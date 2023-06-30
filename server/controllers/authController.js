@@ -9,6 +9,7 @@ const handleUFGoogleLogin = async (req, res) => {
     if (!access_token) return res.status(400).json({ 'message': 'Missing access_token.' });
 
     // exchange access_token for email and name from Google
+    // Google OAuth: https://developers.google.com/identity/protocols/oauth2
     let email, firstName, lastName;
     try {
         const oauth2Client = new google.auth.OAuth2();
