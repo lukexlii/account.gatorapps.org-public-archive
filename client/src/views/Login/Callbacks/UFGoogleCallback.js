@@ -7,10 +7,12 @@ import axios from 'axios';
 // Potential TODO: New API https://developers.google.com/identity/gsi/web/reference/js-reference
 export default function UFGoogleCallback({  }) {
   const HandleGoogleCallback = () => {
+    // Potential TODO: frontend HD validation
     const allowedHDs = ['ufl.edu'];
     const url = new URL(window.location.href);
     const hashParams = new URLSearchParams(url.hash.substr(1)); // Exclude the '#' character
     const accessToken = hashParams.get('access_token');
+    window.history.replaceState({}, document.title, '../../login');
 
     if (accessToken) {
       handleLoginSuccess(accessToken);
@@ -27,14 +29,15 @@ export default function UFGoogleCallback({  }) {
       .post(process.env.REACT_APP_SERVER_HOST + '/api/login/ufgoogle', { access_token }, {
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        withCredentials: true
       })
       .then((response) => {
         const email = response.data.email;
-        console.log(email);
+        console.log(response);
       })
       .catch((error) => {
-        console.log(error.response.data.message);
+        console.log(error);
       });
   };
 
