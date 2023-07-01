@@ -16,8 +16,8 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// routes
-app.use('/auth', require('./routes/auth'));
+// Routes
+app.use('/api/login', require('./routes/login'));
 
 // HTTP Status Codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 app.all('*', (req, res) => {

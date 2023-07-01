@@ -3,12 +3,11 @@ const jwt = require('jsonwebtoken');
 const { google } = require('googleapis');
 
 const handleUFGoogleLogin = async (req, res) => {
-    // check access_token exists
-    console.log(req.body);
+    // Check access_token exists
     const { access_token } = req.body;
     if (!access_token) return res.status(400).json({ 'message': 'Missing access_token.' });
 
-    // exchange access_token for email and name from Google
+    // Exchange access_token for email and name from Google
     // Google OAuth: https://developers.google.com/identity/protocols/oauth2
     let email, firstName, lastName;
     try {
@@ -25,8 +24,9 @@ const handleUFGoogleLogin = async (req, res) => {
           personFields: 'emailAddresses,names',
         });
 
-        // fetch email and verify account is UF-provided
+        // Fetch email and verify account is UF-provided
         const emailAddresses = profile.data.emailAddresses;
+        if (!emailAddresses) return res.status(500).json({ 'message': 'Failed to fetch user email.' });
         for (const e in emailAddresses) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             const domain = "ufl.edu";
@@ -39,16 +39,16 @@ const handleUFGoogleLogin = async (req, res) => {
         }
         if (!email) return res.status(403).json({ 'message': 'You must authenticate with your UF-provided account ending with @ufl.edu.' });
         
-        // fetch name
+        // Fetch name
         firstName = profile.data.names[0].givenName;
         lastName = profile.data.names[0].familyName;
       } catch (error) {
-        return res.status(500).json({ 'message': 'Failed to fetch user info.' });
+        return res.status(400).json({ 'message': 'Unable to fetch user info with access_token provided.' });
       }
 
-    // check if user already exists
+    // Check if user already exists
     let foundUser = await User.findOne({ orgEmail: email }).exec();
-    // if not, create user
+    // If not, create user
     if (!foundUser) {
         try {
             const result = await User.create({
@@ -62,7 +62,7 @@ const handleUFGoogleLogin = async (req, res) => {
         }
     };
 
-    // create JWTs
+    // Create JWTs
     const accessToken = jwt.sign(
         {
             "UserInfo": {
@@ -80,7 +80,6 @@ const handleUFGoogleLogin = async (req, res) => {
     // Save refreshToken with current user
     foundUser.refreshToken = refreshToken;
     const result = await foundUser.save();
-    console.log(result);
 
     // Send refresh token as secure cookie
     res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });

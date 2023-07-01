@@ -8,7 +8,7 @@ const UFLoginViaGoogle = () => {
     // TO FIX: auto get host
     'redirect_uri': 'http://localhost:3000/login/ufgoogle/callback',
     'response_type': 'token',
-    'scope': 'https://www.googleapis.com/auth/userinfo.profile',
+    'scope': ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'].join(' '),
     'include_granted_scopes': 'true',
     'state': 'pass-through value',
     'hd': 'ufl.edu'
