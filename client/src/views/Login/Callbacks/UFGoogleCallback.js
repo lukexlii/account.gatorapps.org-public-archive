@@ -15,6 +15,8 @@ export default function UFGoogleCallback({  }) {
     window.history.replaceState({}, document.title, '../../login');
 
     if (accessToken) {
+      // JUST FOR DEV, REMOVE FOR PROD
+      console.log(accessToken);
       handleLoginSuccess(accessToken);
     } else if (hashParams.get('error')) {
 
@@ -26,7 +28,7 @@ export default function UFGoogleCallback({  }) {
   const handleLoginSuccess = (access_token) => {
     // Send access token to backend
     axios
-      .post(process.env.REACT_APP_SERVER_HOST + '/api/login/ufgoogle', { access_token }, {
+      .post(process.env.REACT_APP_SERVER_HOST + '/account/login/ufgoogle', { access_token }, {
         headers: {
           'Content-Type': 'application/json'
         },
