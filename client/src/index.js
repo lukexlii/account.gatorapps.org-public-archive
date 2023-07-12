@@ -7,6 +7,7 @@ import {
   createBrowserRouter,
   RouterProvider
 } from "react-router-dom";
+import { AuthProvider } from './context/AuthProvider';
 
 const router = createBrowserRouter([
   {
@@ -36,5 +37,7 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <RouterProvider router={router} />
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>
 );
