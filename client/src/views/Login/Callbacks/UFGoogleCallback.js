@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from '../../../components/Header/Header';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import axios from '../../../apis/backend';
 import AuthContext from '../../../context/AuthProvider';
 
@@ -21,16 +24,16 @@ export default function UFGoogleCallback({  }) {
     const url = new URL(window.location.href);
     const hashParams = new URLSearchParams(url.hash.substr(1)); // Exclude the '#' character
     const accessToken = hashParams.get('access_token');
-    //window.history.replaceState({}, document.title, '../..');
+    window.history.replaceState({}, document.title, '../..');
 
     if (accessToken) {
       // JUST FOR DEV, REMOVE FOR PROD
       console.log(accessToken);
       handleLoginSuccess(accessToken);
     } else if (hashParams.get('error')) {
-
+      setErrorMessage(hashParams.get('error'));
     } else {
-      handleLoginFailure("");
+      setErrorMessage('Invalid IdP response');
     }
   };
 
@@ -53,30 +56,51 @@ export default function UFGoogleCallback({  }) {
         navigate('/');
       })
       .catch((error) => {
-        setErrorMessage("handleLoginFailure");
+        console.log(error);
+        if(error?.response?.data?.message) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage('Unable to log you in');
+        }
       });
   };
 
-  const handleLoginFailure = (error) => {
-    setErrorMessage("handleLoginFailure");
-  };
+  const handleRetryLogin = () => {
+    navigate('/');
+  }
 
   useEffect(HandleGoogleCallback, []);
 
   return (
     <div>
       <Header />
-      {errorMessage ? (
-        <Alert severity="error">
-        <AlertTitle>Error</AlertTitle>
-        This is an error alert — <strong>check it out!</strong>
-        </Alert>
-      ) : (
-        <Box sx={{ display: 'flex' }}>
-          <CircularProgress />
-          <div>Logging you in...</div>
-        </Box>
-      )}
+      <div className='login'>
+        <div className='login__window'>
+          <Paper variant='outlined'>
+            <Box margin='24px'>
+            {errorMessage ? (
+              <Alert severity="error" action={
+                <Button color="inherit" size="medium" onClick={handleRetryLogin}>
+                  Retry
+                </Button>
+              }><AlertTitle>An error occurred while logging you in.</AlertTitle>{errorMessage}</Alert>
+            ) : (
+              <Box align='center' marginY="48px">
+                <CircularProgress />
+                <Typography variant='body1' align='center' marginTop="24px" sx={
+                  {
+                    'font-size': '1.5rem',
+                    'font-weight': '400',
+                    'line-height': '2rem',
+                    'width': '100%'
+                  }
+                }>Logging you in...</Typography>
+              </Box>
+            )}
+            </Box>
+          </Paper>
+        </div>
+      </div>
     </div>
   );
 };
