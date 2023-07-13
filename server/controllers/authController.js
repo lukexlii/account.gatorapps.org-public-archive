@@ -58,7 +58,7 @@ const handleUFGoogleLogin = async (req, res) => {
       });
       foundUser = await User.findOne({ orgEmail: email }).exec();
     } catch (err) {
-      res.status(500).json({ 'message': 'Failed to establish user profile.' });
+      return res.status(500).json({ 'message': 'Failed to establish user profile.' });
     }
   };
 
