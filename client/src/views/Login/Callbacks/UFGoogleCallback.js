@@ -1,13 +1,17 @@
-import { useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '../../../components/Header/Header.js';
-import './UFGoogleCallback.css';
-import axios from 'axios';
+import { Header } from '../../../components/Header/Header';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import axios from '../../../apis/backend';
 import AuthContext from '../../../context/AuthProvider';
 
 // Google OAuth: https://developers.google.com/identity/protocols/oauth2
 // Potential TODO: New API https://developers.google.com/identity/gsi/web/reference/js-reference
 export default function UFGoogleCallback({  }) {
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const { setAuth } = useContext(AuthContext);
 
@@ -17,7 +21,7 @@ export default function UFGoogleCallback({  }) {
     const url = new URL(window.location.href);
     const hashParams = new URLSearchParams(url.hash.substr(1)); // Exclude the '#' character
     const accessToken = hashParams.get('access_token');
-    window.history.replaceState({}, document.title, '../..');
+    //window.history.replaceState({}, document.title, '../..');
 
     if (accessToken) {
       // JUST FOR DEV, REMOVE FOR PROD
@@ -33,7 +37,7 @@ export default function UFGoogleCallback({  }) {
   const handleLoginSuccess = (access_token) => {
     // Send access token to backend
     axios
-      .post(process.env.REACT_APP_SERVER_HOST + '/account/login/ufgoogle', { access_token }, {
+      .post('/account/login/ufgoogle', { access_token }, {
         headers: {
           'Content-Type': 'application/json'
         },
@@ -49,20 +53,30 @@ export default function UFGoogleCallback({  }) {
         navigate('/');
       })
       .catch((error) => {
-        console.log(error);
+        setErrorMessage("handleLoginFailure");
       });
   };
 
   const handleLoginFailure = (error) => {
-    console.log("handleLoginFailure");
+    setErrorMessage("handleLoginFailure");
   };
 
-  HandleGoogleCallback();
+  useEffect(HandleGoogleCallback, []);
 
   return (
-    <div className="login">
+    <div>
       <Header />
-      <div>Logging you in...</div>
+      {errorMessage ? (
+        <Alert severity="error">
+        <AlertTitle>Error</AlertTitle>
+        This is an error alert — <strong>check it out!</strong>
+        </Alert>
+      ) : (
+        <Box sx={{ display: 'flex' }}>
+          <CircularProgress />
+          <div>Logging you in...</div>
+        </Box>
+      )}
     </div>
   );
 };
