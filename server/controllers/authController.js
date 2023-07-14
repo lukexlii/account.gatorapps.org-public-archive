@@ -5,7 +5,7 @@ const { google } = require('googleapis');
 const handleUFGoogleLogin = async (req, res) => {
   // Check access_token exists
   const { access_token } = req.body;
-  if (!access_token) return res.status(400).json({ 'message': 'Missing Google access_token.' });
+  if (!access_token) return res.status(400).json({ 'message': 'Missing Google access_token' });
 
   // Exchange access_token for email and name from Google
   // Google OAuth: https://developers.google.com/identity/protocols/oauth2
@@ -26,7 +26,7 @@ const handleUFGoogleLogin = async (req, res) => {
 
     // Fetch email and verify account is UF-provided
     const emailAddresses = profile.data.emailAddresses;
-    if (!emailAddresses) return res.status(500).json({ 'message': 'Failed to fetch user email.' });
+    if (!emailAddresses) return res.status(500).json({ 'message': 'Unable to fetch user email' });
     for (const e in emailAddresses) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const domain = "ufl.edu";
@@ -37,13 +37,13 @@ const handleUFGoogleLogin = async (req, res) => {
       email = emailAddresses[e].value;
       break;
     }
-    if (!email) return res.status(403).json({ 'message': 'You must authenticate with your UF-provided account ending with @ufl.edu.' });
+    if (!email) return res.status(403).json({ 'message': 'You must authenticate with your UF-provided account ending with @ufl.edu' });
 
     // Fetch name
     firstName = profile.data.names[0].givenName;
     lastName = profile.data.names[0].familyName;
   } catch (error) {
-    return res.status(400).json({ 'message': 'Unable to fetch user info with Google access_token provided.' });
+    return res.status(400).json({ 'message': 'Unable to fetch user info with Google access_token provided' });
   }
 
   // Check if user already exists
@@ -52,13 +52,14 @@ const handleUFGoogleLogin = async (req, res) => {
   if (!foundUser) {
     try {
       const result = await User.create({
+        "roles": ["student"],
         "orgEmail": email,
         "firstName": firstName,
         "lastName": lastName
       });
       foundUser = await User.findOne({ orgEmail: email }).exec();
     } catch (err) {
-      return res.status(500).json({ 'message': 'Failed to establish user profile.' });
+      return res.status(500).json({ 'message': 'Unable to establish user profile' });
     }
   };
 
@@ -66,7 +67,8 @@ const handleUFGoogleLogin = async (req, res) => {
   const accessToken = jwt.sign(
     {
       "userInfo": {
-        "id": foundUser.id
+        "id": foundUser.id,
+        "roles": foundUser.roles
       }
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -85,7 +87,7 @@ const handleUFGoogleLogin = async (req, res) => {
   // Send refresh token as httpOnly cookie
   res.cookie(process.env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
   // Send access token
-  res.json({ email, firstName, lastName, accessToken });
+  res.json({ email, firstName, lastName, accessToken, roles: foundUser.roles });
 };
 
 
