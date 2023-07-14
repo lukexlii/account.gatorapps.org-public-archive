@@ -1,51 +1,19 @@
 import React from 'react';
-import Homepage from './views/Homepage/Homepage';
-import Login from './views/Login/Login';
-import UFGoogleCallback from './views/Login/Callbacks/UFGoogleCallback';
-import ReactDOM from 'react-dom/client';
-import {
-  createBrowserRouter,
-  RouterProvider
-} from "react-router-dom";
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
 import { AuthProvider } from './context/AuthProvider';
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,700"
-/>;
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/icon?family=Material+Icons"
-/>;
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: (
-      <Homepage />
-    ),
-  },
-  {
-    path: "/login",
-    element: (
-      <Login />
-    ),
-  },
-  {
-    path: "/login/ufgoogle/callback",
-    element: (
-      <UFGoogleCallback />
-    ),
-  },
-  {
-    path: "/*",
-    element: <div>404 Not Found</div>
-  }
-]);
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-root.render(
-  <AuthProvider>
-    <RouterProvider router={router} />
-  </AuthProvider>
+ReactDOM.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/*" element={<App />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+  document.getElementById('root')
 );

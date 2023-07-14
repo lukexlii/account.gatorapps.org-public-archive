@@ -49,10 +49,11 @@ export default function UFGoogleCallback({  }) {
       .then((response) => {
         console.log(response?.data);
         const accessToken = response?.data?.accessToken;
+        const roles = response?.data?.roles;
         const email = response?.data?.email;
         const firstName = response?.data?.firstName;
         const lastName = response?.data?.lastName;
-        setAuth({ accessToken, email, firstName, lastName });
+        setAuth({ accessToken, roles, email, firstName, lastName });
         navigate('/');
       })
       .catch((error) => {
@@ -77,7 +78,7 @@ export default function UFGoogleCallback({  }) {
       <div className='login'>
         <div className='login__window'>
           <Paper variant='outlined'>
-            <Box margin='24px'>
+            <Box margin='24px' marginBottom='48px'>
             {errorMessage ? (
               <Alert severity="error" action={
                 <Button color="inherit" size="medium" onClick={handleRetryLogin}>

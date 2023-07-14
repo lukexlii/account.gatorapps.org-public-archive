@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import Homepage from './views/Homepage/Homepage';
+import Student from './views/Student/Student';
+import UFGoogleCallback from './views/Login/Callbacks/UFGoogleCallback';
+import RequireAuth from './components/RequireAuth/RequireAuth';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      {/* public routes */}
+      <Route path="/" element={<Homepage />} />
+      <Route path="/login/ufgoogle/callback" element={<UFGoogleCallback />} />
+
+      {/* protected routes */}
+      <Route element={<RequireAuth allowedRoles={['student']} />}>
+        <Route path="/student" element={<Student />} />
+      </Route>
+
+      {/* catch all */}
+      <Route path="*" element={<div></div>} />
+    </Routes>
   );
 }
 

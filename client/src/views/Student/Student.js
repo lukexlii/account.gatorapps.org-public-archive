@@ -1,27 +1,20 @@
 import { Header } from '../../components/Header/Header.js';
-import Login from '../Login/Login.js';
-import './Homepage.css';
 import useAuth from '../../hooks/useAuth';
 
-const Homepage = () => {
+const Student = () => {
   const { auth } = useAuth();
-  console.log(auth);
 
   return (
-    <div className="homepage">
+    <div className="student">
       <Header />
-      {auth?.accessToken ? (
-        <div>
-        <div>Welcome, {auth?.firstName}!</div>
+      <div>
+        <div>Welcome to student page, {auth?.firstName}!</div>
         <div>First name: {auth?.firstName}</div>
         <div>Last name: {auth?.lastName}</div>
         <div>Email: {auth?.email}</div>
-        </div>
-      ) : (
-        <Login />
-      )}
+      </div>
     </div>
   );
 }
 
-export default Homepage;
+export default Student;

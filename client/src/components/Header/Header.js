@@ -16,7 +16,7 @@ export const Header = (props) => {
           </nav>
         </div>
         <div className="header__login">
-          <Link className="header__nav_text" to={'/login'}>Login</Link>
+          <Link className="header__nav_text" to={'/student'}>Student</Link>
         </div>
       </header>
       <div className="header__spaceholder"></div>
