@@ -5,7 +5,6 @@ import useAuth from '../../hooks/useAuth';
 
 const Homepage = () => {
   const { auth } = useAuth();
-  console.log(auth);
 
   return (
     <div className="homepage">

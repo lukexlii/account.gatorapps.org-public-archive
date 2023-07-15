@@ -23,7 +23,7 @@ const handleRefreshToken = async (req, res) => {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_LIFESPAN }
       );
-      res.json({ accessToken })
+      res.json({ email: foundUser.orgEmail, firstName: foundUser.firstName, lastName: foundUser.lastName, accessToken, roles: foundUser.roles })
     }
   );
 }

@@ -1,8 +1,8 @@
 // https://www.youtube.com/watch?v=nI8PYZNFtac
-import { axiosPrivate } from "../apis/backend";
-import { useEffect } from "react";
-import useAuth from "./useAuth";
-import useRefreshToken from "./useRefreshToken";
+import { axiosPrivate } from '../apis/backend';
+import { useEffect } from 'react';
+import useAuth from './useAuth';
+import useRefreshToken from './useRefreshToken';
 
 const useAxiosPrivate = () => {
   const { auth } = useAuth();

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { Header } from '../../components/Header/Header.js';
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { useNavigate, useLocation } from "react-router-dom";
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Student = () => {
   const [firstName, setFirstName] = useState();
@@ -15,30 +15,29 @@ const Student = () => {
     const controller = new AbortController();
 
     const getProfile = async () => {
-        try {
-            const response = await axiosPrivate.get('/api/profile/name', {
-                signal: controller.signal
-            });
-            if (isMounted) {
-              setFirstName(response.data.firstName);
-              setLastName(response.data.lastName);
-            }
-        } catch (error) {
-          console.log(error);
-            //navigate('/', { state: { from: location }, replace: true });
+      try {
+        const response = await axiosPrivate.get('/api/profile/name', {
+          signal: controller.signal
+        });
+        if (isMounted) {
+          setFirstName(response.data.firstName);
+          setLastName(response.data.lastName);
         }
+      } catch (error) {
+        navigate('/', { state: { from: location }, replace: true });
+      }
     }
 
     getProfile();
 
     return () => {
-        isMounted = false;
-        controller.abort();
+      isMounted = false;
+      controller.abort();
     }
   }, []);
 
   return (
-    <div className="student">
+    <div className='student'>
       <Header />
       <div>
         <div>Welcome to student page, {firstName}!</div>
