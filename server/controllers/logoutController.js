@@ -7,7 +7,7 @@ const handleLogout = async (req, res) => {
 
   const foundUser = await User.findOne({ refreshToken }).exec();
   if (!foundUser) {
-    res.clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME, { httpOnly: true, sameSite: 'None', secure: false });
+    res.clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME, { httpOnly: true, secure: true, sameSite: 'None' });
     return res.sendStatus(204);
   }
 
@@ -15,7 +15,7 @@ const handleLogout = async (req, res) => {
   foundUser.refreshToken = '';
   await foundUser.save();
   // Remove refreshToken cookie
-  res.clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME, { httpOnly: true, sameSite: 'None', secure: false });
+  res.clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME, { httpOnly: true, secure: true, sameSite: 'None' });
   res.sendStatus(204);
 }
 

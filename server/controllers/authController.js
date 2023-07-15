@@ -85,7 +85,7 @@ const handleUFGoogleLogin = async (req, res) => {
   const result = await foundUser.save();
 
   // Send refresh token as httpOnly cookie
-  res.cookie(process.env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: false, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+  res.cookie(process.env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
   // Send access token
   res.json({ email, firstName, lastName, accessToken, roles: foundUser.roles });
 };

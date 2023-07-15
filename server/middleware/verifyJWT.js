@@ -8,7 +8,7 @@ const verifyJWT = (req, res, next) => {
     token,
     process.env.ACCESS_TOKEN_SECRET,
     (err, decoded) => {
-      if (err) return res.status(403).json({ 'message': 'Invalid accessToken' });
+      if (err) return res.status(403).json({ 'message': 'Invalid accessToken', 'invalidJWT': true });
       req.userId = decoded.userInfo.id;
       req.userRoles = decoded.userInfo.roles;
       next();

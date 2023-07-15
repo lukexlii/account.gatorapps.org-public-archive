@@ -24,10 +24,10 @@ app.use(cookieParser());
 
 // Routes
 // Auth
-// !--- ATTENTION: accessToken cookie set to secure: false for testing purpose. Change back to true for prod. ---!
+// !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
 app.use('/account/login', require('./routes/login'));
 app.use('/account/refresh', require('./routes/refresh'));
-// !--- ATTENTION: accessToken cookie set to secure: false for testing purpose. Change back to true for prod. ---!
+// !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
 app.use('/account/logout', require('./routes/logout'));
 
 app.use(verifyJWT);

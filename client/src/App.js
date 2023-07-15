@@ -1,5 +1,6 @@
 import Homepage from './views/Homepage/Homepage';
 import Student from './views/Student/Student';
+import Admin from './views/Admin/Admin';
 import UFGoogleCallback from './views/Login/Callbacks/UFGoogleCallback';
 import RequireAuth from './components/RequireAuth/RequireAuth';
 import { Routes, Route } from 'react-router-dom';
@@ -15,6 +16,10 @@ function App() {
       {/* protected routes */}
       <Route element={<RequireAuth allowedRoles={['student']} />}>
         <Route path="/student" element={<Student />} />
+      </Route>
+
+      <Route element={<RequireAuth allowedRoles={['admin']} />}>
+        <Route path="/admin" element={<Admin />} />
       </Route>
 
       {/* catch all */}
