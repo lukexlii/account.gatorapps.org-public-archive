@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
+import Header from '../../components/Header/Header';
 import useRefreshToken from '../../hooks/useRefreshToken';
 import useAuth from '../../hooks/useAuth';
 
@@ -25,7 +26,7 @@ const PersistLogin = () => {
   return (
     <div>
       {isRefreshing
-        ? <div>Logging you in...</div>
+        ? <Fragment><Header loading /><div>Logging you in...</div></Fragment>
         : <Outlet />
       }
     </div>

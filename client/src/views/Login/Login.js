@@ -24,7 +24,6 @@ const UFLoginViaGoogle = () => {
   }
   
   window.location.replace(url);
-
 }
 
 class Login extends React.Component {
