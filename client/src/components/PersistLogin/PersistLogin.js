@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { Fragment, useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import useRefreshToken from '../../hooks/useRefreshToken';
 import useAuth from '../../hooks/useAuth';
 
@@ -26,7 +28,17 @@ const PersistLogin = () => {
   return (
     <div>
       {isRefreshing
-        ? <Fragment><Header loading /><div>Logging you in...</div></Fragment>
+        ? <Fragment>
+            <Header loading />
+            <Box align='center' sx={{
+              'position': 'fixed',
+              'top': '50%',
+              'left': '50%',
+              'transform': 'translate(-50%, -50%)'
+            }}>
+              <CircularProgress size="80px" sx={{ color: "rgb(224, 129, 46)" }}/>
+            </Box>
+          </Fragment>
         : <Outlet />
       }
     </div>
