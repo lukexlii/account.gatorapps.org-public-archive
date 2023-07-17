@@ -2,6 +2,16 @@
   box-sizing: inherit
 }
 
+html, body, main {
+  height: 100%;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   font-family: Roboto, sans-serif;
@@ -10,10 +20,10 @@ body {
   background-color: rgb(241, 241, 241);
 }
 
-html {
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-  text-size-adjust: 100%;
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 code {

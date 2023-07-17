@@ -5,6 +5,7 @@ import UFGoogleCallback from './views/Login/Callbacks/UFGoogleCallback';
 import RequireAuth from './components/RequireAuth/RequireAuth';
 import PersistLogin from './components/PersistLogin/PersistLogin';
 import { Routes, Route } from 'react-router-dom';
+import GenericPage from './components/GenericPage/GenericPage';
 
 function App() {
 
@@ -16,6 +17,8 @@ function App() {
       {/* protected routes */}
       <Route element={<PersistLogin />}>
         <Route path="/" element={<Homepage />} />
+
+        <Route path="/test" element={<GenericPage />} />
         
         <Route element={<RequireAuth allowedRoles={['student']} />}>
           <Route path="/student" element={<Student />} />

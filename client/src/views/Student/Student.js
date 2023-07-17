@@ -37,7 +37,7 @@ const Student = () => {
   }, []);
 
   return (
-    <div className='student'>
+    <div className='Student'>
       <Header />
       <div>
         <div>Welcome to student page, {firstName}!</div>
