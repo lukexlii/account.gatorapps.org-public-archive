@@ -1,4 +1,4 @@
-import { Header } from '../../components/Header/Header.js';
+import Header from '../../components/Header/Header.js';
 import Login from '../Login/Login.js';
 import './Homepage.css';
 import useAuth from '../../hooks/useAuth';
@@ -19,6 +19,7 @@ const Homepage = () => {
       ) : (
         <Login />
       )}
+      <div style={{height: '1000px'}}></div>
     </div>
   );
 }

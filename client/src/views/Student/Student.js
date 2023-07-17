@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Header } from '../../components/Header/Header.js';
+import Header from '../../components/Header/Header.js';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import { useNavigate, useLocation } from 'react-router-dom';
 
