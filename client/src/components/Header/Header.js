@@ -3,8 +3,18 @@ import { Link } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import Drawer from '@mui/material/Drawer';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import IconButton from '@mui/material/Button';
+import ListSubheader from '@mui/material/ListSubheader';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -31,9 +41,31 @@ const Header = (props) => {
     })
   }
 
+  const [openDrawer, setOpenDrawer] = useState({
+    menu: false,
+    profile: false,
+  });
+
+  const toggleDrawer = (drawerName, open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    if (open === undefined) {
+      setOpenDrawer({ ...openDrawer, [drawerName]:!openDrawer[drawerName] });
+    } else {
+      setOpenDrawer({ ...openDrawer, [drawerName]: open });
+    }
+  };
+
+  // Nested list of menu drawer
+  const [menu_expandExample, menu_setExpandExample] = useState(false);
+  const menu_handleExampleClick = () => {
+    menu_setExpandExample(!menu_expandExample);
+  };
+
   return (
     <Fragment>
-      <AppBar position="fixed" elevation="0">
+      <AppBar position="fixed" elevation="0" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar disableGutters sx={
           {
             'background-color': 'rgb(40, 87, 151)',
@@ -43,11 +75,52 @@ const Header = (props) => {
           }
         }>
           {(!props.loading && props.loggedIn) && (
-            <Box aria-label="Menu" sx={{ display: 'inline-block', height: '100%' }}>
-              <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" sx={{ 'min-width': '60px' }}>
-                <MenuIcon />
-              </IconButton>
-            </Box>
+            <Fragment>
+              <Tooltip title="Menu">
+                <Box aria-label="Menu" sx={{ display: 'inline-block', height: '100%' }}>
+                  <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={toggleDrawer("menu")} sx={{ 'min-width': '60px' }}>
+                    <MenuIcon />
+                  </IconButton>
+                </Box>
+              </Tooltip>
+              <Drawer
+                anchor="left"
+                open={openDrawer["menu"]}
+                onClose={toggleDrawer("menu", false)}
+              >
+                <Toolbar />
+                <div>
+                  <List
+                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                    subheader={
+                      <ListSubheader component="div" id="nested-list-subheader">
+                        Nested List Items
+                      </ListSubheader>
+                    }
+                  >
+                    <ListItemButton>
+                      <ListItemText primary="Sent mail" />
+                    </ListItemButton>
+                    <ListItemButton>
+                      <ListItemText primary="Drafts" />
+                    </ListItemButton>
+                    <ListItemButton onClick={menu_handleExampleClick}>
+                      <ListItemText primary="Inbox" />
+                      {menu_expandExample ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={menu_expandExample} timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding>
+                        <ListItemButton sx={{ pl: 4 }}>
+                          <ListItemText primary="Starred" />
+                        </ListItemButton>
+                      </List>
+                    </Collapse>
+                  </List>
+                </div>
+              </Drawer>
+            </Fragment>
           )}
 
           <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" sx={{ 'min-width': '60px' }}>
@@ -96,11 +169,13 @@ const Header = (props) => {
           )}
           
           {(!props.loading && props.loggedIn) && (
-            <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
-              <IconButton className={"Header__button"} size="medium" paddingX="8px" color="inherit" aria-label="menu" onClick={null} sx={{ 'min-width': '60px' }}>
-                <AccountCircleIcon />
-              </IconButton>
-            </Box>
+            <Tooltip title="Profile">
+              <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
+                <IconButton className={"Header__button"} size="medium" paddingX="8px" color="inherit" aria-label="menu" onClick={null} sx={{ 'min-width': '60px' }}>
+                  <AccountCircleIcon />
+                </IconButton>
+              </Box>
+            </Tooltip>
           )}
         </Toolbar>
       </AppBar>
