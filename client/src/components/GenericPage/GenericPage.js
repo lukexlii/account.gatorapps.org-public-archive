@@ -1,9 +1,9 @@
-import Header from '../../components/Header/Header.js';
-import Footer from '../../components/Footer/Footer.js';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
+import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import useAuth from '../../hooks/useAuth';
 
@@ -33,9 +33,9 @@ const GenericPage = () => {
                 'text-align': 'center'
               }
             }>
-              <Skeleton width="80%" height={30} />
-              <Skeleton width="80%" height={30} />
-              <Skeleton width="80%" height={30} />
+              <SkeletonGroup/>
+              <SkeletonGroup/>
+              <SkeletonGroup/>
             </Paper>
           </Container>
         </Box>
