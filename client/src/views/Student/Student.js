@@ -16,7 +16,7 @@ const Student = () => {
 
     const getProfile = async () => {
       try {
-        const response = await axiosPrivate.get('/api/profile/name', {
+        const response = await axiosPrivate.get('/userProfile/name', {
           signal: controller.signal
         });
         if (isMounted) {
