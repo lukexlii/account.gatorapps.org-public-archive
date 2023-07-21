@@ -19,7 +19,8 @@
     "express": "^4.17.1",
     "googleapis": "^120.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.11"
+    "mongoose": "^6.0.11",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"

@@ -1,6 +1,6 @@
 const User = require('../model/User');
-const jwt = require('jsonwebtoken');
 const { google } = require('googleapis');
+const { signAccessToken, signRefreshToken } = require('./signJWT');
 
 const handleUFGoogleLogin = async (req, res) => {
   // Check access_token exists
@@ -64,22 +64,8 @@ const handleUFGoogleLogin = async (req, res) => {
   };
 
   // Create JWTs
-  const accessToken = jwt.sign(
-    {
-      "userInfo": {
-        "id": foundUser.id,
-        "roles": foundUser.roles
-      }
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    // Format: https://github.com/vercel/ms
-    { expiresIn: process.env.ACCESS_TOKEN_LIFESPAN }
-  );
-  const refreshToken = jwt.sign(
-    { "id": foundUser.id },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESH_TOKEN_LIFESPAN }
-  );
+  const accessToken = signAccessToken(foundUser);
+  const refreshToken = signRefreshToken(foundUser);
   // Save refreshToken with current user
   foundUser.refreshToken = refreshToken;
   const result = await foundUser.save();
