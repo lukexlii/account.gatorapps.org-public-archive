@@ -10,6 +10,9 @@ const theme = createTheme({
   palette: {
     primary: {
       main: 'rgb(40, 87, 151)'
+    },
+    secondary: {
+      main: 'rgb(224, 129, 46)'
     }
   },
   components: {

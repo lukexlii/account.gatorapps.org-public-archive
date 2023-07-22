@@ -7,6 +7,11 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -46,19 +51,30 @@ const Account = () => {
       <Fragment>
         <Box>
           <Typography variant="h3" sx={{ 'color': 'rgb(191, 68, 24)', 'font-size': '1.5rem', 'text-align': 'left' }}>Profile</Typography>
-          <Divider sx={{ marginTop: '12px', marginBottom: '24px' }}/>
+          <Divider sx={{ marginTop: '8px', marginBottom: '24px' }}/>
         </Box>
         <Box sx={{ 'display': 'flex', 'marginY': '12px', 'align-items': 'center' }}>
           <TextField disabled fullWidth label="Nick Name" value="Luke Li"/>
           <Button variant="outlined" size="medium" onClick={undefined} sx={{ marginLeft: '16px', height: '36px' }}>Update</Button>
         </Box>
-        <TextField disabled fullWidth label="Organizational Domain" value="ufl.edu" sx={{ 'marginY': '12px' }}/>
-        <TextField disabled fullWidth label="Organizational ID" value="luke.li" sx={{ 'marginY': '12px' }}/>
-        <TextField disabled fullWidth label="Name" value="Luke Li" sx={{ 'marginY': '12px' }}/>
-        <Box sx={{ 'display': 'flex', 'marginY': '12px', 'align-items': 'center' }}>
-          <TextField disabled fullWidth label="Current Affiliation" value={"Active"}/>
-          <CheckCircleOutlineIcon sx={{ 'marginLeft': '12px', width: '32px', height: '32px', color: 'green' }}/>
-        </Box>
+        <TextField disabled fullWidth label="Organizational Domain" value="ufl.edu" sx={{ 'marginY': '8px' }}/>
+        <TextField disabled fullWidth label="Organizational ID" value="luke.li" sx={{ 'marginY': '8px' }}/>
+        <TextField disabled fullWidth label="Name" value="Luke Li" sx={{ 'marginY': '8px' }}/>
+        <FormControl disabled fullWidth variant="outlined" sx={{ 'marginY': '8px' }}>
+          <InputLabel htmlFor="outlined-adornment-current-affiliation">Current Affiliation</InputLabel>
+          <OutlinedInput id="outlined-adornment-current-affiliation" value="Active" endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  edge="end"
+                >
+                  <CheckCircleOutlineIcon sx={{ color: "green" }}/>
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Current Affiliation"
+          />
+        </FormControl>
       </Fragment>
     )
   }
