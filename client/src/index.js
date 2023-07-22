@@ -7,6 +7,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
+  palette: {
+    primary: {
+      main: 'rgb(40, 87, 151)'
+    }
+  },
   components: {
     MuiTooltip: {
       styleOverrides: {
@@ -14,8 +19,38 @@ const theme = createTheme({
               fontSize: '0.736607rem'
           }
       }
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          lineHeight: 'unset'
+        },
+        h1: {
+          'font-size': '1.875rem'
+        }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        outlined: {
+          border: '1px solid rgb(204, 204, 204)'
+        },
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          'background-color': 'rgb(40, 87, 151)',
+          '&:hover': {
+            'background-color': 'rgb(17, 82, 147)'
+          }
+        },
+        sizeMedium: {
+          'font-size':'0.9375rem'
+        }
+      }
     }
-  },
+  }
 });
 
 ReactDOM.render(

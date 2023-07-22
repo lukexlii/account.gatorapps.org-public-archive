@@ -22,7 +22,7 @@ import Menu from '@mui/material/Menu';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import useAuth from '../../hooks/useAuth';
-import { UFLoginViaGoogle } from '../../views/Login/Login';
+import { UFLoginViaGoogle } from '../RequireAuth/AuthFunctions';
 import './Header.css';
 
 const Header = (props) => {
@@ -80,12 +80,12 @@ const Header = (props) => {
   return (
     <Fragment>
       <AppBar position="fixed" elevation="0" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar disableGutters sx={
+        <Toolbar className='Header__toolbar' disableGutters sx={
           {
             'background-color': 'rgb(40, 87, 151)',
             'color': 'rgb(255, 255, 255)',
             'border-bottom': '4px solid rgb(224, 129, 46)',
-            'height': '64px'
+            'height': '56px'
           }
         }>
           {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
@@ -152,13 +152,13 @@ const Header = (props) => {
                 }
               }
             }>
-              ACCOUNT.UF
+              GatorApps
             </Typography>
           </Typography>
 
           {(!props.loading && (props.loggedIn === false || (props.loggedIn === undefined && !auth?.accessToken))) && (
             <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
-              <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleLoginMenuOpen} sx={{ 'width': '88px', 'padding': '6px' }}>
+              <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleLoginMenuOpen} sx={{ 'width': '90px', 'padding': '6px' }}>
                 <span>Log in</span>
                 <ArrowDropDownIcon />
               </IconButton>

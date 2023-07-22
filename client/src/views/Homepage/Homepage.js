@@ -1,25 +1,24 @@
+import { Fragment, useState } from 'react';
 import Header from '../../components/Header/Header';
 import Login from '../Login/Login';
+import Profile from '../Profile/Profile';
 import useAuth from '../../hooks/useAuth';
-import './Homepage.css';
+//import './Homepage.css';
 
 const Homepage = () => {
   const { auth } = useAuth();
 
   return (
     <div className="homepage">
-      <Header />
       {auth?.accessToken ? (
-        <div>
-        <div>Welcome, {auth?.firstName}!</div>
-        <div>First name: {auth?.firstName}</div>
-        <div>Last name: {auth?.lastName}</div>
-        <div>Email: {auth?.email}</div>
-        </div>
+        <Profile />
       ) : (
-        <Login />
+        <Fragment>
+          <Header />
+          <Login />
+        </Fragment>
       )}
-      <div style={{height: '1000px'}}></div>
+      <div></div>
     </div>
   );
 }

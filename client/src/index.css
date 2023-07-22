@@ -37,3 +37,25 @@ main > div:first-child {
   justify-content: space-between;
   min-height: 100%;
 }
+
+.GenericPage__container_title_box {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.GenericPage__container_title_flexBox {
+  display: flex;
+}
+
+.GenericPage__container_title_flexBox_left {
+  align-items: center;
+}
+
+.GenericPage__container_title_flexBox_right {
+  justify-content: flex-end;
+}
+
+.GenericPage__container_paper {
+  min-height: 75vh;
+  text-align: center;
+}
