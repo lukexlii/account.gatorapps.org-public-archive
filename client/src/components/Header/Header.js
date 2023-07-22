@@ -21,9 +21,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import useAuth from '../../hooks/useAuth';
+import { UFLoginViaGoogle } from '../../views/Login/Login';
 import './Header.css';
 
 const Header = (props) => {
+  const { auth } = useAuth();
+
+  // Login dorpdown menu
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleLoginMenuOpen = (event) => {
@@ -34,13 +39,22 @@ const Header = (props) => {
     setAnchorEl(null);
   };
 
+  const defaultLoginMenuItems = [
+    { name: "Students, Faculty & Staff" },
+    { name: "Log in with GatorLink", 'action': UFLoginViaGoogle},
+    { name: "Alumni & Friends" },
+    { name: "Coming soon...", 'action': () => window.alert("Coming soon...")}
+  ];
+
   const renderLoginMenuItems = () => {
-    return props.loginMenuItems?.map((item) => {
+    const menuItems = props.loginMenuItems ? props.loginMenuItems : defaultLoginMenuItems;
+    return menuItems.map((item) => {
       if (item.action) return <MenuItem onClick={item.action}>{item.name}</MenuItem>;
       return <MenuItem disabled>{item.name}</MenuItem>
     })
   }
 
+  // Drawers
   const [openDrawer, setOpenDrawer] = useState({
     menu: false,
     profile: false,
@@ -57,7 +71,7 @@ const Header = (props) => {
     }
   };
 
-  // Nested list of menu drawer
+  // Nested list of left menu drawer
   const [menu_expandExample, menu_setExpandExample] = useState(false);
   const menu_handleExampleClick = () => {
     menu_setExpandExample(!menu_expandExample);
@@ -74,7 +88,7 @@ const Header = (props) => {
             'height': '64px'
           }
         }>
-          {(!props.loading && props.loggedIn) && (
+          {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
             <Fragment>
               <Tooltip title="Menu">
                 <Box aria-label="Menu" sx={{ display: 'inline-block', height: '100%' }}>
@@ -142,7 +156,7 @@ const Header = (props) => {
             </Typography>
           </Typography>
 
-          {(!props.loading && !props.loggedIn) && (
+          {(!props.loading && (props.loggedIn === false || (props.loggedIn === undefined && !auth?.accessToken))) && (
             <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
               <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleLoginMenuOpen} sx={{ 'width': '88px', 'padding': '6px' }}>
                 <span>Log in</span>
@@ -168,7 +182,7 @@ const Header = (props) => {
             </Box>
           )}
           
-          {(!props.loading && props.loggedIn) && (
+          {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
             <Tooltip title="Profile">
               <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
                 <IconButton className={"Header__button"} size="medium" paddingX="8px" color="inherit" aria-label="menu" onClick={null} sx={{ 'min-width': '60px' }}>

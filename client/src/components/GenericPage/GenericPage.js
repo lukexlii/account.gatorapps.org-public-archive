@@ -19,9 +19,7 @@ const GenericPage = () => {
             <Box marginY="24px">
               <Typography variant="h1" sx={
                 {
-                  'margin': '0px',
-                  'font-size': '1.875rem',
-                  'font-weight': '300',
+                  'font-size': '1.875rem'
                 }
               }>Page Title</Typography>
             </Box>
