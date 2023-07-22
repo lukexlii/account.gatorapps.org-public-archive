@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import Header from '../../components/Header/Header';
 import Login from '../Login/Login';
-import Profile from '../Profile/Profile';
+import Account from '../Account/Account';
 import useAuth from '../../hooks/useAuth';
 //import './Homepage.css';
 
@@ -11,7 +11,7 @@ const Homepage = () => {
   return (
     <div className="homepage">
       {auth?.accessToken ? (
-        <Profile />
+        <Account />
       ) : (
         <Fragment>
           <Header />

@@ -6,13 +6,16 @@ import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import useAuth from '../../hooks/useAuth';
 import { axiosPrivate } from '../../apis/backend';
 //import { handleLogout } from '../../components/RequireAuth/AuthFunctions'
 
-const Profile = () => {
+const Account = () => {
   const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -38,6 +41,28 @@ const Profile = () => {
       });
   };
 
+  const renderAccountContent = () => {
+    return (
+      <Fragment>
+        <Box>
+          <Typography variant="h3" sx={{ 'color': 'rgb(191, 68, 24)', 'font-size': '1.5rem', 'text-align': 'left' }}>Profile</Typography>
+          <Divider sx={{ marginTop: '12px', marginBottom: '24px' }}/>
+        </Box>
+        <Box sx={{ 'display': 'flex', 'marginY': '12px', 'align-items': 'center' }}>
+          <TextField disabled fullWidth label="Nick Name" value="Luke Li"/>
+          <Button variant="outlined" size="medium" onClick={undefined} sx={{ marginLeft: '16px', height: '36px' }}>Update</Button>
+        </Box>
+        <TextField disabled fullWidth label="Organizational Domain" value="ufl.edu" sx={{ 'marginY': '12px' }}/>
+        <TextField disabled fullWidth label="Organizational ID" value="luke.li" sx={{ 'marginY': '12px' }}/>
+        <TextField disabled fullWidth label="Name" value="Luke Li" sx={{ 'marginY': '12px' }}/>
+        <Box sx={{ 'display': 'flex', 'marginY': '12px', 'align-items': 'center' }}>
+          <TextField disabled fullWidth label="Current Affiliation" value={"Active"}/>
+          <CheckCircleOutlineIcon sx={{ 'marginLeft': '12px', width: '32px', height: '32px', color: 'green' }}/>
+        </Box>
+      </Fragment>
+    )
+  }
+
   return (
     <div className='GenericPage'>
       <Header/>
@@ -46,7 +71,7 @@ const Profile = () => {
           <Container maxWidth="lg">
             <Box className="GenericPage__container_title_box GenericPage__container_title_flexBox GenericPage__container_title_flexBox_left">
               <Box className="GenericPage__container_title_flexBox GenericPage__container_title_flexBox_left">
-                <Typography variant="h1">Account Profile</Typography>
+                <Typography variant="h1">Account</Typography>
                 <Button size="medium" sx={{ 'margin-left': '16px' }}>Button</Button>
               </Box>
               <Box className="GenericPage__container_title_flexBox GenericPage__container_title_flexBox_right" sx={{ 'flex-grow': '1' }}>
@@ -65,9 +90,9 @@ const Profile = () => {
                 <SkeletonGroup/>
               </Fragment>
             ) : (
-              <Fragment>
-                <div>1</div>
-              </Fragment>
+              <Box sx={{ padding: '32px' }}>
+                {renderAccountContent()}
+              </Box>
             )}
             </Paper>
           </Container>
@@ -78,4 +103,4 @@ const Profile = () => {
   );
 }
 
-export default Profile;
+export default Account;
