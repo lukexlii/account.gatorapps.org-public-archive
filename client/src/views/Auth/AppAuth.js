@@ -5,6 +5,7 @@ import LoginWindow from '../../components/Login/LoginWindow';
 import Alert from '../../components/Alert/Alert';
 import { Container } from '@mui/material';
 import useAuth from '../../hooks/useAuth';
+import axios from '../../apis/backend';
 
 const AppAuth = () => {
   const { auth } = useAuth();
@@ -41,11 +42,29 @@ const AppAuth = () => {
       return;
     };
 
-    setAlertData({
-      title: "Welcome",
-      message: "Please authenticate yourself bellow to continue to ...",
-      actions: [{ name: "Cancel", onClick: () => { navigate('/'); } }]
-    });
+    axios
+      .post('/appAuth/validateRequest', { service, state }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then((response) => {
+        setAlertData({
+          title: "Welcome",
+          message: "Please authenticate yourself bellow" + (response?.data?.serviceDisplayName ? " to continue to " + response?.data?.serviceDisplayName : ""),
+          actions: [{ name: "Cancel", onClick: () => { navigate('/'); } }]
+        });
+        setLoading(false);
+        return;
+      })
+      .catch((error) => {
+        setSeverity("error");
+        setAlertData({
+          title: (error?.response?.data?.errCode ? "Invalid authentication request: " + error?.response?.data?.errCode : "Unknown error"),
+          message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later")
+        });
+        return;
+      });
   };
 
   useEffect(validateAppAuth, []);
