@@ -5,14 +5,12 @@ const app = express();
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
-const mongoose = require('mongoose');
-const connectDB = require('./config/dbConn');
 const cookieParser = require('cookie-parser');
 const verifyJWT = require('./middleware/verifyJWT');
 const PORT = process.env.PORT || 8000;
 
 // Connect to MongoDB mongodb.com
-connectDB();
+const { DBglobal, DBaccount } = require('./config/dbConn');
 
 // Options credentials check and fetch cookies credentials requirement
 app.use(credentials);
@@ -46,7 +44,19 @@ app.all('*', (req, res) => {
   res.sendStatus(404);
 });
 
-mongoose.connection.once('open', () => {
+
+Promise.all([
+  new Promise(resolve => DBglobal.once('open', resolve)),
+  new Promise(resolve => DBaccount.once('open', resolve))
+]).then(() => {
   console.log('Connected to MongoDB');
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}).catch(error => {
+  console.error('Error connecting to the database: ', error);
 });
+
+
+/* mongoose.connection.once('open', () => {
+  console.log('Connected to MongoDB');
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}); */

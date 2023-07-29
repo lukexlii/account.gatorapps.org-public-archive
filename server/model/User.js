@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { DBaccount } = require('../config/dbConn');
 
 const userSchema = new Schema({
   roles: {
@@ -22,4 +23,4 @@ const userSchema = new Schema({
   refreshToken: String
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = DBaccount.model('User', userSchema);

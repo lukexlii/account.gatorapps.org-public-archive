@@ -1,14 +1,41 @@
 const mongoose = require('mongoose');
 
-const connectDB = async () => {
+/* const connectDBGlobal = async () => {
   try {
-    await mongoose.connect(process.env.DATABASE_URI, {
+    return await mongoose.createConnection(process.env.DATABASE_URI, {
       useUnifiedTopology: true,
-      useNewUrlParser: true
+      useNewUrlParser: true,
+      dbName: 'global'
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
-module.exports = connectDB
+const connectDBAccount = async () => {
+  try {
+    return await mongoose.createConnection(process.env.DATABASE_URI, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      dbName: 'account'
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+} */
+
+const DBglobal = mongoose.createConnection(process.env.DATABASE_URI, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  dbName: 'global'
+});
+
+const DBaccount = mongoose.createConnection(process.env.DATABASE_URI, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  dbName: 'account'
+});
+
+module.exports = { DBglobal, DBaccount };

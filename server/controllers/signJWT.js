@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const signAccessToken = (user) => {
-  const accessJWTPrivateKey = fs.readFileSync(path.resolve(__dirname,'../config/_jwtKeyPair/private.pem'));
+  const accessJWTPrivateKey = fs.readFileSync(path.resolve(__dirname, '../config/_jwtKeyPair/private.pem'));
   const accessToken = jwt.sign(
     {
       "userInfo": {
@@ -16,7 +16,7 @@ const signAccessToken = (user) => {
     { algorithm: 'ES256', expiresIn: process.env.ACCESS_TOKEN_LIFESPAN }
   );
   return accessToken;
-}
+};
 
 const signRefreshToken = (user) => {
   const refreshToken = jwt.sign(
@@ -25,6 +25,21 @@ const signRefreshToken = (user) => {
     { expiresIn: process.env.REFRESH_TOKEN_LIFESPAN }
   );
   return refreshToken;
-}
+};
 
-module.exports = { signAccessToken, signRefreshToken };
+const signAppAuthState = (service) => {
+  const appAuthPrivateKey = fs.readFileSync(path.resolve(__dirname, '../config/_jwtKeyPair/appAuth_private.pem'));
+  const appAuthState = jwt.sign(
+    {
+      "serviceInfo": {
+        "code": service.code,
+        "name": service.name
+      }
+    },
+    appAuthPrivateKey,
+    { algorithm: 'ES256', expiresIn: process.env.APP_AUTH_STATE_LIFESPAN }
+  );
+  return appAuthState;
+};
+
+module.exports = { signAccessToken, signRefreshToken, signAppAuthState };
