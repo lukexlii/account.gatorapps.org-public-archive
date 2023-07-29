@@ -23,16 +23,22 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
-// Auth
+// App APIs w/o auth
+//// User auth
 // !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
 app.use('/appApi/account/userAuth/login', require('./routes/appApi/userAuth/login'));
 app.use('/appApi/account/userAuth/refresh', require('./routes/appApi/userAuth/refresh'));
 // !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
 app.use('/appApi/account/userAuth/logout', require('./routes/appApi/userAuth/logout'));
 
-app.use(verifyJWT);
+//// App auth to other internal apps
+app.use('/appApi/account/appAuth', require('./routes/appApi/appAuth/appAuth'));
 
-// APIs
+// Service (other internal apps) APIs
+app.use('/serviceApi/account', require('./routes/serviceApi/serviceApi'));
+
+// App APIs w/ auth
+app.use(verifyJWT);
 app.use('/appApi/account/userProfile', require('./routes/appApi/userProfile'));
 
 // HTTP Status Codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
