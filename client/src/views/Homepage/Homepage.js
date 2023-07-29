@@ -9,7 +9,7 @@ const Homepage = () => {
   const { auth } = useAuth();
 
   return (
-    <div className="homepage">
+    <div className="Homepage">
       {auth?.accessToken ? (
         <Account />
       ) : (

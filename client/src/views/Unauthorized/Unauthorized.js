@@ -6,7 +6,7 @@ import { Container } from '@mui/material';
 const Unauthorized = () => {
   const navigate = useNavigate();
 
-  const error = {
+  const alertData = {
     title: "Unauthorized",
     message: "We are sorry, but you do not have permission to view this resource.",
     actions: [{ name: "Return Home", onClick: () => { navigate('/'); } }]
@@ -16,7 +16,7 @@ const Unauthorized = () => {
     <div className="Unauthorized">
       <Header />
       <Container maxWidth="lg" sx={{ marginTop: '36px' }}>
-        <Alert severity="error" error={error} />
+        <Alert severity="error" alertData={alertData} />
       </Container>
     </div>
   );

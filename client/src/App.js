@@ -2,6 +2,7 @@ import Homepage from './views/Homepage/Homepage';
 import Student from './views/Student/Student';
 import Admin from './views/Admin/Admin';
 import UFGoogleCallback from './components/Login/Callbacks/UFGoogleCallback';
+import AppAuth from './views/Auth/AppAuth';
 import RequireAuth from './components/Auth/RequireAuth';
 import PersistLogin from './components/Auth/PersistLogin';
 import { Routes, Route } from 'react-router-dom';
@@ -18,8 +19,10 @@ function App() {
       <Route element={<PersistLogin />}>
         <Route path="/" element={<Homepage />} />
 
+        <Route path="/appauth" element={<AppAuth />} />
+
         <Route path="/test" element={<GenericPage />} />
-        
+
         <Route element={<RequireAuth allowedRoles={['student']} />}>
           <Route path="/student" element={<Student />} />
         </Route>

@@ -24,7 +24,7 @@ export default function UFGoogleCallback() {
     const url = new URL(window.location.href);
     const hashParams = new URLSearchParams(url.hash.substr(1)); // Exclude the '#' character
     const accessToken = hashParams.get('access_token');
-    //window.history.replaceState({}, document.title, '../..');
+    window.history.replaceState({}, document.title, '../..');
 
     if (accessToken) {
       // JUST FOR DEV, REMOVE FOR PROD
