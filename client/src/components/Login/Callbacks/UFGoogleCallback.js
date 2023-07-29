@@ -13,7 +13,7 @@ import AuthContext from '../../../context/AuthProvider';
 
 // Google OAuth: https://developers.google.com/identity/protocols/oauth2
 // Potential TODO: New API https://developers.google.com/identity/gsi/web/reference/js-reference
-export default function UFGoogleCallback({  }) {
+export default function UFGoogleCallback() {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const { setAuth } = useContext(AuthContext);
@@ -58,7 +58,7 @@ export default function UFGoogleCallback({  }) {
       })
       .catch((error) => {
         console.log(error);
-        if(error?.response?.data?.message) {
+        if (error?.response?.data?.message) {
           setErrorMessage(error.response.data.message);
         } else {
           setErrorMessage('Unable to log you in');
@@ -74,30 +74,30 @@ export default function UFGoogleCallback({  }) {
 
   return (
     <div>
-      <Header loading={!errorMessage}/>
+      <Header loading={!errorMessage} />
       <div className='login'>
         <div className='login__window'>
           <Paper variant='outlined'>
             <Box margin='24px' marginBottom='48px'>
-            {errorMessage ? (
-              <Alert severity="error" action={
-                <Button color="inherit" size="medium" onClick={handleRetryLogin}>
-                  Retry
-                </Button>
-              }><AlertTitle>An error occurred while logging you in.</AlertTitle>{errorMessage}</Alert>
-            ) : (
-              <Box align='center' marginY="48px">
-                <CircularProgress />
-                <Typography variant='body1' align='center' marginTop="24px" sx={
-                  {
-                    'font-size': '1.5rem',
-                    'font-weight': '400',
-                    'line-height': '2rem',
-                    'width': '100%'
-                  }
-                }>Logging you in...</Typography>
-              </Box>
-            )}
+              {errorMessage ? (
+                <Alert severity="error" action={
+                  <Button color="inherit" size="medium" onClick={handleRetryLogin}>
+                    Retry
+                  </Button>
+                }><AlertTitle>An error occurred while logging you in.</AlertTitle>{errorMessage}</Alert>
+              ) : (
+                <Box align='center' marginY="48px">
+                  <CircularProgress />
+                  <Typography variant='body1' align='center' marginTop="24px" sx={
+                    {
+                      'font-size': '1.5rem',
+                      'font-weight': '400',
+                      'line-height': '2rem',
+                      'width': '100%'
+                    }
+                  }>Logging you in...</Typography>
+                </Box>
+              )}
             </Box>
           </Paper>
         </div>

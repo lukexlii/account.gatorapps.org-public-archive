@@ -12,7 +12,7 @@ body{
   min-height: 305px;
 }
 
-.login__window{
+.LoginWindow__window{
   margin: auto;
   width: 480px;
 }

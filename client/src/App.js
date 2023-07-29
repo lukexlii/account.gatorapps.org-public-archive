@@ -1,9 +1,9 @@
 import Homepage from './views/Homepage/Homepage';
 import Student from './views/Student/Student';
 import Admin from './views/Admin/Admin';
-import UFGoogleCallback from './views/Login/Callbacks/UFGoogleCallback';
-import RequireAuth from './components/RequireAuth/RequireAuth';
-import PersistLogin from './components/PersistLogin/PersistLogin';
+import UFGoogleCallback from './components/Login/Callbacks/UFGoogleCallback';
+import RequireAuth from './components/Auth/RequireAuth';
+import PersistLogin from './components/Auth/PersistLogin';
 import { Routes, Route } from 'react-router-dom';
 import GenericPage from './components/GenericPage/GenericPage';
 

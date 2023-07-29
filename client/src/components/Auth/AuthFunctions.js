@@ -1,12 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import Unauthorized from '../../views/Unauthorized/Unauthorized';
-import { axiosPrivate } from '../../apis/backend';
-
 const UFLoginViaGoogle = () => {
   const params = {
     'client_id': process.env.REACT_APP_GOOGLE_CLIENT_ID,
     // TO FIX: auto get host
-    'redirect_uri': 'http://localhost:3000/login/ufgoogle/callback',
+    'redirect_uri': process.env.REACT_APP_FRONTEND_HOST + '/login/ufgoogle/callback',
     'response_type': 'token',
     'scope': ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'].join(' '),
     'include_granted_scopes': 'true',

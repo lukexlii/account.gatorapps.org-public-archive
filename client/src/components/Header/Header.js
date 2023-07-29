@@ -22,7 +22,7 @@ import Menu from '@mui/material/Menu';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import useAuth from '../../hooks/useAuth';
-import { UFLoginViaGoogle } from '../RequireAuth/AuthFunctions';
+import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
 import './Header.css';
 
 const Header = (props) => {
