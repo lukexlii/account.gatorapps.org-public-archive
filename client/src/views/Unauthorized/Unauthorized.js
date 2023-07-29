@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header/Header';
-import Error from '../../components/Alert/Error';
+import Alert from '../../components/Alert/Alert';
+import { Container } from '@mui/material';
 
 const Unauthorized = () => {
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ const Unauthorized = () => {
   return (
     <div className="Unauthorized">
       <Header />
-      <Error marginTop='36px' error={error} />
+      <Container maxWidth="lg" sx={{ marginTop: '36px' }}>
+        <Alert severity="error" error={error} />
+      </Container>
     </div>
   );
 }
