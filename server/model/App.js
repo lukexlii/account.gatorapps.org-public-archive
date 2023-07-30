@@ -14,7 +14,8 @@ const appSchema = new Schema({
   displayName: {
     type: String,
     require: true
-  }
+  },
+  authOptions: String
 });
 
 module.exports = DBglobal.model('App', appSchema);

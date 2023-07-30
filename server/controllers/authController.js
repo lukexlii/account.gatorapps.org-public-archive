@@ -52,7 +52,7 @@ const handleUFGoogleLogin = async (req, res) => {
   if (!foundUser) {
     try {
       const result = await User.create({
-        "roles": ["student"],
+        "roles": ["100001"],
         "orgEmail": email,
         "firstName": firstName,
         "lastName": lastName

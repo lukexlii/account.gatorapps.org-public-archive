@@ -4,14 +4,14 @@ const { DBaccount } = require('../config/dbConn');
 
 const userSchema = new Schema({
   roles: {
-    type: [String],
+    type: [Number],
     required: true
   },
   orgEmail: {
     type: String,
     required: true
   },
-  personalEmail: String,
+  additionalEmails: [String],
   firstName: {
     type: String,
     require: true
