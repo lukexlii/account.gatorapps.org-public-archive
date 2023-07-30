@@ -27,15 +27,10 @@ const signRefreshToken = (user) => {
   return refreshToken;
 };
 
-const signAppAuthState = (service) => {
+const signAppAuthState = (statePayLoad) => {
   const appAuthPrivateKey = fs.readFileSync(path.resolve(__dirname, '../config/_jwtKeyPair/appAuth_private.pem'));
   const appAuthState = jwt.sign(
-    {
-      "serviceInfo": {
-        "code": service.code,
-        "name": service.name
-      }
-    },
+    statePayLoad,
     appAuthPrivateKey,
     { algorithm: 'ES256', expiresIn: process.env.APP_AUTH_STATE_LIFESPAN }
   );
