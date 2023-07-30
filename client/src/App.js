@@ -1,8 +1,8 @@
 import Homepage from './views/Homepage/Homepage';
 import Student from './views/Student/Student';
 import Admin from './views/Admin/Admin';
-import UFGoogleCallback from './components/Login/Callbacks/UFGoogleCallback';
-import AppAuth from './views/Auth/AppAuth';
+import UFGoogleCallback from './views/Login/Callbacks/UFGoogleCallback';
+import Login from './views/Login/Login';
 import RequireAuth from './components/Auth/RequireAuth';
 import PersistLogin from './components/Auth/PersistLogin';
 import { Routes, Route } from 'react-router-dom';
@@ -13,21 +13,22 @@ function App() {
   return (
     <Routes>
       {/* public routes */}
+      <Route path="/login" element={<Login />} />
       <Route path="/login/ufgoogle/callback" element={<UFGoogleCallback />} />
 
       {/* protected routes */}
       <Route element={<PersistLogin />}>
-        <Route path="/" element={<Homepage />} />
-
-        <Route path="/appauth" element={<AppAuth />} />
-
         <Route path="/test" element={<GenericPage />} />
 
-        <Route element={<RequireAuth allowedRoles={['student']} />}>
+        <Route element={<RequireAuth allowedRoles={[100001]} />}>
+          <Route path="/" element={<Homepage />} />
+        </Route>
+
+        <Route element={<RequireAuth allowedRoles={[100101]} />}>
           <Route path="/student" element={<Student />} />
         </Route>
 
-        <Route element={<RequireAuth allowedRoles={['admin']} />}>
+        <Route element={<RequireAuth allowedRoles={[200999]} />}>
           <Route path="/admin" element={<Admin />} />
         </Route>
       </Route>

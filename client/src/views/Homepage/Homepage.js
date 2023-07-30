@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import Header from '../../components/Header/Header';
-import LoginWindow from '../../components/Login/LoginWindow';
+import LoginWindow from '../../components/LoginWindow/LoginWindow';
 import Account from '../Account/Account';
 import useAuth from '../../hooks/useAuth';
 //import './Homepage.css';
