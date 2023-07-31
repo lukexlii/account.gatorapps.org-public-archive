@@ -2,10 +2,12 @@ const allowedOrigins = require('./allowedOrigins');
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
+    // Add || !origin to allow REST or server-to-server requests
+    // Recommend asynchronous for advanced access control and external apis
+    if (allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('Blocked by CORS. Origin: ' + origin));
     }
   },
   optionsSuccessStatus: 200
