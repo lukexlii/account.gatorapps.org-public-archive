@@ -41,9 +41,9 @@ const Header = (props) => {
 
   const defaultLoginMenuItems = [
     { name: "Students, Faculty & Staff" },
-    { name: "Log in with GatorLink", 'action': UFLoginViaGoogle},
+    { name: "Log in with GatorLink", 'action': UFLoginViaGoogle },
     { name: "Alumni & Friends" },
-    { name: "Coming soon...", 'action': () => window.alert("Coming soon...")}
+    { name: "Coming soon...", 'action': () => window.alert("Coming soon...") }
   ];
 
   const renderLoginMenuItems = () => {
@@ -65,7 +65,7 @@ const Header = (props) => {
       return;
     }
     if (open === undefined) {
-      setOpenDrawer({ ...openDrawer, [drawerName]:!openDrawer[drawerName] });
+      setOpenDrawer({ ...openDrawer, [drawerName]: !openDrawer[drawerName] });
     } else {
       setOpenDrawer({ ...openDrawer, [drawerName]: open });
     }
@@ -101,27 +101,30 @@ const Header = (props) => {
                 anchor="left"
                 open={openDrawer["menu"]}
                 onClose={toggleDrawer("menu", false)}
+                sx={{ [`& .MuiDrawer-paper`]: { width: '319px', 'overflow-x': 'hidden', border: '1px solid rgba(0, 0, 0, 0.12)', 'background-color': 'rgb(250, 249, 248)' } }}
               >
                 <Toolbar />
                 <div>
                   <List
-                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
                     component="nav"
                     aria-labelledby="nested-list-subheader"
                     subheader={
-                      <ListSubheader component="div" id="nested-list-subheader">
-                        Nested List Items
+                      <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '22px 0px 12px 24px' }}>
+                        <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
+                          Account
+                        </Typography>
                       </ListSubheader>
                     }
+                    sx={{ 'padding-bottom': '30px' }}
                   >
-                    <ListItemButton>
-                      <ListItemText primary="Sent mail" />
+                    <ListItemButton sx={{ padding: '12px 24px' }}>
+                      <ListItemText primary="Profile" sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
                     </ListItemButton>
-                    <ListItemButton>
-                      <ListItemText primary="Drafts" />
+                    <ListItemButton sx={{ padding: '12px 24px' }}>
+                      <ListItemText primary="Current Affiliation" sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
                     </ListItemButton>
                     <ListItemButton onClick={menu_handleExampleClick}>
-                      <ListItemText primary="Inbox" />
+                      <ListItemText primary="Linked Accounts" />
                       {menu_expandExample ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
                     <Collapse in={menu_expandExample} timeout="auto" unmountOnExit>
@@ -140,7 +143,7 @@ const Header = (props) => {
           <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" sx={{ 'min-width': '60px' }}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43.5 29.4" height="32" width="32" alt="U F Logo"><g fill="#FFF"><path d="M31.1 24.2v-7.5h6.8v-4.9h-6.8V4.9h7.5v2.7h4.9V0H23.7v4.9h1.8v19.3h-1.8v4.9h9.1v-4.9h-1.7zM21.1 18.1V4.9h1.8V0h-9.2v4.9h1.8v11.6c0 4.9-.6 7.2-4 7.2s-4-2.3-4-7.2V4.9h1.8V0H0v4.9h1.8v13.2c0 2.9 0 5.3 1.4 7.4 1.5 2.4 4.3 3.9 8.3 3.9 7.1 0 9.6-3.7 9.6-11.3z"></path></g></svg>
           </IconButton>
-          
+
           <Typography variant="h5" component="div" paddingLeft="10px" sx={{ flexGrow: 1 }}>
             <Typography variant="inherent" component="a" href="/" sx={
               {
@@ -163,25 +166,25 @@ const Header = (props) => {
                 <ArrowDropDownIcon />
               </IconButton>
               <Menu
-                  id="menu-header-login"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={Boolean(anchorEl)}
-                  onClose={handleLoginMenuClose}
-                >
-                  {renderLoginMenuItems()}
+                id="menu-header-login"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleLoginMenuClose}
+              >
+                {renderLoginMenuItems()}
               </Menu>
             </Box>
           )}
-          
+
           {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
             <Tooltip title="Profile">
               <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
@@ -194,7 +197,7 @@ const Header = (props) => {
         </Toolbar>
       </AppBar>
       <Toolbar></Toolbar>
-    </Fragment>
+    </Fragment >
   );
 };
 
