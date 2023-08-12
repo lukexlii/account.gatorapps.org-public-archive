@@ -1,8 +1,9 @@
 const User = require('../model/User');
 const { google } = require('googleapis');
 const { signAccessToken, signRefreshToken } = require('./signJWT');
+const { MAX_WEB_SESSIONS } = require('../config/authOptions');
 
-const handleUFGoogleLogin = async (req, res) => {
+const handleUFGoogleSignIn = async (req, res) => {
   // Check access_token exists
   const { access_token } = req.body;
   if (!access_token) return res.status(400).json({ 'message': 'Missing Google access_token' });
@@ -36,7 +37,7 @@ const handleUFGoogleLogin = async (req, res) => {
       if (!emailAddresses[e].metadata.primary || !emailAddresses[e].metadata.verified) continue;
       email = emailAddresses[e].value;
       break;
-    }
+    };
     if (!email) return res.status(403).json({ 'message': 'You must authenticate with your UF-provided account ending with @ufl.edu' });
 
     // Fetch name
@@ -47,17 +48,17 @@ const handleUFGoogleLogin = async (req, res) => {
   }
 
   // Check if user already exists
-  let foundUser = await User.findOne({ orgEmail: email }).exec();
+  let foundUser = await User.findOne({ primaryEmail: email }).exec();
   // If not, create user
   if (!foundUser) {
     try {
       const result = await User.create({
         "roles": ["100001"],
-        "orgEmail": email,
+        "primaryEmail": email,
         "firstName": firstName,
         "lastName": lastName
       });
-      foundUser = await User.findOne({ orgEmail: email }).exec();
+      foundUser = await User.findOne({ primaryEmail: email }).exec();
     } catch (err) {
       return res.status(500).json({ 'message': 'Unable to establish user profile' });
     }
@@ -66,8 +67,20 @@ const handleUFGoogleLogin = async (req, res) => {
   // Create JWTs
   const accessToken = signAccessToken(foundUser);
   const refreshToken = signRefreshToken(foundUser);
-  // Save refreshToken with current user
-  foundUser.refreshToken = refreshToken;
+
+  // Remove old sessions so number of simultaneous sessions meet the max cap requirement
+  while (foundUser.sessions.length >= MAX_WEB_SESSIONS) {
+    const parsedSessions = foundUser.sessions.map(JSON.parse);
+    const oldestSessionTimeStamp = parsedSessions.reduce((min, session) => Math.min(min, session.signInTimeStamp), Infinity);
+    foundUser.sessions = (parsedSessions.filter((session) => session.signInTimeStamp !== oldestSessionTimeStamp)).map((session) => JSON.stringify(session));
+  };
+
+  // Save newSession with current user
+  const newSession = {
+    refreshToken,
+    signInTimeStamp: new Date().getTime()
+  };
+  foundUser.sessions = [...foundUser.sessions, JSON.stringify(newSession)];
   const result = await foundUser.save();
 
   // Send refresh token as httpOnly cookie
@@ -77,4 +90,4 @@ const handleUFGoogleLogin = async (req, res) => {
 };
 
 
-module.exports = { handleUFGoogleLogin };
+module.exports = { handleUFGoogleSignIn };

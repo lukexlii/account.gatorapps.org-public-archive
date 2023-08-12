@@ -26,10 +26,10 @@ app.use('/appApi/account', cors(corsOptions));
 // !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
 app.use('/appApi/account/userAuth', require('./routes/appApi/userAuth'));
 //// App auth to other internal apps
-app.use('/appApi/account/appAuth', require('./routes/appApi/appAuth/appAuth'));
+app.use('/appApi/account/appAuth', require('./routes/appApi/appAuth'));
 
 // Global (all internal apps) APIs
-app.use('/globalApi/account/global/userAuth', require('./routes/globalApi/userAuth'));
+app.use('/globalApi/account/userAuth', require('./routes/globalApi/userAuth'));
 
 // App APIs w/ auth
 app.use(verifyJWT);

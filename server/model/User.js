@@ -7,11 +7,11 @@ const userSchema = new Schema({
     type: [Number],
     required: true
   },
-  orgEmail: {
+  primaryEmail: {
     type: String,
     required: true
   },
-  additionalEmails: [String],
+  secondaryEmails: [String],
   firstName: {
     type: String,
     require: true
@@ -20,7 +20,7 @@ const userSchema = new Schema({
     type: String,
     require: true
   },
-  refreshToken: String
+  sessions: [String]
 });
 
 module.exports = DBaccount.model('User', userSchema);

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const refreshTokenController = require('../../controllers/refreshTokenController');
+const refreshTokenController = require('../../controllers/accessTokenController');
 
 const allowedOrigins = ['http://localhost:3000'];
 const corsOptions = {
