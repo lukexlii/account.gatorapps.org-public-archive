@@ -4,5 +4,6 @@ const signInController = require('../../controllers/signInController');
 const signOutController = require('../../controllers/signOutController');
 
 router.post('/signIn/ufgoogle', signInController.handleUFGoogleSignIn);
+router.post('/signIn/*', signInController.establishSession);
 
 module.exports = router;

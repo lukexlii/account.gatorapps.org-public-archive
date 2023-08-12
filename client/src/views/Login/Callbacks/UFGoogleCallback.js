@@ -58,8 +58,8 @@ export default function UFGoogleCallback() {
       })
       .catch((error) => {
         console.log(error);
-        if (error?.response?.data?.message) {
-          setErrorMessage(error.response.data.message);
+        if (error?.response?.data?.errMsg) {
+          setErrorMessage(error.response.data.errMsg);
         } else {
           setErrorMessage('Unable to log you in');
         }

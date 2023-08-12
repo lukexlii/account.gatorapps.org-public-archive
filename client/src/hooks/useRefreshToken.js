@@ -5,7 +5,7 @@ const useRefreshToken = () => {
   const { setAuth } = useAuth();
 
   const refresh = async () => {
-    const response = await axiosIdP.get('/global/userAuth/getAccessToken', {
+    const response = await axiosIdP.get('/userAuth/getAccessToken', {
       withCredentials: true
     }, { app: process.env.REACT_APP_APP_NAME });
     setAuth(prev => {
