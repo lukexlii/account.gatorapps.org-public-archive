@@ -15,6 +15,10 @@ const appSchema = new Schema({
     type: String,
     require: true
   },
+  origins: {
+    type: [String],
+    require: true
+  },
   authOptions: String
 });
 

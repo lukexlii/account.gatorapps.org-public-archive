@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const cors = require('cors');
 const refreshTokenController = require('../../controllers/accessTokenController');
+const signOutController = require('../../controllers/signOutController');
 
 const allowedOrigins = ['http://localhost:3000'];
 const corsOptions = {
@@ -15,9 +16,10 @@ const corsOptions = {
     }
   },
   optionsSuccessStatus: 200
-}
+};
 
 router.use(cors(corsOptions));
-router.get('/getAccessToken', refreshTokenController.handleRefreshToken);
+router.get('/getAccessToken', refreshTokenController.validateRefreshToken);
+router.get('/getAccessToken', refreshTokenController.sendAccessToken);
 
 module.exports = router;
