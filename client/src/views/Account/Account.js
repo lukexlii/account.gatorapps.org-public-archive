@@ -31,7 +31,7 @@ const Account = () => {
 
   const handleLogout = () => {
     axiosPrivate
-      .post('/userAuth/logout')
+      .post('/userAuth/signOut')
       .then((response) => {
         const accessToken = response?.data?.accessToken;
         const roles = response?.data?.roles;
@@ -51,27 +51,27 @@ const Account = () => {
       <Fragment>
         <Box>
           <Typography variant="h3" sx={{ 'color': 'rgb(191, 68, 24)', 'font-size': '1.5rem', 'text-align': 'left' }}>Profile</Typography>
-          <Divider sx={{ marginTop: '8px', marginBottom: '24px' }}/>
+          <Divider sx={{ marginTop: '8px', marginBottom: '24px' }} />
         </Box>
         <Box sx={{ 'display': 'flex', 'marginY': '12px', 'align-items': 'center' }}>
-          <TextField disabled fullWidth label="Nick Name" value="Luke Li"/>
+          <TextField disabled fullWidth label="Nick Name" value="Luke Li" />
           <Button variant="outlined" size="medium" onClick={undefined} sx={{ marginLeft: '16px', height: '36px' }}>Update</Button>
         </Box>
-        <TextField disabled fullWidth label="Organizational Domain" value="ufl.edu" sx={{ 'marginY': '8px' }}/>
-        <TextField disabled fullWidth label="Organizational ID" value="luke.li" sx={{ 'marginY': '8px' }}/>
-        <TextField disabled fullWidth label="Name" value="Luke Li" sx={{ 'marginY': '8px' }}/>
+        <TextField disabled fullWidth label="Organizational Domain" value="ufl.edu" sx={{ 'marginY': '8px' }} />
+        <TextField disabled fullWidth label="Organizational ID" value="luke.li" sx={{ 'marginY': '8px' }} />
+        <TextField disabled fullWidth label="Name" value="Luke Li" sx={{ 'marginY': '8px' }} />
         <FormControl disabled fullWidth variant="outlined" sx={{ 'marginY': '8px' }}>
           <InputLabel htmlFor="outlined-adornment-current-affiliation">Current Affiliation</InputLabel>
           <OutlinedInput id="outlined-adornment-current-affiliation" value="Active" endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  edge="end"
-                >
-                  <CheckCircleOutlineIcon sx={{ color: "green" }}/>
-                </IconButton>
-              </InputAdornment>
-            }
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle password visibility"
+                edge="end"
+              >
+                <CheckCircleOutlineIcon sx={{ color: "green" }} />
+              </IconButton>
+            </InputAdornment>
+          }
             label="Current Affiliation"
           />
         </FormControl>
@@ -81,7 +81,7 @@ const Account = () => {
 
   return (
     <div className='GenericPage'>
-      <Header/>
+      <Header />
       <main>
         <Box>
           <Container maxWidth="lg">
@@ -99,22 +99,22 @@ const Account = () => {
           </Container>
           <Container maxWidth="lg">
             <Paper className='GenericPage__container_paper' variant='outlined'>
-            {loading ? (
-              <Fragment>
-                <SkeletonGroup/>
-                <SkeletonGroup/>
-                <SkeletonGroup/>
-              </Fragment>
-            ) : (
-              <Box sx={{ padding: '32px' }}>
-                {renderAccountContent()}
-              </Box>
-            )}
+              {loading ? (
+                <Fragment>
+                  <SkeletonGroup />
+                  <SkeletonGroup />
+                  <SkeletonGroup />
+                </Fragment>
+              ) : (
+                <Box sx={{ padding: '32px' }}>
+                  {renderAccountContent()}
+                </Box>
+              )}
             </Paper>
           </Container>
         </Box>
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

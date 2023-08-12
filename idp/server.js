@@ -15,25 +15,21 @@ const { DBglobal, DBaccount } = require('./config/dbConn');
 // Options credentials check and fetch cookies credentials requirement
 app.use(credentials);
 
-app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
 
 // Routes
 // App APIs w/o auth
+app.use('/appApi/account', cors(corsOptions));
 //// User auth
 // !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
-app.use('/appApi/account/userAuth/login', require('./routes/appApi/userAuth/login'));
-app.use('/appApi/account/userAuth/refresh', require('./routes/appApi/userAuth/refresh'));
-// !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
-app.use('/appApi/account/userAuth/logout', require('./routes/appApi/userAuth/logout'));
-
+app.use('/appApi/account/userAuth', require('./routes/appApi/userAuth'));
 //// App auth to other internal apps
 app.use('/appApi/account/appAuth', require('./routes/appApi/appAuth/appAuth'));
 
-// Service (other internal apps) APIs
-app.use('/serviceApi/account', require('./routes/serviceApi/serviceApi'));
+// Global (all internal apps) APIs
+app.use('/globalApi/account/global/userAuth', require('./routes/globalApi/userAuth'));
 
 // App APIs w/ auth
 app.use(verifyJWT);
@@ -54,9 +50,3 @@ Promise.all([
 }).catch(error => {
   console.error('Error connecting to the database: ', error);
 });
-
-
-/* mongoose.connection.once('open', () => {
-  console.log('Connected to MongoDB');
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}); */

@@ -1,13 +1,13 @@
-import axios from '../apis/backend';
+import { axiosIdP } from '../apis/backend';
 import useAuth from './useAuth';
 
 const useRefreshToken = () => {
   const { setAuth } = useAuth();
 
   const refresh = async () => {
-    const response = await axios.get('/userAuth/refresh', {
+    const response = await axiosIdP.get('/global/userAuth/getAccessToken', {
       withCredentials: true
-    });
+    }, { app: process.env.REACT_APP_APP_NAME });
     setAuth(prev => {
       return {
         ...prev,
@@ -20,7 +20,7 @@ const useRefreshToken = () => {
     });
     return response.data.accessToken;
   };
-  
+
   return refresh;
 };
 

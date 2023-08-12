@@ -40,7 +40,7 @@ export default function UFGoogleCallback() {
   const handleLoginSuccess = (access_token) => {
     // Send access token to backend
     axios
-      .post('/userAuth/login/ufgoogle', { access_token }, {
+      .post('/userAuth/signIn/ufgoogle', { access_token }, {
         headers: {
           'Content-Type': 'application/json'
         },
