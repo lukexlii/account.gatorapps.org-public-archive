@@ -47,13 +47,6 @@ export default function UFGoogleCallback() {
         withCredentials: true
       })
       .then((response) => {
-        console.log(response?.data);
-        const accessToken = response?.data?.accessToken;
-        const roles = response?.data?.roles;
-        const email = response?.data?.email;
-        const firstName = response?.data?.firstName;
-        const lastName = response?.data?.lastName;
-        setAuth({ accessToken, roles, email, firstName, lastName });
         navigate('/');
       })
       .catch((error) => {

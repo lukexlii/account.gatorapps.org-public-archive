@@ -83,9 +83,8 @@ const establishSession = async (req, res) => {
   const foundUser = req.foundUser;
 
   try {
-    // Create JWTs
-    const accessToken = signAccessToken(foundUser);
-    const refreshToken = signRefreshToken(foundUser);
+    // Sign refreshToken
+    const refreshToken = signRefreshToken({ opid: foundUser.opid });
 
     // Remove old sessions so number of simultaneous sessions meet the max cap requirement
     while (foundUser.sessions.length >= MAX_WEB_SESSIONS) {
@@ -102,10 +101,9 @@ const establishSession = async (req, res) => {
     foundUser.sessions = [...foundUser.sessions, JSON.stringify(newSession)];
     const result = await foundUser.save();
 
-    // Send refresh token as httpOnly cookie
+    // Send refreshToken as httpOnly cookie
     res.cookie(process.env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
-    // Send access token
-    res.json({ accessToken, roles: foundUser.roles, email: foundUser.email, firstName: foundUser.firstName, lastName: foundUser.lastName });
+    return res.status(200).json({ 'errCode': '0' });
   } catch (err) {
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish session' });
   }

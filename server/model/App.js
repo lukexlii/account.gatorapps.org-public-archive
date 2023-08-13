@@ -19,6 +19,7 @@ const appSchema = new Schema({
     type: [String],
     require: true
   },
+  userInfoScope: [String],
   authOptions: String
 });
 

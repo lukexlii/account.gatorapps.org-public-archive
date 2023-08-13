@@ -2,12 +2,9 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 
-const signAccessToken = (privateSigningKey, opid, userInfo) => {
+const signAccessToken = (privateSigningKey, payload) => {
   const accessToken = jwt.sign(
-    {
-      opid,
-      userInfo
-    },
+    payload,
     privateSigningKey,
     // Time format: https://github.com/vercel/ms
     { algorithm: 'ES256', expiresIn: process.env.ACCESS_TOKEN_LIFESPAN }
@@ -15,9 +12,9 @@ const signAccessToken = (privateSigningKey, opid, userInfo) => {
   return accessToken;
 };
 
-const signRefreshToken = (user) => {
+const signRefreshToken = (payload) => {
   const refreshToken = jwt.sign(
-    { "id": user.id },
+    payload,
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: process.env.REFRESH_TOKEN_LIFESPAN }
   );
