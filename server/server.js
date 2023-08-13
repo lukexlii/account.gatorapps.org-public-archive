@@ -10,7 +10,7 @@ const verifyJWT = require('./middleware/verifyJWT');
 const PORT = process.env.PORT || 8000;
 
 // Connect to MongoDB mongodb.com
-const { DBglobal, DBaccount } = require('./config/dbConn');
+const { DBglobal, DBaccount } = require('./config/dbConnections');
 
 // Options credentials check and fetch cookies credentials requirement
 app.use(credentials);

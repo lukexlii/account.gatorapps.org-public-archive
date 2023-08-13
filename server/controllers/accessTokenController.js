@@ -37,10 +37,14 @@ const validateRefreshToken = async (req, res, next) => {
 };
 
 const sendAccessToken = async (req, res) => {
-  if (!req.foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': '' });
+  if (!req.foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when issuing access token' });
   const foundUser = req.foundUser;
 
+  if (!req.app) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when issuing access token' });
+  const app = req.app;
+
   let ResponseUserInfo, accessTokenUserInfo;
+  // in DB, let apps have resinfo scope and at scope
 
   const accessToken = signAccessToken(foundUser);
   res.json({ email: foundUser.orgEmail, firstName: foundUser.firstName, lastName: foundUser.lastName, accessToken, roles: foundUser.roles })

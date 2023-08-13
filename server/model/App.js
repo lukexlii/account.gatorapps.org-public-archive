@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { DBglobal } = require('../config/dbConn');
+const { DBglobal } = require('../config/dbConnections');
 
 const appSchema = new Schema({
   code: {

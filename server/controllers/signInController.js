@@ -1,4 +1,5 @@
 const User = require('../model/User');
+const { v4: uuidv4 } = require('uuid');
 const { google } = require('googleapis');
 const { signAccessToken, signRefreshToken } = require('./signJWT');
 const { MAX_WEB_SESSIONS } = require('../config/authOptions');
@@ -49,17 +50,25 @@ const handleUFGoogleSignIn = async (req, res, next) => {
 
   let foundUser;
   try {
-    // Check if user already exists
+    // Check if user with given  primaryEmail already exists
     foundUser = await User.findOne({ primaryEmail: email }).exec();
+
     // If not, create user
     if (!foundUser) {
+      // Generate unique UUID for new user
+      let opid = uuidv4();
+      while (await User.findOne({ opid })) {
+        opid = uuidv4();
+      };
+
       const result = await User.create({
+        "opid": opid,
         "roles": ["100001"],
         "primaryEmail": email,
         "firstName": firstName,
         "lastName": lastName
       });
-      foundUser = await User.findOne({ primaryEmail: email }).exec();
+      foundUser = await User.findOne({ opid }).exec();
     }
   } catch (err) {
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user profile' });

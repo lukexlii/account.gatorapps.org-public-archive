@@ -1,15 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { DBaccount } = require('../config/dbConn');
+const { DBaccount } = require('../config/dbConnections');
 
 const userSchema = new Schema({
+  opid: {
+    type: String,
+    required: true,
+    unique: true
+  },
   roles: {
     type: [Number],
     required: true
   },
   primaryEmail: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   secondaryEmails: [String],
   firstName: {

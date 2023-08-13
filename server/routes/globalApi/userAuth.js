@@ -3,13 +3,13 @@ const router = express.Router();
 const cors = require('cors');
 const refreshTokenController = require('../../controllers/accessTokenController');
 const signOutController = require('../../controllers/signOutController');
+const { GA_GLOBAL_ORIGINS } = require('../../config/allowedOrigins');
 
-const allowedOrigins = ['http://localhost:3000'];
 const corsOptions = {
   origin: (origin, callback) => {
     // Add || !origin to allow REST or server-to-server requests
     // Recommend asynchronous for advanced access control and external apis
-    if (allowedOrigins.includes(origin)) {
+    if (GA_GLOBAL_ORIGINS.includes(origin)) {
       callback(null, true)
     } else {
       callback(new Error('Blocked by CORS. Origin: ' + origin));

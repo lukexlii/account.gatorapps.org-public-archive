@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const initiateRequest = async (req, res) => {
-  const { app, statePayLoad } = req.body;
+  const { app, statePayload } = req.body;
   if (!app) return res.status(400).json({ 'errCode': '-200101', 'errMsg': 'Missing app' });
 
   try {
@@ -13,15 +13,15 @@ const initiateRequest = async (req, res) => {
     if (!foundApp) return res.status(400).json({ 'errCode': '-200102', 'errMsg': 'App not found' });
 
     const requireState = (foundApp.authOptions && JSON.parse(foundApp.authOptions)?.requireState);
-    if (requireState && !statePayLoad) return res.status(400).json({ 'errCode': '-200103', 'errMsg': 'App requires a state, statePayLoad not found' });
+    if (requireState && !statePayload) return res.status(400).json({ 'errCode': '-200103', 'errMsg': 'App requires a state, statePayload not found' });
 
-    if (statePayLoad) {
+    if (statePayload) {
       try {
-        const state = signAppAuthState(statePayLoad);
+        const state = signAppAuthState(statePayload);
         const authUrl = process.env.FRONTEND_HOST + '/login?app=' + foundApp.name + '&state=' + state;
         return res.json({ authUrl })
       } catch (error) {
-        return res.status(500).json({ 'errCode': '-200104', 'errMsg': 'Unable to sign StatePayLoad' });
+        return res.status(500).json({ 'errCode': '-200104', 'errMsg': 'Unable to sign statePayload' });
       }
     };
 
