@@ -63,8 +63,8 @@ const sendAccessToken = async (req, res) => {
   const privateSigningKey = process.env['ACCESS_TOKEN_PRIVATE_KEY_' + foundApp.name.toUpperCase()].replace(/\\n/g, '\n');
   if (!privateSigningKey) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when issuing access token' });
 
-  const tokenScope = req.body.tokenScope || DEFAULT_ACCESSTOKEN_SCOPE;
-  const responseScope = req.body.responseScope || DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE;
+  const tokenScope = (req.header('GATORAPPS_tokenScope') && JSON.parse(req.header('GATORAPPS_tokenScope'))) || DEFAULT_ACCESSTOKEN_SCOPE;
+  const responseScope = (req.header('GATORAPPS_responseScope') && JSON.parse(req.header('GATORAPPS_responseScope'))) || DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE;
 
   // TODO: Fine grained roles scope (global roles, app roles, other apps roles)
   const tokenUserInfo = {};
