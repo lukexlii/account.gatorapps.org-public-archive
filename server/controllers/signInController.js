@@ -57,7 +57,7 @@ const handleUFGoogleSignIn = async (req, res, next) => {
     if (!foundUser) {
       // Generate unique UUID for new user
       let opid = uuidv4();
-      while (await User.findOne({ opid })) {
+      while (await User.findOne({ opid }.exec())) {
         opid = uuidv4();
       };
 

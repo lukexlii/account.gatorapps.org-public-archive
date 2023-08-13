@@ -2,16 +2,13 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 
-const signAccessToken = (user) => {
-  const accessJWTPrivateKey = fs.readFileSync(path.resolve(__dirname, '../config/_jwtKeyPair/private.pem'));
+const signAccessToken = (privateSigningKey, opid, userInfo) => {
   const accessToken = jwt.sign(
     {
-      "userInfo": {
-        "id": user.id,
-        "roles": user.roles
-      }
+      opid,
+      userInfo
     },
-    accessJWTPrivateKey,
+    privateSigningKey,
     // Time format: https://github.com/vercel/ms
     { algorithm: 'ES256', expiresIn: process.env.ACCESS_TOKEN_LIFESPAN }
   );
