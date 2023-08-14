@@ -41,7 +41,7 @@ const Header = (props) => {
 
   const defaultLoginMenuItems = [
     { name: "Students, Faculty & Staff" },
-    { name: "Log in with GatorLink", 'action': UFLoginViaGoogle },
+    { name: "Sign in with GatorLink", 'action': UFLoginViaGoogle },
     { name: "Alumni & Friends" },
     { name: "Coming soon...", 'action': () => window.alert("Coming soon...") }
   ];
@@ -161,8 +161,8 @@ const Header = (props) => {
 
           {(!props.loading && (props.loggedIn === false || (props.loggedIn === undefined && !auth?.accessToken))) && (
             <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
-              <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleLoginMenuOpen} sx={{ 'width': '90px', 'padding': '6px' }}>
-                <span>Log in</span>
+              <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleLoginMenuOpen} sx={{ 'width': '96px', 'padding': '6px' }}>
+                <span>Sign in</span>
                 <ArrowDropDownIcon />
               </IconButton>
               <Menu

@@ -3,6 +3,7 @@ const { signAppAuthState } = require('./signJWT');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
+const { FRONTEND_HOST } = require('../config/globalConfig');
 
 const initiateRequest = async (req, res) => {
   const { app, statePayload } = req.body;
@@ -18,14 +19,14 @@ const initiateRequest = async (req, res) => {
     if (statePayload) {
       try {
         const state = signAppAuthState(statePayload);
-        const authUrl = process.env.FRONTEND_HOST + '/login?app=' + foundApp.name + '&state=' + state;
+        const authUrl = FRONTEND_HOST + '/signin?app=' + foundApp.name + '&state=' + state;
         return res.json({ authUrl })
       } catch (error) {
         return res.status(500).json({ 'errCode': '-200104', 'errMsg': 'Unable to sign statePayload' });
       }
     };
 
-    const authUrl = process.env.FRONTEND_HOST + '/login?app=' + foundApp.name;
+    const authUrl = FRONTEND_HOST + '/signin?app=' + foundApp.name;
     return res.json({ authUrl })
   } catch (error) {
     return res.status(500).json({ 'errCode': '-200199', 'errMsg': 'Unknown server error' });

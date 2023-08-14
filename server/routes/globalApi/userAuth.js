@@ -3,7 +3,7 @@ const router = express.Router();
 const cors = require('cors');
 const refreshTokenController = require('../../controllers/accessTokenController');
 const signOutController = require('../../controllers/signOutController');
-const { GA_GLOBAL_ORIGINS } = require('../../config/allowedOrigins');
+const { GA_GLOBAL_ORIGINS } = require('../../config/corsOptions');
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -19,8 +19,8 @@ const corsOptions = {
 };
 
 router.use(cors(corsOptions));
-router.get('/getAccessToken', refreshTokenController.validateOrigin);
 router.get('/getAccessToken', refreshTokenController.validateRefreshToken);
+router.get('/getAccessToken', refreshTokenController.validateOrigin);
 router.get('/getAccessToken', refreshTokenController.sendAccessToken);
 
 module.exports = router;

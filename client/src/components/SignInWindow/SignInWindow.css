@@ -2,7 +2,7 @@ body {
   margin: 0;
 }
 
-.LoginWindow {
+.SignInWindow {
   display: block;
   background-image: url(../../static/tower-login.jpg);
   background-position: center top;
@@ -12,7 +12,7 @@ body {
   min-height: 305px;
 }
 
-.LoginWindow__window {
+.SignInWindow__window {
   margin: auto;
   width: 480px;
 }

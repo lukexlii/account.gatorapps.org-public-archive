@@ -2,7 +2,7 @@ const App = require('../model/App');
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const { signAccessToken } = require('./signJWT');
-const { DEFAULT_ACCESSTOKEN_SCOPE, DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE } = require('../config/authOptions');
+const { REFRESH_TOKEN_COOKIE_NAME, DEFAULT_ACCESSTOKEN_SCOPE, DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE } = require('../config/authOptions');
 
 const validateOrigin = async (req, res, next) => {
   const requestingApp = req.header('GATORAPPS_app');
@@ -23,8 +23,8 @@ const validateRefreshToken = async (req, res, next) => {
   try {
     // Check refreshToken exists
     const cookies = req.cookies;
-    if (!cookies?.[process.env.REFRESH_TOKEN_COOKIE_NAME]) return res.status(401).json({ 'errCode': '-', 'errMsg': 'Client missing refreshToken cookie' });
-    const refreshToken = cookies[process.env.REFRESH_TOKEN_COOKIE_NAME];
+    if (!cookies?.[REFRESH_TOKEN_COOKIE_NAME]) return res.status(401).json({ 'errCode': '-', 'errMsg': 'Client missing refreshToken cookie' });
+    const refreshToken = cookies[REFRESH_TOKEN_COOKIE_NAME];
 
     jwt.verify(
       refreshToken,

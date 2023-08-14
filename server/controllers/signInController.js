@@ -2,7 +2,7 @@ const User = require('../model/User');
 const { v4: uuidv4 } = require('uuid');
 const { google } = require('googleapis');
 const { signAccessToken, signRefreshToken } = require('./signJWT');
-const { MAX_WEB_SESSIONS } = require('../config/authOptions');
+const { MAX_WEB_SESSIONS, REFRESH_TOKEN_COOKIE_NAME } = require('../config/authOptions');
 
 const handleUFGoogleSignIn = async (req, res, next) => {
   // Check req body contains access_token
@@ -102,7 +102,7 @@ const establishSession = async (req, res) => {
     const result = await foundUser.save();
 
     // Send refreshToken as httpOnly cookie
-    res.cookie(process.env.REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
     return res.status(200).json({ 'errCode': '0' });
   } catch (err) {
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish session' });

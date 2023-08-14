@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/Header/Header';
-import LoginWindow from '../../components/LoginWindow/LoginWindow';
+import SignInWindow from '../../components/SignInWindow/SignInWindow';
 import Alert from '../../components/Alert/Alert';
 import { Container } from '@mui/material';
 import useAuth from '../../hooks/useAuth';
 import axios from '../../apis/backend';
 
-const Login = () => {
+const SignIn = () => {
   const { auth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,9 +66,9 @@ const Login = () => {
           <Alert alertData={alertData} />
         </Container>
       )}
-      {!loading && <LoginWindow />}
+      {!loading && <SignInWindow />}
     </div>
   );
 }
 
-export default Login;
+export default SignIn;

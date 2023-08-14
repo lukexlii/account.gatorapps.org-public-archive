@@ -68,8 +68,8 @@ export default function UFGoogleCallback() {
   return (
     <div>
       <Header loading={!errorMessage} />
-      <div className='LoginWindow'>
-        <div className='LoginWindow__window'>
+      <div className='SignInWindow'>
+        <div className='SignInWindow__window'>
           <Paper variant='outlined'>
             <Box margin='24px' marginBottom='48px'>
               {errorMessage ? (

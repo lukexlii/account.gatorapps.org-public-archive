@@ -3,7 +3,7 @@ const express = require('express');
 // Express.js: expressjs.com
 const app = express();
 const cors = require('cors');
-const corsOptions = require('./config/corsOptions');
+const { APP_CORS_OPTIONS } = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
 const cookieParser = require('cookie-parser');
 const verifyJWT = require('./middleware/verifyJWT');
@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 // Routes
 // App APIs w/o auth
-app.use('/appApi/account', cors(corsOptions));
+app.use('/appApi/account', cors(APP_CORS_OPTIONS));
 //// User auth
 // !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
 app.use('/appApi/account/userAuth', require('./routes/appApi/userAuth'));

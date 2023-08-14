@@ -1,8 +1,8 @@
 import Homepage from './views/Homepage/Homepage';
 import Student from './views/Student/Student';
 import Admin from './views/Admin/Admin';
-import UFGoogleCallback from './views/Login/Callbacks/UFGoogleCallback';
-import Login from './views/Login/Login';
+import UFGoogleCallback from './views/SignIn/Callbacks/UFGoogleCallback';
+import SignIn from './views/SignIn/SignIn';
 import RequireAuth from './components/Auth/RequireAuth';
 import PersistLogin from './components/Auth/PersistLogin';
 import { Routes, Route } from 'react-router-dom';
@@ -13,8 +13,8 @@ function App() {
   return (
     <Routes>
       {/* public routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/login/ufgoogle/callback" element={<UFGoogleCallback />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signin/ufgoogle/callback" element={<UFGoogleCallback />} />
 
       {/* protected routes */}
       <Route element={<PersistLogin />}>

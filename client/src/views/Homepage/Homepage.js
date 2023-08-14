@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import Header from '../../components/Header/Header';
-import LoginWindow from '../../components/LoginWindow/LoginWindow';
+import SignInWindow from '../../components/SignInWindow/SignInWindow';
 import Account from '../Account/Account';
 import useAuth from '../../hooks/useAuth';
 //import './Homepage.css';
@@ -15,7 +15,7 @@ const Homepage = () => {
       ) : (
         <Fragment>
           <Header />
-          <LoginWindow />
+          <SignInWindow />
         </Fragment>
       )}
       <div></div>
