@@ -14,7 +14,7 @@ const UFLoginViaGoogle = () => {
 
   for (const p in params) {
     url.searchParams.set(p, params[p]);
-  }
+  };
 
   window.location.replace(url);
 };

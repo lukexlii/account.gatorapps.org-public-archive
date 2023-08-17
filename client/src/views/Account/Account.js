@@ -17,7 +17,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import useAuth from '../../hooks/useAuth';
-import { axiosPrivate } from '../../apis/backend';
+import { axiosIdP } from '../../apis/backend';
 //import { handleLogout } from '../../components/RequireAuth/AuthFunctions'
 
 const Account = () => {
@@ -30,8 +30,10 @@ const Account = () => {
   }, []);
 
   const handleLogout = () => {
-    axiosPrivate
-      .post('/userAuth/signOut')
+    axiosIdP
+      .post('/userAuth/signOut', {}, {
+        withCredentials: true
+      })
       .then((response) => {
         const accessToken = response?.data?.accessToken;
         const roles = response?.data?.roles;

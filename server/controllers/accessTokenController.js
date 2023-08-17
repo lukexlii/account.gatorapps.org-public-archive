@@ -13,6 +13,7 @@ const validateOrigin = async (req, res, next) => {
 
   const foundApp = await App.findOne({ name: requestingApp }).exec();
   if (!foundApp) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Requesting app does not exist' });
+  // This blocks mismatched origins though previous CORS check allowed all global origins
   if (!foundApp.origins.includes(origin)) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Unauthorized or mismatched origin' });
 
   req.foundApp = foundApp;

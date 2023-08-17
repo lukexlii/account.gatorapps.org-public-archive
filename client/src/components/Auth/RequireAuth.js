@@ -13,6 +13,6 @@ const RequireAuth = ({ allowedRoles }) => {
         ? <Unauthorized />
         : <Navigate to="./signin" state={{ from: location }} replace />
   );
-}
+};
 
 export default RequireAuth;

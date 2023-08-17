@@ -23,4 +23,6 @@ router.get('/getAccessToken', refreshTokenController.validateRefreshToken);
 router.get('/getAccessToken', refreshTokenController.validateOrigin);
 router.get('/getAccessToken', refreshTokenController.sendAccessToken);
 
+router.post('/signOut', signOutController.handleSignOut);
+
 module.exports = router;

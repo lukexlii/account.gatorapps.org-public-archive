@@ -77,7 +77,7 @@ export default function UFGoogleCallback() {
                   <Button color="inherit" size="medium" onClick={handleRetryLogin}>
                     Retry
                   </Button>
-                }><AlertTitle>An error occurred while logging you in.</AlertTitle>{errorMessage}</Alert>
+                }><AlertTitle>An error occurred while signing you in.</AlertTitle>{errorMessage}</Alert>
               ) : (
                 <Box align='center' marginY="48px">
                   <CircularProgress />
@@ -88,7 +88,7 @@ export default function UFGoogleCallback() {
                       'line-height': '2rem',
                       'width': '100%'
                     }
-                  }>Logging you in...</Typography>
+                  }>Signing you in...</Typography>
                 </Box>
               )}
             </Box>
