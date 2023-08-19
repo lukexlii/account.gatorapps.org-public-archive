@@ -6,8 +6,8 @@ const cors = require('cors');
 // https://www.npmjs.com/package/express-session
 var session = require('express-session');
 // https://www.npmjs.com/package/connect-mongodb-session
-const MongoDBStore = require('connect-mongodb-session')(session);
-const { SESSION_LIFESPAN } = require('./config/authOptions');
+const MongoStore = require('connect-mongo');
+const { SESSION_COOKIE_NAME, SESSION_LIFESPAN } = require('./config/authOptions');
 const { APP_CORS_OPTIONS } = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
 const cookieParser = require('cookie-parser');
@@ -18,30 +18,14 @@ const PORT = process.env.PORT || 8000;
 const { DBglobal, DBaccount } = require('./config/dbConnections');
 
 // Use express-session
-//// Store sessions in MongoDB
-const store = new MongoDBStore({
-  uri: process.env.DATABASE_URI,
-  collection: 'sessions',
-  connectionOptions: { // Connection options are passed directly to the MongoDB driver
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    dbName: 'dev_global'
-  }
-  // TODO: Use existing Mongoose connection
-  //clientPromise: DBglobal.getClient()
-});
-//// Catch DB connection errors
-store.on('error', (error) => {
-  console.log(error);
-});
-//// Start session
 app.use(session({
   secret: JSON.parse(process.env.SESSION_COOKIE_SECRET),
   cookie: { maxAge: SESSION_LIFESPAN },
-  store: store,
-  resave: true,
+  // store in MongoDB, use existing connection, TTL autoRemove handled separately
+  store: MongoStore.create({ client: DBglobal.getClient(), dbName: 'dev_global', autoRemove: 'disabled' }),
+  resave: false,
   saveUninitialized: false,
-  name: 'GATORAPPS_SESSION'
+  name: SESSION_COOKIE_NAME
 }))
 
 // Options credentials check and fetch cookies credentials requirement

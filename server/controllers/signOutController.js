@@ -31,7 +31,7 @@ const handleSignOut = async (req, res) => {
 
   // Remove refreshToken from session
   //res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, { httpOnly: true, secure: true, sameSite: 'None' });
-  req.session.refreshToken = null;
+  delete req.session.refreshToken;
   req.session.save((err) => {
     if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to update session to sign you out' });
   });
