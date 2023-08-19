@@ -24,31 +24,61 @@ const validateRefreshToken = async (req, res, next) => {
   try {
     // Check refreshToken exists in session
     const refreshToken = req?.session?.refreshToken;
-    if (!refreshToken) return res.status(401).json({ 'errCode': '-', 'errMsg': 'Missing refreshToken' });
+    console.log(req?.session);
+    if (!refreshToken) {
+      req.RTValidationResult = { status: 401, errCode: '-', errMsg: 'Missing refreshToken' };
+      return next();
+    };
 
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       async (err, decoded) => {
         // Validate refreshToken
-        if (err) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Invalid refreshToken' });
-        if (!decoded.opid) return res.status(403).json({ 'errCode': '-', 'errMsg': 'refreshToken missing user opid' });
+        if (err) {
+          req.RTValidationResult = { status: 403, errCode: '-', errMsg: 'Invalid refreshToken' };
+          return next();
+        };
+        if (!decoded.opid) {
+          req.RTValidationResult = { status: 403, errCode: '-', errMsg: 'refreshToken missing user opid' };
+          return next();
+        };
 
         // Find user with id stored in refreshToken
         const foundUser = await User.findOne({ opid: decoded.opid }).exec();
-        if (!foundUser) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Invalid user id' });
+        if (!foundUser) {
+          req.RTValidationResult = { status: 403, errCode: '-', errMsg: 'Invalid user id' };
+          return next();
+        };
 
         // Check the session is active
         const foundSession = foundUser.sessions.find(session => session.refreshToken === refreshToken);
-        if (!foundSession) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Invalid session' });
+        if (!foundSession) {
+          req.RTValidationResult = { status: 403, errCode: '-', errMsg: 'Missing refreshToken' };
+          return next();
+        };
 
         // Store foundUser is req and continue
         req.foundUser = foundUser;
-        next();
+        req.RTValidationResult = { errCode: '0' };
+        return next();
       }
     );
   } catch (err) {
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unknown server error when validating refreshToken' });
+  }
+};
+
+const sendRefreshTokenError = (req, res, next) => {
+  try {
+    if (req.RTValidationResult.errCode === '0') {
+      delete req.RTValidationResult;
+      return next();
+    }
+    if (!req.RTValidationResult.status || !req?.RTValidationResult.errCode) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when issuing access token' });
+    return res.status(req.RTValidationResult.status).json({ 'errCode': req.RTValidationResult.errCode, 'errMsg': req.RTValidationResult.errMsg });
+  } catch (err) {
+    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when validating refreshToken' });
   }
 };
 
@@ -92,4 +122,4 @@ const sendAccessToken = async (req, res) => {
   }
 };
 
-module.exports = { validateOrigin, validateRefreshToken, sendAccessToken };
+module.exports = { validateOrigin, validateRefreshToken, sendRefreshTokenError, sendAccessToken };

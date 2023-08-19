@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import useAuth from '../../hooks/useAuth';
 import { axiosIdP } from '../../apis/backend';
-//import { handleLogout } from '../../components/RequireAuth/AuthFunctions'
+//import { handleSignOut } from '../../components/RequireAuth/AuthFunctions'
 
 const Account = () => {
   const { auth, setAuth } = useAuth();
@@ -29,7 +29,7 @@ const Account = () => {
     setLoading(false);
   }, []);
 
-  const handleLogout = () => {
+  const handleSignOut = () => {
     axiosIdP
       .post('/userAuth/signOut', {}, {
         withCredentials: true
@@ -94,7 +94,7 @@ const Account = () => {
               </Box>
               <Box className="GenericPage__container_title_flexBox GenericPage__container_title_flexBox_right" sx={{ 'flex-grow': '1' }}>
                 <Box className="GenericPage__container_title_flexBox_right">
-                  <Button variant="contained" size="medium" onClick={handleLogout}>Log out</Button>
+                  <Button variant="contained" size="medium" onClick={handleSignOut}>Sign out</Button>
                 </Box>
               </Box>
             </Box>

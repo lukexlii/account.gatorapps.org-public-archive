@@ -33,7 +33,7 @@ const initiateRequest = async (req, res) => {
   }
 };
 
-const validateRequest = async (req, res) => {
+const validateRequest = async (req, res, next) => {
   const { app, state } = req.body;
   if (!app && !state) return res.status(400).json({ 'errCode': '-200201', 'errMsg': "We're sorry, but we are unable to process your request because the server did not receive the required parameters, please re-initiate a request or try again later" });
 
@@ -45,7 +45,7 @@ const validateRequest = async (req, res) => {
 
     if (state) {
       const appAuthPublicKey = fs.readFileSync(path.resolve(__dirname, '../config/_jwtKeyPair/appAuth_public.pem'));
-      jwt.verify(
+      await jwt.verify(
         state,
         appAuthPublicKey,
         { algorithms: ['ES256'] },
@@ -67,11 +67,26 @@ const validateRequest = async (req, res) => {
       // Return if an request has already been sent in the err block of jwt.verify
       if (res.headersSent) return;
     }
-
-    return res.status(200).json({ 'errCode': '0', 'alertTitle': 'Welcome', 'alertMessage': 'Please authenticate yourself bellow' + (foundApp.displayName && (" to continue to " + foundApp.displayName)), 'appDisplayName': foundApp.displayName });
+    req.foundApp = foundApp;
+    next();
   } catch (error) {
     return res.status(500).json({ 'errCode': '-200299', 'errMsg': "We're sorry, but we are unable to process your request at this time. Please try again later" });
   }
 };
 
-module.exports = { initiateRequest, validateRequest };
+const initiateAuth = (req, res) => {
+  try {
+    console.log(req.RTValidationResult);
+    if (req.RTValidationResult.errCode === '0') {
+      // User already has an active signed in session
+      return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });
+    }
+    delete req.RTValidationResult;
+  } catch (err) {
+    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when validating refreshToken' });
+  }
+
+  return res.status(200).json({ 'errCode': '0', 'alertTitle': 'Welcome', 'alertMessage': 'Please authenticate yourself bellow' + (req.foundApp.displayName && (" to continue to " + req.foundApp.displayName)), 'appDisplayName': req.foundApp.displayName });
+}
+
+module.exports = { initiateRequest, validateRequest, initiateAuth };

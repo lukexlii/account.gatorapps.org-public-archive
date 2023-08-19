@@ -46,6 +46,7 @@ app.use('/appApi/account/appAuth', require('./routes/appApi/appAuth'));
 
 // Global (all internal apps) APIs
 app.use('/globalApi/account/userAuth', require('./routes/globalApi/userAuth'));
+app.use('/globalApi/account/appAuth', require('./routes/globalApi/appAuth'));
 
 // App APIs w/ auth
 app.use(verifyJWT);
