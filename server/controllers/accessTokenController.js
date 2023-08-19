@@ -22,17 +22,16 @@ const validateOrigin = async (req, res, next) => {
 
 const validateRefreshToken = async (req, res, next) => {
   try {
-    // Check refreshToken exists
-    const cookies = req.cookies;
-    if (!cookies?.[REFRESH_TOKEN_COOKIE_NAME]) return res.status(401).json({ 'errCode': '-', 'errMsg': 'Client missing refreshToken cookie' });
-    const refreshToken = cookies[REFRESH_TOKEN_COOKIE_NAME];
+    // Check refreshToken exists in session
+    const refreshToken = req?.session?.refreshToken;
+    if (!refreshToken) return res.status(401).json({ 'errCode': '-', 'errMsg': 'Missing refreshToken' });
 
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       async (err, decoded) => {
         // Validate refreshToken
-        if (err) return res.sendStatus(403).json({ 'errCode': '-', 'errMsg': 'Invalid refreshToken' });
+        if (err) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Invalid refreshToken' });
         if (!decoded.opid) return res.status(403).json({ 'errCode': '-', 'errMsg': 'refreshToken missing user opid' });
 
         // Find user with id stored in refreshToken
@@ -40,8 +39,7 @@ const validateRefreshToken = async (req, res, next) => {
         if (!foundUser) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Invalid user id' });
 
         // Check the session is active
-        const parsedSessions = foundUser.sessions.map(JSON.parse);
-        const foundSession = parsedSessions.find(session => session.refreshToken === refreshToken);
+        const foundSession = foundUser.sessions.find(session => session.refreshToken === refreshToken);
         if (!foundSession) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Invalid session' });
 
         // Store foundUser is req and continue

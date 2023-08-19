@@ -57,7 +57,7 @@ const handleUFGoogleSignIn = async (req, res, next) => {
     if (!foundUser) {
       // Generate unique UUID for new user
       let opid = uuidv4();
-      while (await User.findOne({ opid }.exec())) {
+      while (await User.findOne({ opid }).exec()) {
         opid = uuidv4();
       };
 
@@ -71,6 +71,7 @@ const handleUFGoogleSignIn = async (req, res, next) => {
       foundUser = await User.findOne({ opid }).exec();
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user profile' });
   };
 
@@ -88,9 +89,10 @@ const establishSession = async (req, res) => {
 
     // Remove old sessions so number of simultaneous sessions meet the max cap requirement
     while (foundUser.sessions.length >= MAX_WEB_SESSIONS) {
-      const parsedSessions = foundUser.sessions.map(JSON.parse);
-      const oldestSessionTimeStamp = parsedSessions.reduce((min, session) => Math.min(min, session.signInTimeStamp), Infinity);
-      foundUser.sessions = (parsedSessions.filter((session) => session.signInTimeStamp !== oldestSessionTimeStamp)).map((session) => JSON.stringify(session));
+      const oldestSessionTimeStamp = foundUser.sessions.reduce((min, session) => Math.min(min, session.signInTimeStamp.getTime()), Infinity);
+      foundUser.sessions = foundUser.sessions.filter((session) => session.signInTimeStamp.getTime() !== oldestSessionTimeStamp);
+      console.log(oldestSessionTimeStamp);
+      console.log(foundUser.sessions);
     };
 
     // Save newSession with current user
@@ -98,11 +100,15 @@ const establishSession = async (req, res) => {
       refreshToken,
       signInTimeStamp: new Date().getTime()
     };
-    foundUser.sessions = [...foundUser.sessions, JSON.stringify(newSession)];
+    foundUser.sessions = [...foundUser.sessions, newSession];
     const result = await foundUser.save();
 
-    // Send refreshToken as httpOnly cookie
-    res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+    // Save refreshToken in session
+    //res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+    req.session.refreshToken = refreshToken;
+    req.session.save((err) => {
+      if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to update session with current sign in' });
+    });
     return res.status(200).json({ 'errCode': '0' });
   } catch (err) {
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish session' });

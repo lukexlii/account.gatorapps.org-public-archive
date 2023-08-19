@@ -17,7 +17,6 @@ const APP_CORS_OPTIONS = {
   optionsSuccessStatus: 200
 };
 
-
 const GA_GLOBAL_ORIGINS = [
   'https://account.gatorapps.org',
   'https://account.dev.gatorapps.org',

@@ -26,7 +26,12 @@ const userSchema = new Schema({
     type: String,
     require: true
   },
-  sessions: [String]
+  sessions: [{
+    _id: false,
+    refreshToken: String,
+    signInTimeStamp: Date
+    // TODO: Automatically remove expired sessions
+  }]
 });
 
 module.exports = DBaccount.model('User', userSchema);

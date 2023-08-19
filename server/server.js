@@ -3,6 +3,11 @@ const express = require('express');
 // Express.js: expressjs.com
 const app = express();
 const cors = require('cors');
+// https://www.npmjs.com/package/express-session
+var session = require('express-session');
+// https://www.npmjs.com/package/connect-mongodb-session
+const MongoDBStore = require('connect-mongodb-session')(session);
+const { SESSION_LIFESPAN } = require('./config/authOptions');
 const { APP_CORS_OPTIONS } = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
 const cookieParser = require('cookie-parser');
@@ -12,12 +17,38 @@ const PORT = process.env.PORT || 8000;
 // Connect to MongoDB mongodb.com
 const { DBglobal, DBaccount } = require('./config/dbConnections');
 
+// Use express-session
+//// Store sessions in MongoDB
+const store = new MongoDBStore({
+  uri: process.env.DATABASE_URI,
+  collection: 'sessions',
+  connectionOptions: { // Connection options are passed directly to the MongoDB driver
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    dbName: 'dev_global'
+  }
+  //clientPromise: DBglobal.getClient() // Use existing Mongoose connection
+});
+//// Catch DB connection errors
+store.on('error', (error) => {
+  console.log(error);
+});
+//// Start session
+app.use(session({
+  secret: JSON.parse(process.env.SESSION_COOKIE_SECRET),
+  cookie: { maxAge: SESSION_LIFESPAN },
+  store: store,
+  resave: true,
+  saveUninitialized: true,
+  name: 'GATORAPPS_SESSION'
+}))
+
 // Options credentials check and fetch cookies credentials requirement
 app.use(credentials);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cookieParser());
+//app.use(cookieParser());
 
 // Routes
 // App APIs w/o auth
@@ -45,6 +76,11 @@ Promise.all([
   new Promise(resolve => DBglobal.once('open', resolve)),
   new Promise(resolve => DBaccount.once('open', resolve))
 ]).then(() => {
+  // Create index to automatically delete expired sessions in db
+  DBglobal.db.collection('sessions').createIndex(
+    { expires: 1 },
+    { expireAfterSeconds: 0 }
+  );
   console.log('Connected to MongoDB');
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }).catch(error => {
