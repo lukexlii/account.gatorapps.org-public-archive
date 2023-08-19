@@ -76,7 +76,6 @@ const validateRequest = async (req, res, next) => {
 
 const initiateAuth = (req, res) => {
   try {
-    console.log(req.RTValidationResult);
     if (req.RTValidationResult.errCode === '0') {
       // User already has an active signed in session
       return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });

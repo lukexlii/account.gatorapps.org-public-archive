@@ -6,7 +6,6 @@ const useRefreshToken = () => {
 
   const refresh = async () => {
     const response = await axiosIdP.get('/userAuth/getAccessToken/', {
-      withCredentials: true,
       headers: { GATORAPPS_app: process.env.REACT_APP_APP_NAME }
     });
     setAuth(prev => {

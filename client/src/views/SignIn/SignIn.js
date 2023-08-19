@@ -5,7 +5,7 @@ import SignInWindow from '../../components/SignInWindow/SignInWindow';
 import Alert from '../../components/Alert/Alert';
 import { Container } from '@mui/material';
 import useAuth from '../../hooks/useAuth';
-import { axiosIdP } from '../../apis/backend';
+import { axiosPrivate } from '../../apis/backend';
 
 const SignIn = () => {
   const { auth } = useAuth();
@@ -30,12 +30,8 @@ const SignIn = () => {
       return;
     };
 
-    axiosIdP
-      .post('/appAuth/validateRequest', { withCredentials: true, app, state }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+    axiosPrivate
+      .post('/appAuth/validateRequest', { app, state })
       .then((response) => {
         setAlertData({
           severity: response?.data?.alertSeverity ? response.data.alertSeverity : "info",

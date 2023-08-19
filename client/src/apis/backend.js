@@ -11,5 +11,7 @@ export const axiosPrivate = axios.create({
 });
 
 export const axiosIdP = axios.create({
-  baseURL: process.env.REACT_APP_IDP_HOST + process.env.REACT_APP_IDP_API_PATH
+  baseURL: process.env.REACT_APP_IDP_HOST + process.env.REACT_APP_IDP_API_PATH,
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true
 });

@@ -24,7 +24,6 @@ const validateRefreshToken = async (req, res, next) => {
   try {
     // Check refreshToken exists in session
     const refreshToken = req?.session?.refreshToken;
-    console.log(req?.session);
     if (!refreshToken) {
       req.RTValidationResult = { status: 401, errCode: '-', errMsg: 'Missing refreshToken' };
       return next();
