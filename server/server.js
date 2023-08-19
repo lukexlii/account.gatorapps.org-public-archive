@@ -27,7 +27,8 @@ const store = new MongoDBStore({
     useUnifiedTopology: true,
     dbName: 'dev_global'
   }
-  //clientPromise: DBglobal.getClient() // Use existing Mongoose connection
+  // TODO: Use existing Mongoose connection
+  //clientPromise: DBglobal.getClient()
 });
 //// Catch DB connection errors
 store.on('error', (error) => {
@@ -39,7 +40,7 @@ app.use(session({
   cookie: { maxAge: SESSION_LIFESPAN },
   store: store,
   resave: true,
-  saveUninitialized: true,
+  saveUninitialized: false,
   name: 'GATORAPPS_SESSION'
 }))
 

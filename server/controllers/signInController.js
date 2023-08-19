@@ -91,8 +91,6 @@ const establishSession = async (req, res) => {
     while (foundUser.sessions.length >= MAX_WEB_SESSIONS) {
       const oldestSessionTimeStamp = foundUser.sessions.reduce((min, session) => Math.min(min, session.signInTimeStamp.getTime()), Infinity);
       foundUser.sessions = foundUser.sessions.filter((session) => session.signInTimeStamp.getTime() !== oldestSessionTimeStamp);
-      console.log(oldestSessionTimeStamp);
-      console.log(foundUser.sessions);
     };
 
     // Save newSession with current user
