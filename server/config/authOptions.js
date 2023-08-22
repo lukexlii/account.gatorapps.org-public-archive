@@ -15,7 +15,7 @@ const REFRESH_TOKEN_LIFESPAN = '12h'; // 12 hours
 // opid is always return in accessToken
 const ACCESS_TOKEN_LIFESPAN = '10s';
 const DEFAULT_ACCESSTOKEN_SCOPE = ['opid'];
-const DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE = ['roles', 'firstName', 'lastName', 'primaryEmail'];
+const DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE = ['roles', 'nickName', 'primaryEmail'];
 
 // appAuth
 const APP_AUTH_STATE_LIFESPAN = '5m';

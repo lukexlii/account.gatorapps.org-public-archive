@@ -97,7 +97,9 @@ const sendAccessToken = async (req, res) => {
   // TODO: Fine grained roles scope (global roles, app roles, other apps roles)
   const tokenUserInfo = {};
   tokenScope.forEach((attributeName) => {
+    // opid is always included, return to avoid duplication
     if (attributeName === 'opid') return;
+    // Avoid duplication if an attribute is included twice
     if (tokenUserInfo[attributeName]) return;
     if (!foundApp.userInfoScope.includes(attributeName)) return;
     if (!foundUser[attributeName]) return;
@@ -106,6 +108,7 @@ const sendAccessToken = async (req, res) => {
 
   const responseUserInfo = {};
   responseScope.forEach((attributeName) => {
+    // Avoid duplication if an attribute is included twice
     if (responseUserInfo[attributeName]) return;
     if (!foundApp.userInfoScope.includes(attributeName)) return;
     if (!foundUser[attributeName]) return;

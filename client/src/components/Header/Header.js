@@ -47,13 +47,15 @@ const Header = (props) => {
 
   // User profile dropdown menu
   // Determines name to be displayed
-  const userDisplayName = auth?.userInfo?.firstName && auth?.userInfo?.lastName
-    ? `${auth?.userInfo?.firstName} ${auth?.userInfo?.lastName}`
-    : auth?.userInfo?.firstName
-      ? auth?.userInfo?.firstName
-      : auth?.userInfo?.lastName
-        ? auth?.userInfo?.lastName
-        : 'GatorApps User';
+  const userDisplayName = auth?.userInfo?.nickName
+    ? auth?.userInfo?.nickName
+    : auth?.userInfo?.firstName && auth?.userInfo?.lastName
+      ? `${auth?.userInfo?.firstName} ${auth?.userInfo?.lastName}`
+      : auth?.userInfo?.firstName
+        ? auth?.userInfo?.firstName
+        : auth?.userInfo?.lastName
+          ? auth?.userInfo?.lastName
+          : 'GatorApps User';
 
   // onClick account settings button
   const handleAccountSettings = () => {

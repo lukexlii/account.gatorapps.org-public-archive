@@ -5,7 +5,9 @@ const useRefreshToken = () => {
   const { setAuth } = useAuth();
 
   const refresh = async () => {
-    const response = await axiosIdP.get('/userAuth/getAccessToken/');
+    const response = await axiosIdP.get('/userAuth/getAccessToken/', {
+      headers: { GATORAPPS_responseScope: JSON.stringify(['roles', 'nickName', 'firstName', 'lastName', 'primaryEmail']) }
+    });
     setAuth(prev => {
       return {
         ...prev,
