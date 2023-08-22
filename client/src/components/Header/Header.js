@@ -71,7 +71,55 @@ const Header = (props) => {
     }
   };
 
-  // Nested list of left menu drawer
+  // Left menu drawer
+  // Menu content
+  const leftMenuItems = [
+    {
+      heading: 'Heading 1',
+      items: [
+        { label: 'Item 1', route: '/1' },
+        { label: 'Item 2', route: '/2' },
+        {
+          label: 'Item 3 (Expandable)', subItems: [
+            { label: 'Subitem 1', route: '/s1' },
+            { label: 'Subitem 2', route: '/s2' }
+          ]
+        },
+        {
+          label: 'Item 4 (Expandable)', subItems: [
+            { label: 'Subitem 1', route: '/s1' },
+            { label: 'Subitem 2', route: '/s2' }
+          ]
+        }
+      ]
+    },
+    {
+      heading: 'Heading 2',
+      items: [
+        { label: 'Item 1', route: '/1' },
+        { label: 'Item 2', route: '/2' },
+        {
+          label: 'Item 3 (Expandable)', subItems: [
+            { label: 'Subitem 1', route: '/s1' },
+            { label: 'Subitem 2', route: '/s2' }
+          ]
+        }
+      ]
+    }
+  ];
+  // Handle nested list expand and collapse
+  const [leftMenuExpanded, setLeftMenuExpanded] = useState({});
+  const handleleftMenuClick = (sectionIndex, itemIndex) => {
+    const key = `${sectionIndex}-${itemIndex}`;
+    setLeftMenuExpanded({
+      ...leftMenuExpanded,
+      [key]: !leftMenuExpanded[key],
+    });
+  };
+  // Item styles
+
+
+  // Example, to be removed
   const [menu_expandExample, menu_setExpandExample] = useState(false);
   const menu_handleExampleClick = () => {
     menu_setExpandExample(!menu_expandExample);
@@ -105,36 +153,53 @@ const Header = (props) => {
               >
                 <Toolbar />
                 <div>
-                  <List
-                    component="nav"
-                    aria-labelledby="nested-list-subheader"
-                    subheader={
-                      <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '22px 0px 12px 24px' }}>
-                        <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
-                          Account
-                        </Typography>
-                      </ListSubheader>
-                    }
-                    sx={{ 'padding-bottom': '30px' }}
-                  >
-                    <ListItemButton sx={{ padding: '12px 24px' }}>
-                      <ListItemText primary="Profile" sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                    </ListItemButton>
-                    <ListItemButton sx={{ padding: '12px 24px' }}>
-                      <ListItemText primary="Current Affiliation" sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                    </ListItemButton>
-                    <ListItemButton onClick={menu_handleExampleClick}>
-                      <ListItemText primary="Linked Accounts" />
-                      {menu_expandExample ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={menu_expandExample} timeout="auto" unmountOnExit>
-                      <List component="div" disablePadding>
-                        <ListItemButton sx={{ pl: 4 }}>
-                          <ListItemText primary="Starred" />
-                        </ListItemButton>
+                  {leftMenuItems.map((section, sectionIndex) => {
+                    if (section.length <= 0) return;
+                    return (
+                      <List
+                        component="nav"
+                        aria-labelledby="nested-list-subheader"
+                        subheader={
+                          <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '22px 0px 12px 24px' }}>
+                            <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
+                              {section.heading}
+                            </Typography>
+                          </ListSubheader>
+                        }
+                        sx={{ 'padding-bottom': '30px' }}
+                      >
+                        {section.items.map((item, itemIndex) => {
+                          // Item with route
+                          if (item.route) return (
+                            <ListItemButton sx={{ padding: '12px 24px' }}>
+                              <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                            </ListItemButton>
+                          );
+                          // Expandable item with subitems
+                          if (item.subItems) return (
+                            <Fragment>
+                              <ListItemButton onClick={() => { handleleftMenuClick(sectionIndex, itemIndex) }} sx={{ padding: '12px 24px' }}>
+                                <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                                {leftMenuExpanded[`${sectionIndex}-${itemIndex}`] ? <ExpandLess sx={{ color: 'rgb(179, 182, 182)' }} /> : <ExpandMore sx={{ color: 'rgb(179, 182, 182)' }} />}
+                              </ListItemButton>
+                              <Collapse in={leftMenuExpanded[`${sectionIndex}-${itemIndex}`]} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                  {item.subItems.map((subItem) => {
+                                    return (
+                                      <ListItemButton sx={{ padding: '12px 24px 12px 40px' }}>
+                                        <ListItemText primary={subItem.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                                      </ListItemButton>
+                                    )
+                                  })}
+                                </List>
+                              </Collapse>
+                            </Fragment>
+                          );
+                          return;
+                        })}
                       </List>
-                    </Collapse>
-                  </List>
+                    );
+                  })}
                 </div>
               </Drawer>
             </Fragment>

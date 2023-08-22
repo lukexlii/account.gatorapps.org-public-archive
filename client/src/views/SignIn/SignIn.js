@@ -23,15 +23,10 @@ const SignIn = () => {
     const query = new URLSearchParams(location.search);
     const app = query.get('app');
     const state = query.get('state');
-
-    if (!app && !state) {
-      setAlertData(undefined);
-      setLoading(false);
-      return;
-    };
+    const returnTo = query.get('returnTo');
 
     axiosPrivate
-      .post('/appAuth/validateRequest', { app, state })
+      .post('/appAuth/validateRequest', { app, state, returnTo })
       .then((response) => {
         setAlertData({
           severity: response?.data?.alertSeverity ? response.data.alertSeverity : "info",
