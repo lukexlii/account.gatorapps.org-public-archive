@@ -21,6 +21,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import useAuth from '../../hooks/useAuth';
 import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
 import './Header.css';
@@ -77,33 +78,53 @@ const Header = (props) => {
     {
       heading: 'Heading 1',
       items: [
-        { label: 'Item 1', route: '/1' },
-        { label: 'Item 2', route: '/2' },
+        { label: 'Item 1', route: '/1_1' },
+        { label: 'Item 2', route: '/1_2' },
         {
           label: 'Item 3 (Expandable)', subItems: [
-            { label: 'Subitem 1', route: '/s1' },
-            { label: 'Subitem 2', route: '/s2' }
+            { label: 'Subitem 1', route: '/1_3_s1' },
+            { label: 'Subitem 2', route: '/1_3_s2', newTab: true },
+            { label: 'Subitem 3', route: '/1_3_s3' },
           ]
         },
+        { label: 'Item 4 (Opens in new tab)', route: '/1_4', newTab: true },
         {
-          label: 'Item 4 (Expandable)', subItems: [
-            { label: 'Subitem 1', route: '/s1' },
-            { label: 'Subitem 2', route: '/s2' }
+          label: 'Item 5 (Expandable)', subItems: [
+            { label: 'Subitem 1', route: '/1_5_s1' },
+            { label: 'Subitem 2', route: '/1_5_s2' }
           ]
-        }
+        },
+        { label: 'Item 6', route: '/1_6' },
       ]
     },
     {
       heading: 'Heading 2',
       items: [
-        { label: 'Item 1', route: '/1' },
-        { label: 'Item 2', route: '/2' },
+        { label: 'Item 1 (Opens in new tab)', route: '/2_1', newTab: true },
+        { label: 'Item 2', route: '/2_2' },
         {
           label: 'Item 3 (Expandable)', subItems: [
-            { label: 'Subitem 1', route: '/s1' },
-            { label: 'Subitem 2', route: '/s2' }
+            { label: 'Subitem 1', route: '/2_3_s1' },
+            { label: 'Subitem 2', route: '/2_3_s2', newTab: true },
+            { label: 'Subitem 2', route: '/2_3_s3' }
           ]
-        }
+        },
+        { label: 'Item 4', route: '/2_4' },
+      ]
+    },
+    {
+      heading: 'Heading 3',
+      items: [
+        { label: 'Item 1', route: '/3_1' },
+        { label: 'Item 2 (Opens in new tab)', route: '/3_2', newTab: true },
+        {
+          label: 'Item 3 (Expandable)', subItems: [
+            { label: 'Subitem 1', route: '/3_3_s1' },
+            { label: 'Subitem 2', route: '/3_3_s2', newTab: true },
+            { label: 'Subitem 2', route: '/3_3_s3' }
+          ]
+        },
+        { label: 'Item 4', route: '/3_4' },
       ]
     }
   ];
@@ -151,7 +172,7 @@ const Header = (props) => {
                 onClose={toggleDrawer("menu", false)}
                 sx={{ [`& .MuiDrawer-paper`]: { width: '319px', 'overflow-x': 'hidden', border: '1px solid rgba(0, 0, 0, 0.12)', 'background-color': 'rgb(250, 249, 248)' } }}
               >
-                <Toolbar />
+                <Toolbar sx={{ 'margin-bottom': '18px' }} />
                 <div>
                   {leftMenuItems.map((section, sectionIndex) => {
                     if (section.length <= 0) return;
@@ -160,7 +181,7 @@ const Header = (props) => {
                         component="nav"
                         aria-labelledby="nested-list-subheader"
                         subheader={
-                          <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '22px 0px 12px 24px' }}>
+                          <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '4px 0px 12px 24px' }}>
                             <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
                               {section.heading}
                             </Typography>
@@ -171,8 +192,9 @@ const Header = (props) => {
                         {section.items.map((item, itemIndex) => {
                           // Item with route
                           if (item.route) return (
-                            <ListItemButton sx={{ padding: '12px 24px' }}>
+                            <ListItemButton href={item.route} target={item.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px' }}>
                               <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                              {item.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '5px' }} />}
                             </ListItemButton>
                           );
                           // Expandable item with subitems
@@ -186,8 +208,9 @@ const Header = (props) => {
                                 <List component="div" disablePadding>
                                   {item.subItems.map((subItem) => {
                                     return (
-                                      <ListItemButton sx={{ padding: '12px 24px 12px 40px' }}>
+                                      <ListItemButton href={subItem.route} target={subItem.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px 12px 40px' }}>
                                         <ListItemText primary={subItem.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                                        {subItem.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '1.5px' }} />}
                                       </ListItemButton>
                                     )
                                   })}
