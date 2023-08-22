@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppBar, Avatar, Box, Collapse, Divider, Drawer, List, ListItemButton, ListSubheader, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/Button';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -11,11 +11,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Settings from '@mui/icons-material/Settings';
 import useAuth from '../../hooks/useAuth';
+import { axiosIdP } from '../../apis/backend';
 import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
 import './Header.css';
 
 const Header = (props) => {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
+  const navigate = useNavigate();
 
   // Dorpdown menus
   const [anchorEl, setAnchorEl] = useState(null);
@@ -42,6 +44,52 @@ const Header = (props) => {
       return <MenuItem disabled>{item.name}</MenuItem>
     })
   }
+
+  // User profile dropdown menu
+  // Determines name to be displayed
+  const userDisplayName = auth?.userInfo?.firstName && auth?.userInfo?.lastName
+    ? `${auth?.userInfo?.firstName} ${auth?.userInfo?.lastName}`
+    : auth?.userInfo?.firstName
+      ? auth?.userInfo?.firstName
+      : auth?.userInfo?.lastName
+        ? auth?.userInfo?.lastName
+        : 'GatorApps User';
+
+  // onClick account settings button
+  const handleAccountSettings = () => {
+    window.open("/", "_self");
+    /*
+      // For apps other than account:
+      axiosIdP
+        .get('/userAuth/getAccountSettingsUrl')
+        .then((response) => {
+          window.open(response?.data?.redirectUrl, "_blank");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    */
+  };
+
+  // onClick sign out button
+  const handleSignOut = () => {
+    axiosIdP
+      .post('/userAuth/signOut', {}, {
+        withCredentials: true
+      })
+      .then((response) => {
+        const accessToken = response?.data?.accessToken;
+        const roles = response?.data?.roles;
+        const email = response?.data?.email;
+        const firstName = response?.data?.firstName;
+        const lastName = response?.data?.lastName;
+        setAuth({ accessToken, roles, email, firstName, lastName });
+        navigate('/');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   // Drawers
   const [openDrawer, setOpenDrawer] = useState({
@@ -129,9 +177,6 @@ const Header = (props) => {
     });
   };
 
-  // User profile dropdown menu
-
-
   return (
     <Fragment>
       <AppBar position="fixed" elevation="0" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -201,7 +246,7 @@ const Header = (props) => {
             </Box>
           )}
 
-          {/* User profile dropdown menu */}
+          {/* Account dropdown menu */}
           {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
             <Fragment>
               <Tooltip title="Account">
@@ -220,6 +265,7 @@ const Header = (props) => {
                 PaperProps={{
                   elevation: 0,
                   sx: {
+                    borderRadius: '8px',
                     overflow: 'visible',
                     filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                     mt: 1.5,
@@ -234,29 +280,32 @@ const Header = (props) => {
                       display: 'block',
                       position: 'absolute',
                       top: 0,
-                      right: 14,
+                      right: 17,
                       width: 10,
                       height: 10,
                       bgcolor: 'background.paper',
                       transform: 'translateY(-50%) rotate(45deg)',
                       zIndex: 0,
+                      width: 12,
+                      height: 12
                     },
+                    'background-color': 'rgb(255, 253.98, 252.96)'
                   },
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem disabled>
-                  <Avatar>L</Avatar> Profile
+                  <Avatar>{userDisplayName.toUpperCase()[0]}</Avatar> {userDisplayName}
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleDorpdownMenuClose}>
+                <MenuItem onClick={handleAccountSettings}>
                   <ListItemIcon>
                     <Settings fontSize="small" />
                   </ListItemIcon>
                   Account Settings
                 </MenuItem>
-                <MenuItem onClick={handleDorpdownMenuClose}>
+                <MenuItem onClick={handleSignOut}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>

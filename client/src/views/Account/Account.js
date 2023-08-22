@@ -29,25 +29,6 @@ const Account = () => {
     setLoading(false);
   }, []);
 
-  const handleSignOut = () => {
-    axiosIdP
-      .post('/userAuth/signOut', {}, {
-        withCredentials: true
-      })
-      .then((response) => {
-        const accessToken = response?.data?.accessToken;
-        const roles = response?.data?.roles;
-        const email = response?.data?.email;
-        const firstName = response?.data?.firstName;
-        const lastName = response?.data?.lastName;
-        setAuth({ accessToken, roles, email, firstName, lastName });
-        navigate('/');
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const renderAccountContent = () => {
     return (
       <Fragment>
@@ -94,7 +75,7 @@ const Account = () => {
               </Box>
               <Box className="GenericPage__container_title_flexBox GenericPage__container_title_flexBox_right" sx={{ 'flex-grow': '1' }}>
                 <Box className="GenericPage__container_title_flexBox_right">
-                  <Button variant="contained" size="medium" onClick={handleSignOut}>Sign out</Button>
+                  <Button variant="contained" size="medium">Button</Button>
                 </Box>
               </Box>
             </Box>
