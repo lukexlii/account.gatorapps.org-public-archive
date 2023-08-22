@@ -63,6 +63,7 @@ const handleUFGoogleSignIn = async (req, res, next) => {
 
       const result = await User.create({
         "opid": opid,
+        "registerTimestamp": new Date().getTime(),
         "roles": ["100001"],
         "primaryEmail": email,
         "firstName": firstName,

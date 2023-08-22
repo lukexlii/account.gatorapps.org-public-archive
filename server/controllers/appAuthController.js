@@ -6,7 +6,7 @@ const path = require('path');
 const { FRONTEND_HOST } = require('../config/globalConfig');
 
 const initiateRequest = async (req, res) => {
-  const { app, statePayload } = req.body;
+  const { app, returnTo, statePayload } = req.body;
   if (!app) return res.status(400).json({ 'errCode': '-200101', 'errMsg': 'Missing app' });
 
   try {
@@ -16,30 +16,35 @@ const initiateRequest = async (req, res) => {
     const requireState = (foundApp.authOptions && JSON.parse(foundApp.authOptions)?.requireState);
     if (requireState && !statePayload) return res.status(400).json({ 'errCode': '-200103', 'errMsg': 'App requires a state, statePayload not found' });
 
+    let authUrl = FRONTEND_HOST + '/signin?app=' + foundApp.name;
+
     if (statePayload) {
       try {
         const state = signAppAuthState(statePayload);
-        const authUrl = FRONTEND_HOST + '/signin?app=' + foundApp.name + '&state=' + state;
-        return res.json({ authUrl })
+        authUrl += '&state=' + state;
       } catch (error) {
         return res.status(500).json({ 'errCode': '-200104', 'errMsg': 'Unable to sign statePayload' });
       }
     };
 
-    const authUrl = FRONTEND_HOST + '/signin?app=' + foundApp.name;
-    return res.json({ authUrl })
+    if (returnTo) {
+      // TODO: Validate returnTo is an authorized uri
+      authUrl += '&returnTo=' + returnTo;
+    };
+
+    return res.status(200).json({ authUrl });
   } catch (error) {
     return res.status(500).json({ 'errCode': '-200199', 'errMsg': 'Unknown server error' });
   }
 };
 
 const validateRequest = async (req, res, next) => {
-  const { app, state } = req.body;
-  if (!app && !state) return res.status(400).json({ 'errCode': '-200201', 'errMsg': "We're sorry, but we are unable to process your request because the server did not receive the required parameters, please re-initiate a request or try again later" });
+  const { app, state, returnTo } = req.body;
+  //if (!app && !state) return res.status(400).json({ 'errCode': '-200201', 'errMsg': "We're sorry, but we are unable to process your request because the server did not receive the required parameters, please re-initiate a request or try again later" });
 
   try {
     const foundApp = await App.findOne({ name: app || 'account' }).exec();
-    if (!foundApp) return res.status(200).json({ 'errCode': '-200202', 'errMsg': 'The app you attempted to authenticate to does not exist. You may continue to login to view your account, or examine your request and try again', 'alertSeverity': 'warning' });
+    if (!foundApp) return res.status(200).json({ 'errCode': '-200202', 'errMsg': 'The app you attempted to authenticate to does not exist. You may continue to sign in to view your account, or examine your request and try again', 'alertSeverity': 'warning' });
     const requireState = (foundApp.authOptions && JSON.parse(foundApp.authOptions)?.requireState);
     if (requireState && !state) return res.status(400).json({ 'errCode': '-200203', 'errMsg': 'You attempted to authenticate to ' + foundApp.displayName + ' without providing a state. ' + foundApp.displayName + ' requires a valid state to log you in, please examine your request and try again' });
 
@@ -67,6 +72,11 @@ const validateRequest = async (req, res, next) => {
       // Return if an request has already been sent in the err block of jwt.verify
       if (res.headersSent) return;
     }
+
+    if (returnTo) {
+
+    }
+
     req.foundApp = foundApp;
     next();
   } catch (error) {
@@ -86,6 +96,6 @@ const initiateAuth = (req, res) => {
   }
 
   return res.status(200).json({ 'errCode': '0', 'alertTitle': 'Welcome', 'alertMessage': 'Please authenticate yourself bellow' + (req.foundApp.displayName && (" to continue to " + req.foundApp.displayName)), 'appDisplayName': req.foundApp.displayName });
-}
+};
 
 module.exports = { initiateRequest, validateRequest, initiateAuth };

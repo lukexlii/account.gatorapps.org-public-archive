@@ -8,16 +8,14 @@ const userSchema = new Schema({
     required: true,
     unique: true
   },
+  registerTimestamp: {
+    type: Date,
+    required: true
+  },
   roles: {
     type: [Number],
     required: true
   },
-  primaryEmail: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  secondaryEmails: [String],
   firstName: {
     type: String,
     require: true
@@ -26,6 +24,13 @@ const userSchema = new Schema({
     type: String,
     require: true
   },
+  nickName: String,
+  primaryEmail: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  secondaryEmails: [String],
   sessions: [{
     _id: false,
     refreshToken: String,
