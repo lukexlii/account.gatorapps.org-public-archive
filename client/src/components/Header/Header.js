@@ -1,27 +1,15 @@
 import { Fragment, useState } from 'react';
 import { Link } from 'react-router-dom';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Collapse from '@mui/material/Collapse';
-import Drawer from '@mui/material/Drawer';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import { AppBar, Avatar, Box, Collapse, Divider, Drawer, List, ListItemButton, ListSubheader, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/Button';
-import ListSubheader from '@mui/material/ListSubheader';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Logout from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import Settings from '@mui/icons-material/Settings';
 import useAuth from '../../hooks/useAuth';
 import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
 import './Header.css';
@@ -29,26 +17,26 @@ import './Header.css';
 const Header = (props) => {
   const { auth } = useAuth();
 
-  // Login dorpdown menu
+  // Dorpdown menus
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleLoginMenuOpen = (event) => {
+  const handleDorpdownMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleLoginMenuClose = () => {
+  const handleDorpdownMenuClose = () => {
     setAnchorEl(null);
   };
 
-  const defaultLoginMenuItems = [
+  // Sign in dropdown menu
+  const defaultSignInMenuItems = [
     { name: "Students, Faculty & Staff" },
     { name: "Sign in with GatorLink", 'action': UFLoginViaGoogle },
     { name: "Alumni & Friends" },
     { name: "Coming soon...", 'action': () => window.alert("Coming soon...") }
   ];
-
-  const renderLoginMenuItems = () => {
-    const menuItems = props.loginMenuItems ? props.loginMenuItems : defaultLoginMenuItems;
+  const renderSignInMenuItems = () => {
+    const menuItems = props.SignInMenuItems ? props.SignInMenuItems : defaultSignInMenuItems;
     return menuItems.map((item) => {
       if (item.action) return <MenuItem onClick={item.action}>{item.name}</MenuItem>;
       return <MenuItem disabled>{item.name}</MenuItem>
@@ -57,14 +45,17 @@ const Header = (props) => {
 
   // Drawers
   const [openDrawer, setOpenDrawer] = useState({
-    menu: false,
-    profile: false,
+    leftMenu: false
   });
 
   const toggleDrawer = (drawerName, open) => (event) => {
+    // Stop propagation drawers only close if clicking on app bar only and not any buttons
+    event.stopPropagation();
+
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
+
     if (open === undefined) {
       setOpenDrawer({ ...openDrawer, [drawerName]: !openDrawer[drawerName] });
     } else {
@@ -137,19 +128,14 @@ const Header = (props) => {
       [key]: !leftMenuExpanded[key],
     });
   };
-  // Item styles
 
+  // User profile dropdown menu
 
-  // Example, to be removed
-  const [menu_expandExample, menu_setExpandExample] = useState(false);
-  const menu_handleExampleClick = () => {
-    menu_setExpandExample(!menu_expandExample);
-  };
 
   return (
     <Fragment>
       <AppBar position="fixed" elevation="0" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar className='Header__toolbar' disableGutters sx={
+        <Toolbar className='Header__toolbar' disableGutters onClick={toggleDrawer("leftMenu", false)} sx={
           {
             'background-color': 'rgb(40, 87, 151)',
             'color': 'rgb(255, 255, 255)',
@@ -161,70 +147,11 @@ const Header = (props) => {
             <Fragment>
               <Tooltip title="Menu">
                 <Box aria-label="Menu" sx={{ display: 'inline-block', height: '100%' }}>
-                  <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={toggleDrawer("menu")} sx={{ 'min-width': '60px' }}>
+                  <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={toggleDrawer("leftMenu")} sx={{ 'min-width': '60px' }}>
                     <MenuIcon />
                   </IconButton>
                 </Box>
               </Tooltip>
-              <Drawer
-                anchor="left"
-                open={openDrawer["menu"]}
-                onClose={toggleDrawer("menu", false)}
-                sx={{ [`& .MuiDrawer-paper`]: { width: '319px', 'overflow-x': 'hidden', border: '1px solid rgba(0, 0, 0, 0.12)', 'background-color': 'rgb(250, 249, 248)' } }}
-              >
-                <Toolbar sx={{ 'margin-bottom': '18px' }} />
-                <div>
-                  {leftMenuItems.map((section, sectionIndex) => {
-                    if (section.length <= 0) return;
-                    return (
-                      <List
-                        component="nav"
-                        aria-labelledby="nested-list-subheader"
-                        subheader={
-                          <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '4px 0px 12px 24px' }}>
-                            <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
-                              {section.heading}
-                            </Typography>
-                          </ListSubheader>
-                        }
-                        sx={{ 'padding-bottom': '30px' }}
-                      >
-                        {section.items.map((item, itemIndex) => {
-                          // Item with route
-                          if (item.route) return (
-                            <ListItemButton href={item.route} target={item.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px' }}>
-                              <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                              {item.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '5px' }} />}
-                            </ListItemButton>
-                          );
-                          // Expandable item with subitems
-                          if (item.subItems) return (
-                            <Fragment>
-                              <ListItemButton onClick={() => { handleleftMenuClick(sectionIndex, itemIndex) }} sx={{ padding: '12px 24px' }}>
-                                <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                                {leftMenuExpanded[`${sectionIndex}-${itemIndex}`] ? <ExpandLess sx={{ color: 'rgb(179, 182, 182)' }} /> : <ExpandMore sx={{ color: 'rgb(179, 182, 182)' }} />}
-                              </ListItemButton>
-                              <Collapse in={leftMenuExpanded[`${sectionIndex}-${itemIndex}`]} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
-                                  {item.subItems.map((subItem) => {
-                                    return (
-                                      <ListItemButton href={subItem.route} target={subItem.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px 12px 40px' }}>
-                                        <ListItemText primary={subItem.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                                        {subItem.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '1.5px' }} />}
-                                      </ListItemButton>
-                                    )
-                                  })}
-                                </List>
-                              </Collapse>
-                            </Fragment>
-                          );
-                          return;
-                        })}
-                      </List>
-                    );
-                  })}
-                </div>
-              </Drawer>
             </Fragment>
           )}
 
@@ -247,9 +174,10 @@ const Header = (props) => {
             </Typography>
           </Typography>
 
+          {/* Sign in dropdown menu */}
           {(!props.loading && (props.loggedIn === false || (props.loggedIn === undefined && !auth?.accessToken))) && (
-            <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
-              <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleLoginMenuOpen} sx={{ 'width': '96px', 'padding': '6px' }}>
+            <Box aria-label="Sign in Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
+              <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleDorpdownMenuOpen} sx={{ 'width': '96px', 'padding': '6px' }}>
                 <span>Sign in</span>
                 <ArrowDropDownIcon />
               </IconButton>
@@ -266,24 +194,142 @@ const Header = (props) => {
                   horizontal: 'right',
                 }}
                 open={Boolean(anchorEl)}
-                onClose={handleLoginMenuClose}
+                onClose={handleDorpdownMenuClose}
               >
-                {renderLoginMenuItems()}
+                {renderSignInMenuItems()}
               </Menu>
             </Box>
           )}
 
+          {/* User profile dropdown menu */}
           {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
-            <Tooltip title="Profile">
-              <Box aria-label="Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
-                <IconButton className={"Header__button"} size="medium" paddingX="8px" color="inherit" aria-label="menu" onClick={null} sx={{ 'min-width': '60px' }}>
-                  <AccountCircleIcon />
-                </IconButton>
-              </Box>
-            </Tooltip>
+            <Fragment>
+              <Tooltip title="Account">
+                <Box aria-label="Account Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
+                  <IconButton className={"Header__button"} size="medium" paddingX="8px" color="inherit" aria-label="menu" onClick={handleDorpdownMenuOpen} sx={{ 'min-width': '60px' }}>
+                    <AccountCircleIcon />
+                  </IconButton>
+                </Box>
+              </Tooltip>
+              <Menu
+                anchorEl={anchorEl}
+                id="account-menu"
+                open={Boolean(anchorEl)}
+                onClose={handleDorpdownMenuClose}
+                //onClick={handleDorpdownMenuClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                    '&:before': {
+                      content: '""',
+                      display: 'block',
+                      position: 'absolute',
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: 'background.paper',
+                      transform: 'translateY(-50%) rotate(45deg)',
+                      zIndex: 0,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                <MenuItem disabled>
+                  <Avatar>L</Avatar> Profile
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleDorpdownMenuClose}>
+                  <ListItemIcon>
+                    <Settings fontSize="small" />
+                  </ListItemIcon>
+                  Account Settings
+                </MenuItem>
+                <MenuItem onClick={handleDorpdownMenuClose}>
+                  <ListItemIcon>
+                    <Logout fontSize="small" />
+                  </ListItemIcon>
+                  Sign Out
+                </MenuItem>
+              </Menu>
+            </Fragment>
           )}
         </Toolbar>
       </AppBar>
+
+      {/* Left menu drawer */}
+      <Drawer
+        anchor="left"
+        open={openDrawer["leftMenu"]}
+        onClose={toggleDrawer("leftMenu", false)}
+        sx={{ [`& .MuiDrawer-paper`]: { width: '319px', 'overflow-x': 'hidden', border: '1px solid rgba(0, 0, 0, 0.12)', 'background-color': 'rgb(250, 249, 248)' } }}
+      >
+        <Toolbar sx={{ 'margin-bottom': '18px' }} />
+        <div>
+          {leftMenuItems.map((section, sectionIndex) => {
+            if (section.length <= 0) return;
+            return (
+              <List
+                component="nav"
+                aria-labelledby="nested-list-subheader"
+                subheader={
+                  <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '4px 0px 12px 24px' }}>
+                    <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
+                      {section.heading}
+                    </Typography>
+                  </ListSubheader>
+                }
+                sx={{ 'padding-bottom': '30px' }}
+              >
+                {section.items.map((item, itemIndex) => {
+                  // Item with route
+                  if (item.route) return (
+                    <ListItemButton href={item.route} target={item.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px' }}>
+                      <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                      {item.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '5px' }} />}
+                    </ListItemButton>
+                  );
+                  // Expandable item with subitems
+                  if (item.subItems) return (
+                    <Fragment>
+                      <ListItemButton onClick={() => { handleleftMenuClick(sectionIndex, itemIndex) }} sx={{ padding: '12px 24px' }}>
+                        <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                        {leftMenuExpanded[`${sectionIndex}-${itemIndex}`] ? <ExpandLess sx={{ color: 'rgb(179, 182, 182)' }} /> : <ExpandMore sx={{ color: 'rgb(179, 182, 182)' }} />}
+                      </ListItemButton>
+                      <Collapse in={leftMenuExpanded[`${sectionIndex}-${itemIndex}`]} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                          {item.subItems.map((subItem) => {
+                            return (
+                              <ListItemButton href={subItem.route} target={subItem.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px 12px 40px' }}>
+                                <ListItemText primary={subItem.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                                {subItem.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '1.5px' }} />}
+                              </ListItemButton>
+                            )
+                          })}
+                        </List>
+                      </Collapse>
+                    </Fragment>
+                  );
+                  return;
+                })}
+              </List>
+            );
+          })}
+        </div>
+      </Drawer>
+
+      {/* Space holder so pages don't have to each add spaces at top to avoid bar overlap */}
       <Toolbar></Toolbar>
     </Fragment >
   );
