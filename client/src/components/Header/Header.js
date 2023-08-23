@@ -263,7 +263,6 @@ const Header = (props) => {
                 id="account-menu"
                 open={Boolean(anchorEl)}
                 onClose={handleDorpdownMenuClose}
-                //onClick={handleDorpdownMenuClose}
                 PaperProps={{
                   elevation: 0,
                   sx: {
@@ -282,7 +281,7 @@ const Header = (props) => {
                       display: 'block',
                       position: 'absolute',
                       top: 0,
-                      right: 17,
+                      right: 16,
                       width: 10,
                       height: 10,
                       bgcolor: 'background.paper',

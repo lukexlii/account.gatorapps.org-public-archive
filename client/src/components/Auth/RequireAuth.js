@@ -1,6 +1,6 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-import Unauthorized from '../../views/Unauthorized/Unauthorized';
+import ErrorPage from '../../views/ErrorPage/ErrorPage';
 
 const RequireAuth = ({ allowedRoles }) => {
   const { auth } = useAuth();
@@ -10,7 +10,7 @@ const RequireAuth = ({ allowedRoles }) => {
     auth?.userInfo?.roles?.find(role => allowedRoles?.includes(role))
       ? <Outlet />
       : auth?.accessToken
-        ? <Unauthorized />
+        ? <ErrorPage error='403' />
         : <Navigate to="./signin" state={{ from: location }} replace />
   );
 };
