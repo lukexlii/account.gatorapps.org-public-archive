@@ -1,8 +1,8 @@
 const User = require('../model/User');
 const { v4: uuidv4 } = require('uuid');
 const { google } = require('googleapis');
-const { signAccessToken, signRefreshToken } = require('./signJWT');
-const { MAX_WEB_SESSIONS, REFRESH_TOKEN_COOKIE_NAME } = require('../config/authOptions');
+const { signUserAuthToken } = require('./signJWT');
+const { MAX_WEB_SESSIONS } = require('../config/authOptions');
 
 const handleUFGoogleSignIn = async (req, res, next) => {
   // Check req body contains access_token
@@ -48,10 +48,9 @@ const handleUFGoogleSignIn = async (req, res, next) => {
     return res.status(400).json({ 'errCode': '-', 'errMsg': 'Unable to fetch user info with Google access_token provided' });
   }
 
-  let foundUser;
   try {
     // Check if user with given  primaryEmail already exists
-    foundUser = await User.findOne({ primaryEmail: email }).exec();
+    const foundUser = await User.findOne({ primaryEmail: email }).exec();
 
     // If not, create user
     if (!foundUser) {
@@ -71,46 +70,49 @@ const handleUFGoogleSignIn = async (req, res, next) => {
       });
       foundUser = await User.findOne({ opid }).exec();
     }
+
+    // Store user and continue
+    req.foundUser = foundUser;
+    next();
   } catch (err) {
     console.log(err);
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user profile' });
   };
-
-  req.foundUser = foundUser;
-  next();
 };
 
 const establishSession = async (req, res) => {
-  if (!req.foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish session' });;
+  if (!req.foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user session' });
   const foundUser = req.foundUser;
 
   try {
-    // Sign refreshToken
-    const refreshToken = signRefreshToken({ opid: foundUser.opid });
+    const userAuthToken = signUserAuthToken({ opid: foundUser.opid, sessionID: req.sessionID });
 
-    // Remove old sessions so number of simultaneous sessions meet the max cap requirement
+    // Sign out older sessions so number of simultaneous sessions for foundUser meet the max cap requirement
     while (foundUser.sessions.length >= MAX_WEB_SESSIONS) {
       const oldestSessionTimeStamp = foundUser.sessions.reduce((min, session) => Math.min(min, session.signInTimeStamp.getTime()), Infinity);
       foundUser.sessions = foundUser.sessions.filter((session) => session.signInTimeStamp.getTime() !== oldestSessionTimeStamp);
+      // TO DO: Also remove the session from session db
     };
 
-    // Save newSession with current user
+    // Save new session with current user
     const newSession = {
-      refreshToken,
+      sessionID: req.sessionID,
       signInTimeStamp: new Date().getTime()
     };
     foundUser.sessions = [...foundUser.sessions, newSession];
     const result = await foundUser.save();
 
-    // Save refreshToken in session
-    //res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
-    req.session.refreshToken = refreshToken;
+    // Save auth info in session
+    req.session.userAuth = {
+      token: userAuthToken
+    };
     req.session.save((err) => {
       if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to update session with current sign in' });
     });
+
     return res.status(200).json({ 'errCode': '0' });
   } catch (err) {
-    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish session' });
+    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user session' });
   }
 };
 

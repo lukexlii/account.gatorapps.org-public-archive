@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-const { REFRESH_TOKEN_LIFESPAN, ACCESS_TOKEN_LIFESPAN, APP_AUTH_STATE_LIFESPAN } = require('../config/authOptions');
+const { ACCESS_TOKEN_LIFESPAN, APP_AUTH_STATE_LIFESPAN } = require('../config/authOptions');
+const { GLOBAL_USER_SESSION_TOKEN_LIFESPAN } = require('../config/config');
 
 const signAccessToken = (privateSigningKey, payload) => {
   const accessToken = jwt.sign(
@@ -13,13 +14,17 @@ const signAccessToken = (privateSigningKey, payload) => {
   return accessToken;
 };
 
-const signRefreshToken = (payload) => {
-  const refreshToken = jwt.sign(
-    payload,
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: REFRESH_TOKEN_LIFESPAN }
-  );
-  return refreshToken;
+const signUserAuthToken = (payload) => {
+  try {
+    const userSessionToken = jwt.sign(
+      payload,
+      process.env.USR_AUTH_TOKEN_PRIVATE_KEY,
+      { algorithm: 'ES256', expiresIn: GLOBAL_USER_AUTH_TOKEN_LIFESPAN }
+    );
+    return userSessionToken;
+  } catch (error) {
+    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to sign user session' });
+  }
 };
 
 const signAppAuthState = (payload) => {
@@ -32,4 +37,4 @@ const signAppAuthState = (payload) => {
   return appAuthState;
 };
 
-module.exports = { signAccessToken, signRefreshToken, signAppAuthState };
+module.exports = { signAccessToken, signUserAuthToken, signAppAuthState };

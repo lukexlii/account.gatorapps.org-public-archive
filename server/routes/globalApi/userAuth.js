@@ -19,8 +19,6 @@ const corsOptions = {
 };
 
 router.use(cors(corsOptions));
-router.get('/getAccessToken', refreshTokenController.validateRefreshToken);
-router.get('/getAccessToken', refreshTokenController.sendRefreshTokenError);
 router.get('/getAccessToken', refreshTokenController.validateOrigin);
 router.get('/getAccessToken', refreshTokenController.sendAccessToken);
 

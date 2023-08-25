@@ -3,7 +3,7 @@ const { signAppAuthState } = require('./signJWT');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-const { FRONTEND_HOST } = require('../config/globalConfig');
+const { FRONTEND_HOST } = require('../config/config');
 
 const initiateRequest = async (req, res) => {
   const { app, returnTo, statePayload } = req.body;

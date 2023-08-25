@@ -1,9 +1,5 @@
-// Maximum allowed number of simultaneous sessions on web app
+// Maximum allowed number of simultaneous sessions on web app for each user
 const MAX_WEB_SESSIONS = 2;
-// Session id cookie name
-const SESSION_COOKIE_NAME = 'GATORAPPS_SID';
-// Session expiration in milliseconds
-const SESSION_LIFESPAN = 1000 * 60 * 60 * 12; // 12 hours
 
 // refreshToken expiration
 const REFRESH_TOKEN_LIFESPAN = '12h'; // 12 hours
@@ -20,4 +16,4 @@ const DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE = ['roles', 'nickName', 'primaryEmail']
 // appAuth
 const APP_AUTH_STATE_LIFESPAN = '5m';
 
-module.exports = { MAX_WEB_SESSIONS, SESSION_COOKIE_NAME, SESSION_LIFESPAN, REFRESH_TOKEN_LIFESPAN, ACCESS_TOKEN_LIFESPAN, DEFAULT_ACCESSTOKEN_SCOPE, DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE, APP_AUTH_STATE_LIFESPAN };
+module.exports = { MAX_WEB_SESSIONS, REFRESH_TOKEN_LIFESPAN, ACCESS_TOKEN_LIFESPAN, DEFAULT_ACCESSTOKEN_SCOPE, DEFAULT_ACCESSTOKEN_RESPONSE_SCOPE, APP_AUTH_STATE_LIFESPAN };

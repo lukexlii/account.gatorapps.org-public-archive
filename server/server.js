@@ -7,10 +7,11 @@ const cors = require('cors');
 var session = require('express-session');
 // https://www.npmjs.com/package/connect-mongodb-session
 const MongoStore = require('connect-mongo');
-const { SESSION_COOKIE_NAME, SESSION_LIFESPAN } = require('./config/authOptions');
+const { GLOBAL_SESSION_COOKIE_NAME, GLOBAL_SESSION_LIFESPAN } = require('./config/config');
 const { APP_CORS_OPTIONS } = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
 const cookieParser = require('cookie-parser');
+const getUserAuth = require('./middleware/getUserAuth');
 const verifyJWT = require('./middleware/verifyJWT');
 const PORT = process.env.PORT || 8000;
 
@@ -18,26 +19,34 @@ const PORT = process.env.PORT || 8000;
 const { DBglobal, DBaccount } = require('./config/dbConnections');
 
 // Use express-session
+// Global session
 app.use(session({
   secret: JSON.parse(process.env.SESSION_COOKIE_SECRET),
-  cookie: { maxAge: SESSION_LIFESPAN },
+  // TO DO for PROD: set cookie domain to .gatorapps.org
+  cookie: { maxAge: GLOBAL_SESSION_LIFESPAN },
   // store in MongoDB, use existing connection, TTL autoRemove handled separately
   store: MongoStore.create({ client: DBglobal.getClient(), dbName: 'dev_global', autoRemove: 'disabled' }),
   resave: false,
   saveUninitialized: false,
-  name: SESSION_COOKIE_NAME
-}))
+  name: GLOBAL_SESSION_COOKIE_NAME
+}));
 
 // Options credentials check and fetch cookies credentials requirement
 app.use(credentials);
-
+// Parse url and request body
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+// Session cookie is currently handled by express-session
 //app.use(cookieParser());
+
+// TO DO: CORS and origin validation middleware
+app.use('/appApi/account', cors(APP_CORS_OPTIONS));
+
+// Get user auth status and info
+app.use(getUserAuth);
 
 // Routes
 // App APIs w/o auth
-app.use('/appApi/account', cors(APP_CORS_OPTIONS));
 //// User auth
 // !--- ATTENTION: accessToken cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
 app.use('/appApi/account/userAuth', require('./routes/appApi/userAuth'));
