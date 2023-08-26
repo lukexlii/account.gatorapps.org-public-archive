@@ -3,15 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
-import { Box, Button, Container, Divider, FormControl, Grid } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import { Box, Button, Container, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, FormControl, Grid, InputAdornment, InputLabel, OutlinedInput, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useDispatch, useSelector } from 'react-redux';
 //import { setUserInfo } from '../../context/authSlice';
 //import { handleSignOut } from '../../components/RequireAuth/AuthFunctions'
@@ -27,36 +21,86 @@ const Account = () => {
     setLoading(false);
   }, []);
 
-  const renderProfileItems = () => {
-    const profileItems = [
-      { id: "name", label: "Name", data: "Luke Li" },
-      { id: "nickName", label: "Nick Name", data: "Luke's Testing Nick Name", updateRoute: "/appApi/account/updateUserProfile" },
-      { id: "organizationalDomain", label: "Organizational Domain", data: "UFL.EDU" },
-      { id: "organizationalID", label: "Organizational ID", data: "luke.li" },
-      { id: "currentAffiliation", label: "Current Affiliation", data: "Verified" }
-    ];
+  // Profile
+  const profileItems = [
+    { id: "name", label: "Name", value: "Luke Li" },
+    { id: "nickName", label: "Nick Name", value: "Luke's Testing Nick Name", update: { description: "Plase enter your new nick name. Leave blank to use your full name as default nick name.", postRoute: "/appApi/account/updateUserProfile" } },
+    { id: "organizationalDomain", label: "Organizational Domain", value: "UFL.EDU" },
+    { id: "organizationalID", label: "Organizational ID", value: "luke.li" },
+    { id: "currentAffiliation", label: "Current Affiliation", value: "Verified", verification: { verified: true } },
+    { id: "unverifiedTesting", label: "Unverified Testing", value: "Unverified", verification: { verified: false } }
+  ];
+  // Profile update dialogue
+  const [profileUpdateDialogue, setProfileUpdateDialogue] = useState({ open: false, item: undefined });
+  const handleProfileUpdateDialogueOpen = (item) => {
+    setProfileUpdateDialogue({ open: true, item });
+  };
+  const handleProfileUpdateDialogueClose = () => {
+    setProfileUpdateDialogue(prev => ({ ...prev, open: false }));
+  };
 
+  const renderProfileItems = () => {
     return (
-      <Grid container spacing={3}>
-        {profileItems.map((item, itemIndex) => {
-          return (
-            <Grid item xs={12} sm={12} md={6}>
-              <FormControl disabled fullWidth variant="outlined">
-                <InputLabel htmlFor={"profile-" + item.id}>{item.label}</InputLabel>
-                <OutlinedInput id={"profile-" + item.id} value={item.data} endAdornment={
-                  (item.updateRoute && (
+      <Fragment>
+        <Grid container spacing={3}>
+          {profileItems.map((item, itemIndex) => {
+            return (
+              <Grid item xs={12} sm={12} md={6}>
+                <FormControl disabled fullWidth variant="outlined">
+                  <InputLabel htmlFor={"profile-" + itemIndex}>{item.label}</InputLabel>
+                  <OutlinedInput id={"profile-" + itemIndex} value={item.value} endAdornment={
                     <InputAdornment position="end">
-                      <Button size="medium" onClick={undefined} sx={{ marginLeft: '16px', height: '36px' }}>Update</Button>
+                      {item?.update && (<Button size="medium" onClick={() => handleProfileUpdateDialogueOpen(item)} sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>Update</Button>)}
+                      {item?.verification && (
+                        (item?.verification?.verified
+                          ? (
+                            <Tooltip title="Verified" arrow>
+                              <Button size="medium" sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>
+                                <CheckCircleOutlineIcon />
+                              </Button>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title="Unverified" arrow>
+                              <Button size="medium" sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>
+                                <HelpOutlineIcon />
+                              </Button>
+                            </Tooltip>
+                          ))
+                      )}
                     </InputAdornment>
-                  ))
-                }
-                  label={item.label}
-                />
-              </FormControl>
-            </Grid>
-          )
-        })}
-      </Grid>
+                  }
+                    label={item.label}
+                  />
+                </FormControl>
+              </Grid>
+            )
+          })}
+        </Grid >
+
+        {/* Update profile field dialogue */}
+        <Dialog open={profileUpdateDialogue.open} onClose={handleProfileUpdateDialogueClose}>
+          <DialogTitle>{"Update " + profileUpdateDialogue?.item?.label}</DialogTitle>
+          <DialogContent sx={{ width: '512px' }}>
+            <DialogContentText sx={{ marginBottom: '14px' }}>
+              {profileUpdateDialogue?.item?.update?.description}
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id={"profile" + profileUpdateDialogue?.item?.id}
+              label={profileUpdateDialogue?.item?.label}
+              defaultValue={profileUpdateDialogue?.item?.value}
+              type=""
+              fullWidth
+              variant="outlined"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleProfileUpdateDialogueClose}>Cancel</Button>
+            <Button onClick={handleProfileUpdateDialogueClose}>Save</Button>
+          </DialogActions>
+        </Dialog>
+      </Fragment>
     )
   }
 
