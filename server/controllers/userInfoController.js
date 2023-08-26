@@ -16,10 +16,8 @@ const sendRefreshTokenError = (req, res, next) => {
 const getUserInfo = async (req, res) => {
   try {
     const foundUser = req?.userAuth?.authedUser;
-    if (!foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when getting user info' });
-
-    const foundApp = req.foundApp;
-    if (!foundApp) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when getting user info' });
+    const foundApp = req?.reqApp?.foundApp;
+    if (!foundUser || !foundApp) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when getting user info' });
 
     const userInfoScope = (req.header('GATORAPPS_userInfoScope') && JSON.parse(req.header('GATORAPPS_userInfoScope'))) || DEFAULT_GETUSERINFO_SCOPE;
 

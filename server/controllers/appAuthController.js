@@ -79,13 +79,13 @@ const validateRequest = async (req, res, next) => {
 
     req.foundApp = foundApp;
     next();
-  } catch (error) {
+  } catch (err) {
     return res.status(500).json({ 'errCode': '-200299', 'errMsg': "We're sorry, but we are unable to process your request at this time. Please try again later" });
   }
 };
 
 const initiateAuth = (req, res) => {
-  if (req.userAuth.authedUser) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });
+  if (req?.userAuth?.authedUser) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });
 
   return res.status(200).json({ 'errCode': '0', 'alertTitle': 'Welcome', 'alertMessage': 'Please authenticate yourself bellow' + (req.foundApp.displayName && (" to continue to " + req.foundApp.displayName)), 'appDisplayName': req.foundApp.displayName });
 };

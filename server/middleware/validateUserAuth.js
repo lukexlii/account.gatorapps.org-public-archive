@@ -1,4 +1,7 @@
-const validateUserAuth = (req, res, next) => {
+const jwt = require('jsonwebtoken');
+const User = require('../model/User');
+
+const validateUserAuth = async (req, res, next) => {
   // Check userAuth info exists in session
   const userAuth = req?.session?.userAuth;
   if (!userAuth) {
@@ -9,9 +12,8 @@ const validateUserAuth = (req, res, next) => {
   };
 
   // Check opid and userAuthToken exists in userAuth
-  const opid = userAuth?.opid;
   const userAuthToken = userAuth?.token;
-  if (!opid || !userAuthToken) {
+  if (!userAuthToken) {
     req.userAuth = {
       error: { status: 403, errCode: '-', errMsg: 'Incomplete userAuth info' }
     };
@@ -19,9 +21,9 @@ const validateUserAuth = (req, res, next) => {
   };
 
   try {
-    jwt.verify(
+    await jwt.verify(
       userAuthToken,
-      process.env.USR_AUTH_TOKEN_PUBLIC_KEY,
+      process.env.USR_AUTH_TOKEN_PUBLIC_KEY.replace(/\\n/g, '\n'),
       { algorithm: 'ES256' },
       async (err, decoded) => {
         // Validate userAuthToken
@@ -50,7 +52,7 @@ const validateUserAuth = (req, res, next) => {
         };
 
         // Check the session is actively associated with foundUser
-        const foundSession = foundUser.sessions.find(session => session.sessionID === decoded.sessionID);
+        const foundSession = await foundUser.sessions.find(session => session.sessionID === decoded.sessionID);
         if (!foundSession) {
           req.userAuth = {
             error: { status: 403, errCode: '-', errMsg: 'Inactive user auth session' }
@@ -67,9 +69,11 @@ const validateUserAuth = (req, res, next) => {
       }
     );
   } catch (err) {
-    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to validate user auth session' });
+    req.userAuth = {
+      error: { status: 500, errCode: '-', errMsg: 'Unable to validate user auth session' }
+    };
+    next();
   }
-  next();
 };
 
 module.exports = validateUserAuth

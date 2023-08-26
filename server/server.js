@@ -40,7 +40,13 @@ app.use(express.json());
 //app.use(cookieParser());
 
 // TO DO: CORS middleware
-app.use('/appApi/account', cors(APP_CORS_OPTIONS));
+app.use(cors({
+  origin: (origin, callback) => {
+    callback(null, true)
+  },
+  optionsSuccessStatus: 200
+}))
+
 // Validate requesting app's origin and store app in req.foundApp
 app.use(validateOrigin);
 // Validate user auth status and store user in req.userAuth.authedUser
@@ -59,6 +65,7 @@ app.use('/globalApi/account/userAuth', require('./routes/globalApi/userAuth'));
 app.use('/globalApi/account/appAuth', require('./routes/globalApi/appAuth'));
 
 // App APIs w/ auth
+// TO DO: add middleware to send error message for unauthed client
 
 
 // HTTP Status Codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
