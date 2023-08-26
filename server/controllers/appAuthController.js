@@ -85,15 +85,7 @@ const validateRequest = async (req, res, next) => {
 };
 
 const initiateAuth = (req, res) => {
-  try {
-    if (req.RTValidationResult.errCode === '0') {
-      // User already has an active signed in session
-      return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });
-    }
-    delete req.RTValidationResult;
-  } catch (err) {
-    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error when validating refreshToken' });
-  }
+  if (req.userAuth.authedUser) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });
 
   return res.status(200).json({ 'errCode': '0', 'alertTitle': 'Welcome', 'alertMessage': 'Please authenticate yourself bellow' + (req.foundApp.displayName && (" to continue to " + req.foundApp.displayName)), 'appDisplayName': req.foundApp.displayName });
 };

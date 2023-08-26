@@ -11,8 +11,8 @@ const { GLOBAL_SESSION_COOKIE_NAME, GLOBAL_SESSION_LIFESPAN } = require('./confi
 const { APP_CORS_OPTIONS } = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
 const cookieParser = require('cookie-parser');
-const getUserAuth = require('./middleware/getUserAuth');
-const verifyJWT = require('./middleware/verifyJWT');
+const validateOrigin = require('./middleware/validateOrigin');
+const validateUserAuth = require('./middleware/validateUserAuth');
 const PORT = process.env.PORT || 8000;
 
 // Connect to MongoDB mongodb.com
@@ -39,11 +39,12 @@ app.use(express.json());
 // Session cookie is currently handled by express-session
 //app.use(cookieParser());
 
-// TO DO: CORS and origin validation middleware
+// TO DO: CORS middleware
 app.use('/appApi/account', cors(APP_CORS_OPTIONS));
-
-// Get user auth status and info
-app.use(getUserAuth);
+// Validate requesting app's origin and store app in req.foundApp
+app.use(validateOrigin);
+// Validate user auth status and store user in req.userAuth.authedUser
+app.use(validateUserAuth);
 
 // Routes
 // App APIs w/o auth
@@ -58,8 +59,7 @@ app.use('/globalApi/account/userAuth', require('./routes/globalApi/userAuth'));
 app.use('/globalApi/account/appAuth', require('./routes/globalApi/appAuth'));
 
 // App APIs w/ auth
-app.use(verifyJWT);
-app.use('/appApi/account/userProfile', require('./routes/appApi/userProfile'));
+
 
 // HTTP Status Codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 app.all('*', (req, res) => {

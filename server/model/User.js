@@ -33,7 +33,7 @@ const userSchema = new Schema({
   secondaryEmails: [String],
   sessions: [{
     _id: false,
-    refreshToken: String,
+    sessionID: String,
     signInTimeStamp: Date
     // TODO: Automatically remove expired sessions
   }]

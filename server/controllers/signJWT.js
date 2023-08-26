@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
 const { ACCESS_TOKEN_LIFESPAN, APP_AUTH_STATE_LIFESPAN } = require('../config/authOptions');
-const { GLOBAL_USER_SESSION_TOKEN_LIFESPAN } = require('../config/config');
+const { GLOBAL_USER_AUTH_TOKEN_LIFESPAN } = require('../config/config');
 
 const signAccessToken = (privateSigningKey, payload) => {
   const accessToken = jwt.sign(
@@ -15,16 +15,12 @@ const signAccessToken = (privateSigningKey, payload) => {
 };
 
 const signUserAuthToken = (payload) => {
-  try {
-    const userSessionToken = jwt.sign(
-      payload,
-      process.env.USR_AUTH_TOKEN_PRIVATE_KEY,
-      { algorithm: 'ES256', expiresIn: GLOBAL_USER_AUTH_TOKEN_LIFESPAN }
-    );
-    return userSessionToken;
-  } catch (error) {
-    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to sign user session' });
-  }
+  const userSessionToken = jwt.sign(
+    payload,
+    process.env.USR_AUTH_TOKEN_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    { algorithm: 'ES256', expiresIn: GLOBAL_USER_AUTH_TOKEN_LIFESPAN }
+  );
+  return userSessionToken;
 };
 
 const signAppAuthState = (payload) => {

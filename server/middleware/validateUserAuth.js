@@ -1,4 +1,4 @@
-const getUserAuth = (req, res, next) => {
+const validateUserAuth = (req, res, next) => {
   // Check userAuth info exists in session
   const userAuth = req?.session?.userAuth;
   if (!userAuth) {
@@ -72,4 +72,4 @@ const getUserAuth = (req, res, next) => {
   next();
 };
 
-module.exports = getUserAuth
+module.exports = validateUserAuth
