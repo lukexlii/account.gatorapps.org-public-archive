@@ -4,11 +4,12 @@ import Header from '../../components/Header/Header';
 import SignInWindow from '../../components/SignInWindow/SignInWindow';
 import Alert from '../../components/Alert/Alert';
 import { Container } from '@mui/material';
-import useAuth from '../../hooks/useAuth';
+import { useSelector } from 'react-redux';
 import { axiosPrivate } from '../../apis/backend';
 
 const SignIn = () => {
-  const { auth } = useAuth();
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
   const navigate = useNavigate();
   const location = useLocation();
 

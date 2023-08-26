@@ -1,20 +1,20 @@
 // https://www.youtube.com/watch?v=nI8PYZNFtac
 import { axiosPrivate } from '../apis/backend';
 import { useEffect } from 'react';
-import useAuth from './useAuth';
+import { useSelector } from 'react-redux';
 import useRefreshToken from './useRefreshToken';
 
 const useAxiosPrivate = () => {
-  const { auth } = useAuth();
+  const userInfo = useSelector((state) => state.auth.userInfo);
   const refresh = useRefreshToken();
 
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       config => {
-      if (!config.headers['Authorization']) {
-        config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
-      }
-      return config;
+        if (!config.headers['Authorization']) {
+          config.headers['Authorization'] = `Bearer ${auth?.accessToken}`;
+        }
+        return config;
       }, (error) => Promise.reject(error)
     );
 

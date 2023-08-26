@@ -2,15 +2,15 @@ import { Fragment, useState } from 'react';
 import Header from '../../components/Header/Header';
 import SignInWindow from '../../components/SignInWindow/SignInWindow';
 import Account from '../Account/Account';
-import useAuth from '../../hooks/useAuth';
+import { useSelector } from 'react-redux';
 //import './Homepage.css';
 
 const Homepage = () => {
-  const { auth } = useAuth();
+  const userInfo = useSelector((state) => state.auth.userInfo);
 
   return (
     <div className="Homepage">
-      {auth?.accessToken ? (
+      {userInfo?.roles.includes(100001) ? (
         <Account />
       ) : (
         <Fragment>

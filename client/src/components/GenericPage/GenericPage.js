@@ -1,3 +1,4 @@
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
@@ -6,14 +7,13 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import useAuth from '../../hooks/useAuth';
 
 const GenericPage = () => {
-  const { auth } = useAuth();
+  const userInfo = useSelector((state) => state.auth.userInfo);
 
   return (
     <div className='GenericPage'>
-      <Header/>
+      <Header />
       <main>
         <Box>
           <Container maxWidth="lg">
@@ -31,14 +31,14 @@ const GenericPage = () => {
           </Container>
           <Container maxWidth="lg">
             <Paper className='GenericPage__container_paper' variant='outlined'>
-              <SkeletonGroup/>
-              <SkeletonGroup/>
-              <SkeletonGroup/>
+              <SkeletonGroup />
+              <SkeletonGroup />
+              <SkeletonGroup />
             </Paper>
           </Container>
         </Box>
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

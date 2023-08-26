@@ -1,15 +1,15 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
+import { useSelector } from 'react-redux';
 import ErrorPage from '../../views/ErrorPage/ErrorPage';
 
 const RequireAuth = ({ allowedRoles }) => {
-  const { auth } = useAuth();
+  const userInfo = useSelector((state) => state.auth.userInfo);
   const location = useLocation();
 
   return (
-    auth?.userInfo?.roles?.find(role => allowedRoles?.includes(role))
+    userInfo?.roles?.find(role => allowedRoles?.includes(role))
       ? <Outlet />
-      : auth?.accessToken
+      : userInfo?.roles.includes(100001)
         ? <ErrorPage error='403' />
         : <Navigate to="./signin" state={{ from: location }} replace />
   );

@@ -9,14 +9,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import axios from '../../../apis/backend';
-import AuthContext from '../../../context/AuthProvider';
 
 // Google OAuth: https://developers.google.com/identity/protocols/oauth2
 // Potential TODO: New API https://developers.google.com/identity/gsi/web/reference/js-reference
 export default function UFGoogleCallback() {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
-  const { setAuth } = useContext(AuthContext);
 
   const HandleGoogleCallback = () => {
     // Potential TODO: frontend HD validation

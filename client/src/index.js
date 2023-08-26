@@ -2,8 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import { AuthProvider } from './context/AuthProvider';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './context/store';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -18,9 +19,9 @@ const theme = createTheme({
   components: {
     MuiTooltip: {
       styleOverrides: {
-          tooltip: {
-              fontSize: '0.736607rem'
-          }
+        tooltip: {
+          fontSize: '0.736607rem'
+        }
       }
     },
     MuiTypography: {
@@ -49,7 +50,7 @@ const theme = createTheme({
           }
         },
         sizeMedium: {
-          'font-size':'0.9375rem'
+          'font-size': '0.9375rem'
         }
       }
     }
@@ -59,13 +60,13 @@ const theme = createTheme({
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
+      <Provider store={store}>
         <ThemeProvider theme={theme}>
           <Routes>
             <Route path="/*" element={<App />} />
           </Routes>
         </ThemeProvider>
-      </AuthProvider>
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

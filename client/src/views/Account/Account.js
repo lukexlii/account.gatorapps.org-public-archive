@@ -16,12 +16,14 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import useAuth from '../../hooks/useAuth';
-import { axiosIdP } from '../../apis/backend';
+import { useDispatch, useSelector } from 'react-redux';
+//import { setUserInfo } from '../../context/authSlice';
 //import { handleSignOut } from '../../components/RequireAuth/AuthFunctions'
 
 const Account = () => {
-  const { auth, setAuth } = useAuth();
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 

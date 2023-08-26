@@ -1,5 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setUserInfo } from '../../context/authSlice';
 import { AppBar, Avatar, Box, Collapse, Divider, Drawer, List, ListItemButton, ListSubheader, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/Button';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -10,13 +12,17 @@ import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Settings from '@mui/icons-material/Settings';
-import useAuth from '../../hooks/useAuth';
 import { axiosIdP } from '../../apis/backend';
 import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
 import './Header.css';
 
-const Header = (props) => {
-  const { auth, setAuth } = useAuth();
+const Header = ({ SignInMenuItems, loading, signedIn }) => {
+  // Global context
+  const userInfo = useSelector((state) => state.auth.userInfo);
+  const dispatch = useDispatch();
+
+  const isSignedIn = signedIn || (signedIn === undefined && userInfo?.roles.includes(100001));
+
   const navigate = useNavigate();
 
   // Dorpdown menus
@@ -38,7 +44,7 @@ const Header = (props) => {
     { name: "Coming soon...", 'action': () => window.alert("Coming soon...") }
   ];
   const renderSignInMenuItems = () => {
-    const menuItems = props.SignInMenuItems ? props.SignInMenuItems : defaultSignInMenuItems;
+    const menuItems = SignInMenuItems ? SignInMenuItems : defaultSignInMenuItems;
     return menuItems.map((item) => {
       if (item.action) return <MenuItem onClick={item.action}>{item.name}</MenuItem>;
       return <MenuItem disabled>{item.name}</MenuItem>
@@ -47,14 +53,14 @@ const Header = (props) => {
 
   // User profile dropdown menu
   // Determines name to be displayed
-  const userDisplayName = auth?.userInfo?.nickName
-    ? auth?.userInfo?.nickName
-    : auth?.userInfo?.firstName && auth?.userInfo?.lastName
-      ? `${auth?.userInfo?.firstName} ${auth?.userInfo?.lastName}`
-      : auth?.userInfo?.firstName
-        ? auth?.userInfo?.firstName
-        : auth?.userInfo?.lastName
-          ? auth?.userInfo?.lastName
+  const userDisplayName = userInfo?.nickName
+    ? userInfo?.nickName
+    : userInfo?.firstName && userInfo?.lastName
+      ? `${userInfo?.firstName} ${userInfo?.lastName}`
+      : userInfo?.firstName
+        ? userInfo?.firstName
+        : userInfo?.lastName
+          ? userInfo?.lastName
           : 'GatorApps User';
 
   // onClick account settings button
@@ -80,12 +86,7 @@ const Header = (props) => {
         withCredentials: true
       })
       .then((response) => {
-        const accessToken = response?.data?.accessToken;
-        const roles = response?.data?.roles;
-        const email = response?.data?.email;
-        const firstName = response?.data?.firstName;
-        const lastName = response?.data?.lastName;
-        setAuth({ accessToken, roles, email, firstName, lastName });
+        dispatch(setUserInfo(null));
         navigate('/');
       })
       .catch((error) => {
@@ -190,7 +191,7 @@ const Header = (props) => {
             'height': '56px'
           }
         }>
-          {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
+          {(!loading && isSignedIn) && (
             <Fragment>
               <Tooltip title="Menu">
                 <Box aria-label="Menu" sx={{ display: 'inline-block', height: '100%' }}>
@@ -222,7 +223,7 @@ const Header = (props) => {
           </Typography>
 
           {/* Sign in dropdown menu */}
-          {(!props.loading && (props.loggedIn === false || (props.loggedIn === undefined && !auth?.accessToken))) && (
+          {(!loading && !isSignedIn) && (
             <Box aria-label="Sign in Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
               <IconButton className={"Header__button"} size="medium" color="inherit" aria-label="menu" onClick={handleDorpdownMenuOpen} sx={{ 'width': '96px', 'padding': '6px' }}>
                 <span>Sign in</span>
@@ -249,7 +250,7 @@ const Header = (props) => {
           )}
 
           {/* Account dropdown menu */}
-          {(!props.loading && (props.loggedIn || (props.loggedIn === undefined && auth?.accessToken))) && (
+          {(!loading && isSignedIn) && (
             <Fragment>
               <Tooltip title="Account">
                 <Box aria-label="Account Menu" marginX="8px" sx={{ display: 'inline-block', height: '100%' }}>
