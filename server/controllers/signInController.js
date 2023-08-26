@@ -83,32 +83,37 @@ const establishSession = async (req, res) => {
   const foundUser = req.signIn.foundUser;
   if (!foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user session' });
 
+  const signInTimeStamp = new Date().getTime();
+
   // Sign userAuthToken to be saved with session
   let userAuthToken;
   try {
-    userAuthToken = signUserAuthToken({ opid: foundUser.opid, sessionID: req.sessionID });
+    userAuthToken = signUserAuthToken({ opid: foundUser.opid, sessionID: req.sessionID, signInTimeStamp });
   } catch (err) {
-    console.log(err)
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to sign user session' });
   }
+
+  // If the current client sessionID has an old session with foundUser, remove the old session
+  foundUser.sessions = foundUser.sessions.filter((session) => session.sessionID !== req.sessionID);
 
   // Sign out older sessions so number of simultaneous sessions for foundUser meet the max cap requirement
   while (foundUser.sessions.length >= MAX_WEB_SESSIONS) {
     const oldestSessionTimeStamp = foundUser.sessions.reduce((min, session) => Math.min(min, session.signInTimeStamp.getTime()), Infinity);
     foundUser.sessions = foundUser.sessions.filter((session) => session.signInTimeStamp.getTime() !== oldestSessionTimeStamp);
     // TO DO: Also remove the session from session db
-  };
+  }
 
   // Save new session with current user
   const newSession = {
     sessionID: req.sessionID,
-    signInTimeStamp: new Date().getTime()
+    signInTimeStamp
   };
   foundUser.sessions = [...foundUser.sessions, newSession];
   const result = await foundUser.save();
 
   // Save auth info in session
   req.session.userAuth = {
+    opid: foundUser.opid,
     token: userAuthToken
   };
   req.session.save((err) => {

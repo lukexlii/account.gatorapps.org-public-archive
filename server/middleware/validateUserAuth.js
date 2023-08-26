@@ -9,38 +9,51 @@ const validateUserAuth = async (req, res, next) => {
       error: { status: 403, errCode: '-', errMsg: 'Session missing userAuth info' }
     };
     return next();
-  };
+  }
 
   // Check opid and userAuthToken exists in userAuth
+  const opid = userAuth?.opid;
   const userAuthToken = userAuth?.token;
-  if (!userAuthToken) {
+  if (!opid || !userAuthToken) {
     req.userAuth = {
       error: { status: 403, errCode: '-', errMsg: 'Incomplete userAuth info' }
     };
     return next();
-  };
+  }
 
   try {
     await jwt.verify(
       userAuthToken,
       process.env.USR_AUTH_TOKEN_PUBLIC_KEY.replace(/\\n/g, '\n'),
-      { algorithm: 'ES256' },
+      { algorithm: 'ES256', ignoreExpiration: true },
       async (err, decoded) => {
         // Validate userAuthToken
-        if (err || !decoded.opid || !decoded.sessionID) {
+        if (err || !decoded) {
           req.userAuth = {
             error: { status: 403, errCode: '-', errMsg: 'Invalid userAuthToken' }
           };
           return next();
-        };
+        }
+        if (!decoded.opid || !decoded.sessionID || !decoded.signInTimeStamp) {
+          req.userAuth = {
+            error: { status: 403, errCode: '-', errMsg: 'Incomplete userAuthToken' }
+          };
+          return next();
+        }
 
-        // Check sessionID in userAuthToken matches sessionID of requesting client
+        // Check opid, sessionID in userAuthToken matches those of requesting client
+        if (decoded.opid !== userAuth.opid) {
+          req.userAuth = {
+            error: { status: 403, errCode: '-', errMsg: 'Token and client opid mismatch' }
+          };
+          return next();
+        }
         if (decoded.sessionID !== req.sessionID) {
           req.userAuth = {
             error: { status: 403, errCode: '-', errMsg: 'Token and client sessionID mismatch' }
           };
           return next();
-        };
+        }
 
         // Find user with opid
         const foundUser = await User.findOne({ opid: decoded.opid }).exec();
@@ -49,21 +62,39 @@ const validateUserAuth = async (req, res, next) => {
             error: { status: 403, errCode: '-', errMsg: 'Invalid user opid in userAuthToken' }
           };
           return next();
-        };
+        }
 
-        // Check the session is actively associated with foundUser
+        // Check session is associated with foundUser
         const foundSession = await foundUser.sessions.find(session => session.sessionID === decoded.sessionID);
         if (!foundSession) {
           req.userAuth = {
-            error: { status: 403, errCode: '-', errMsg: 'Inactive user auth session' }
+            error: { status: 403, errCode: '-', errMsg: 'Client and user sessionID mismatch' }
           };
           return next();
-        };
+        }
 
-        // Store foundUser is req.userAuth and continue
+        // Check signInTimeStamp match as stored with foundUser
+        if (String(new Date(decoded.signInTimeStamp)) !== String(new Date(foundSession.signInTimeStamp))) {
+          req.userAuth = {
+            error: { status: 403, errCode: '-', errMsg: 'Sign in time stamp mismatch' }
+          };
+          return next();
+        }
+
+        // Check auth has not expired
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        if (decoded.exp && decoded.exp > currentTimestamp) {
+          // Store foundUser in req.userAuth and continue
+          req.userAuth = {
+            authedUser: foundUser,
+            error: { errCode: '0' }
+          };
+          return next();
+        }
+
+        // If auth expired, store foundUser as expiredUser in error
         req.userAuth = {
-          authedUser: foundUser,
-          error: { errCode: '0' }
+          error: { status: 403, errCode: '-', errMsg: 'Auth session has expired', expiredUser: foundUser }
         };
         return next();
       }
@@ -72,7 +103,7 @@ const validateUserAuth = async (req, res, next) => {
     req.userAuth = {
       error: { status: 500, errCode: '-', errMsg: 'Unable to validate user auth session' }
     };
-    next();
+    return next();
   }
 };
 

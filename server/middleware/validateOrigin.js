@@ -12,7 +12,7 @@ const validateOrigin = async (req, res, next) => {
     foundApp = await App.findOne({ name: requestingApp }).exec();
   } catch (err) {
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to look up requesting app' });
-  };
+  }
 
   if (!foundApp) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Requesting app does not exist' });
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
+const requireUserAuth = require('../../middleware/requireUserAuth');
 const userInfoController = require('../../controllers/userInfoController');
 const signOutController = require('../../controllers/signOutController');
 const { GA_GLOBAL_ORIGINS } = require('../../config/corsOptions');
@@ -19,7 +20,7 @@ const corsOptions = {
 };
 
 router.use(cors(corsOptions));
-router.get('/getUserInfo', userInfoController.getUserInfo);
+router.get('/getUserInfo', requireUserAuth, userInfoController.getUserInfo);
 
 router.post('/signOut', signOutController.handleSignOut);
 
