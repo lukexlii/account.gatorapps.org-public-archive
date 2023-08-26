@@ -1,7 +1,7 @@
 import Admin from './views/Admin/Admin';
 import ErrorPage from './views/ErrorPage/ErrorPage';
 import Homepage from './views/Homepage/Homepage';
-import PersistLogin from './components/Auth/PersistLogin';
+import PersistAuth from './components/Auth/PersistAuth';
 import RequireAuth from './components/Auth/RequireAuth';
 import SignIn from './views/SignIn/SignIn';
 import Student from './views/Student/Student';
@@ -15,7 +15,7 @@ function App() {
       {/* sign in callbacks */}
       <Route path="/signin/ufgoogle/callback" element={<UFGoogleCallback />} />
 
-      <Route element={<PersistLogin />}>
+      <Route element={<PersistAuth />}>
         {/* public routes */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/test" element={<GenericPage />} />

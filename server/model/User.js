@@ -24,7 +24,7 @@ const userSchema = new Schema({
     type: String,
     require: true
   },
-  nickName: String,
+  nickname: String,
   primaryEmail: {
     type: String,
     required: true,

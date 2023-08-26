@@ -53,8 +53,8 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
 
   // User profile dropdown menu
   // Determines name to be displayed
-  const userDisplayName = userInfo?.nickName
-    ? userInfo?.nickName
+  const userDisplayName = userInfo?.nickname
+    ? userInfo?.nickname
     : userInfo?.firstName && userInfo?.lastName
       ? `${userInfo?.firstName} ${userInfo?.lastName}`
       : userInfo?.firstName

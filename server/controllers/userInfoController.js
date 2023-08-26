@@ -25,4 +25,4 @@ const getUserInfo = async (req, res) => {
   }
 };
 
-module.exports = { getUserInfo };
+module.exports = { getUserInfo }

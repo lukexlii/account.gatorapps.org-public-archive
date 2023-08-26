@@ -1,12 +1,12 @@
-// https://www.youtube.com/watch?v=nI8PYZNFtac
+/* // https://www.youtube.com/watch?v=nI8PYZNFtac
 import { axiosPrivate } from '../apis/backend';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import useRefreshToken from './useRefreshToken';
+import useGetCSRFToken from './useGetCSRFToken';
 
 const useAxiosPrivate = () => {
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const refresh = useRefreshToken();
+  const getCSRFToken = useGetCSRFToken();
 
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
@@ -41,4 +41,4 @@ const useAxiosPrivate = () => {
   return axiosPrivate;
 }
 
-export default useAxiosPrivate;
+export default useAxiosPrivate; */

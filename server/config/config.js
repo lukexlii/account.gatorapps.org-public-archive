@@ -12,6 +12,6 @@ const GLOBAL_USER_AUTH_TOKEN_LIFESPAN = '12h'; // 12 hours
 // /globalApi/account/userAuth/getUserInfo
 // Default userInfo attributes returned for getUserInfo call
 // Will not return an attribute if the requesting app does not have permission to access it
-const DEFAULT_GETUSERINFO_SCOPE = ['roles', 'nickName', 'primaryEmail'];
+const DEFAULT_GETUSERINFO_SCOPE = ['roles', 'nickname', 'primaryEmail'];
 
 module.exports = { FRONTEND_HOST, GLOBAL_SESSION_COOKIE_NAME, GLOBAL_SESSION_LIFESPAN, GLOBAL_USER_AUTH_TOKEN_LIFESPAN, DEFAULT_GETUSERINFO_SCOPE };

@@ -1,14 +1,14 @@
 import { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
-import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Container, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, FormControl, Grid, InputAdornment, InputLabel, OutlinedInput, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { useDispatch, useSelector } from 'react-redux';
-//import { setUserInfo } from '../../context/authSlice';
-//import { handleSignOut } from '../../components/RequireAuth/AuthFunctions'
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
+import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
 
 const Account = () => {
   const dispatch = useDispatch();
@@ -24,16 +24,20 @@ const Account = () => {
   // Profile
   const profileItems = [
     { id: "name", label: "Name", value: "Luke Li" },
-    { id: "nickName", label: "Nick Name", value: "Luke's Testing Nick Name", update: { description: "Plase enter your new nick name. Leave blank to use your full name as default nick name.", postRoute: "/appApi/account/updateUserProfile" } },
+    { id: "nickname", label: "Nickname", value: "Luke's Testing Nickname", update: { description: "Please enter your new nickname. Leave blank to clear your nickname.", postRoute: "/appApi/account/updateUserProfile" } },
     { id: "organizationalDomain", label: "Organizational Domain", value: "UFL.EDU" },
     { id: "organizationalID", label: "Organizational ID", value: "luke.li" },
     { id: "currentAffiliation", label: "Current Affiliation", value: "Verified", verification: { verified: true } },
-    { id: "unverifiedTesting", label: "Unverified Testing", value: "Unverified", verification: { verified: false } }
+    { id: "unverifiedTesting", label: "Unverified Demo", value: "Unverified", verification: { verified: false } }
   ];
+
   // Profile update dialogue
+  // Make dialogue full screen on small screens; currently not enabled
+  //// const theme = useTheme();
+  //// const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [profileUpdateDialogue, setProfileUpdateDialogue] = useState({ open: false, item: undefined });
   const handleProfileUpdateDialogueOpen = (item) => {
-    setProfileUpdateDialogue({ open: true, item });
+    setProfileUpdateDialogue({ open: true, item, newValue: item.value });
   };
   const handleProfileUpdateDialogueClose = () => {
     setProfileUpdateDialogue(prev => ({ ...prev, open: false }));
@@ -80,7 +84,7 @@ const Account = () => {
         {/* Update profile field dialogue */}
         <Dialog open={profileUpdateDialogue.open} onClose={handleProfileUpdateDialogueClose}>
           <DialogTitle>{"Update " + profileUpdateDialogue?.item?.label}</DialogTitle>
-          <DialogContent sx={{ width: '512px' }}>
+          <DialogContent sx={{ maxWidth: '512px' }}>
             <DialogContentText sx={{ marginBottom: '14px' }}>
               {profileUpdateDialogue?.item?.update?.description}
             </DialogContentText>
@@ -89,15 +93,16 @@ const Account = () => {
               margin="dense"
               id={"profile" + profileUpdateDialogue?.item?.id}
               label={profileUpdateDialogue?.item?.label}
-              defaultValue={profileUpdateDialogue?.item?.value}
+              value={profileUpdateDialogue.newValue}
+              onChange={(event) => { setProfileUpdateDialogue(prev => ({ ...prev, newValue: event.target.value })) }}
               type=""
               fullWidth
               variant="outlined"
             />
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ margin: '0 12px 10px 0' }}>
             <Button onClick={handleProfileUpdateDialogueClose}>Cancel</Button>
-            <Button onClick={handleProfileUpdateDialogueClose}>Save</Button>
+            <Button variant="outlined" onClick={handleProfileUpdateDialogueClose} disabled={profileUpdateDialogue.newValue === profileUpdateDialogue?.item?.value}>Save</Button>
           </DialogActions>
         </Dialog>
       </Fragment>

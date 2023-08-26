@@ -1,20 +1,19 @@
 import { Outlet } from 'react-router-dom';
 import { Fragment, useState, useEffect } from 'react';
-import Header from '../../components/Header/Header';
+import Header from '../Header/Header';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import useRefreshToken from '../../hooks/useRefreshToken';
+import useGetUserInfo from '../../hooks/useGetUserInfo';
 import { useSelector, useDispatch } from 'react-redux';
 
-const PersistLogin = () => {
+const PersistAuth = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
-  const refresh = useRefreshToken();
+  const refresh = useGetUserInfo();
 
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    const verifyRefreshToken = async () => {
+    const verifyUserAuth = async () => {
       try {
         await refresh();
       } catch (error) {
@@ -24,7 +23,7 @@ const PersistLogin = () => {
       }
     }
 
-    !userInfo?.roles.includes('00001') ? verifyRefreshToken() : setIsRefreshing(false);
+    !userInfo?.roles.includes('00001') ? verifyUserAuth() : setIsRefreshing(false);
   }, []);
 
   return (
@@ -47,4 +46,4 @@ const PersistLogin = () => {
   )
 }
 
-export default PersistLogin;
+export default PersistAuth;

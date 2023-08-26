@@ -4,9 +4,9 @@ import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 
 const Footer = () => {
-  return(
+  return (
     <Fragment>
-      <Divider sx={{ 'margin-top': '60px' }}/>
+      <Divider sx={{ 'margin-top': '60px' }} />
       <Box component="footer" sx={
         {
           flexGrow: 1,
@@ -15,13 +15,13 @@ const Footer = () => {
         }
       }>
         <Grid container spacing={2}>
-          <Grid item md={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <div>Footer Column 1</div>
           </Grid>
-          <Grid item md={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <div>Column 2</div>
           </Grid>
-          <Grid item md={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <div>Column 3</div>
           </Grid>
         </Grid>
