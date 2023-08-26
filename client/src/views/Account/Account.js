@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
+import { Box, Button, Container, Divider, FormControl, Grid } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
@@ -31,36 +27,36 @@ const Account = () => {
     setLoading(false);
   }, []);
 
-  const renderAccountContent = () => {
+  const renderProfileItems = () => {
+    const profileItems = [
+      { id: "name", label: "Name", data: "Luke Li" },
+      { id: "nickName", label: "Nick Name", data: "Luke's Testing Nick Name", updateRoute: "/appApi/account/updateUserProfile" },
+      { id: "organizationalDomain", label: "Organizational Domain", data: "UFL.EDU" },
+      { id: "organizationalID", label: "Organizational ID", data: "luke.li" },
+      { id: "currentAffiliation", label: "Current Affiliation", data: "Verified" }
+    ];
+
     return (
-      <Fragment>
-        <Box>
-          <Typography variant="h3" sx={{ 'color': 'rgb(191, 68, 24)', 'font-size': '1.5rem', 'text-align': 'left' }}>Profile</Typography>
-          <Divider sx={{ marginTop: '8px', marginBottom: '24px' }} />
-        </Box>
-        <Box sx={{ 'display': 'flex', 'marginY': '12px', 'align-items': 'center' }}>
-          <TextField disabled fullWidth label="Nick Name" value="Luke Li" />
-          <Button variant="outlined" size="medium" onClick={undefined} sx={{ marginLeft: '16px', height: '36px' }}>Update</Button>
-        </Box>
-        <TextField disabled fullWidth label="Organizational Domain" value="ufl.edu" sx={{ 'marginY': '8px' }} />
-        <TextField disabled fullWidth label="Organizational ID" value="luke.li" sx={{ 'marginY': '8px' }} />
-        <TextField disabled fullWidth label="Name" value="Luke Li" sx={{ 'marginY': '8px' }} />
-        <FormControl disabled fullWidth variant="outlined" sx={{ 'marginY': '8px' }}>
-          <InputLabel htmlFor="outlined-adornment-current-affiliation">Current Affiliation</InputLabel>
-          <OutlinedInput id="outlined-adornment-current-affiliation" value="Active" endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                edge="end"
-              >
-                <CheckCircleOutlineIcon sx={{ color: "green" }} />
-              </IconButton>
-            </InputAdornment>
-          }
-            label="Current Affiliation"
-          />
-        </FormControl>
-      </Fragment>
+      <Grid container spacing={3}>
+        {profileItems.map((item, itemIndex) => {
+          return (
+            <Grid item xs={12} sm={12} md={6}>
+              <FormControl disabled fullWidth variant="outlined">
+                <InputLabel htmlFor={"profile-" + item.id}>{item.label}</InputLabel>
+                <OutlinedInput id={"profile-" + item.id} value={item.data} endAdornment={
+                  (item.updateRoute && (
+                    <InputAdornment position="end">
+                      <Button size="medium" onClick={undefined} sx={{ marginLeft: '16px', height: '36px' }}>Update</Button>
+                    </InputAdornment>
+                  ))
+                }
+                  label={item.label}
+                />
+              </FormControl>
+            </Grid>
+          )
+        })}
+      </Grid>
     )
   }
 
@@ -92,7 +88,11 @@ const Account = () => {
                 </Fragment>
               ) : (
                 <Box sx={{ padding: '32px' }}>
-                  {renderAccountContent()}
+                  <Box>
+                    <Typography variant="h3" sx={{ 'color': 'rgb(191, 68, 24)', 'font-size': '1.5rem', 'text-align': 'left' }}>Profile</Typography>
+                    <Divider sx={{ marginTop: '8px', marginBottom: '24px' }} />
+                  </Box>
+                  {renderProfileItems()}
                 </Box>
               )}
             </Paper>

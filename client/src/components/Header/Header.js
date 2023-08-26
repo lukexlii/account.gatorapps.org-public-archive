@@ -267,6 +267,7 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
                 PaperProps={{
                   elevation: 0,
                   sx: {
+                    width: '230px',
                     borderRadius: '8px',
                     overflow: 'visible',
                     filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
@@ -298,7 +299,8 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem disabled>
-                  <Avatar>{userDisplayName.toUpperCase()[0]}</Avatar> {userDisplayName}
+                  <Avatar>{userDisplayName.toUpperCase()[0]}</Avatar>
+                  <Typography noWrap>{userDisplayName}</Typography>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleAccountSettings}>
