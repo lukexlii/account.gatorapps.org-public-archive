@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUserInfo } from '../../context/authSlice';
@@ -12,7 +12,7 @@ import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Settings from '@mui/icons-material/Settings';
-import { axiosIdP } from '../../apis/backend';
+import { axiosPrivate, axiosIdP } from '../../apis/backend';
 import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
 import './Header.css';
 
@@ -115,61 +115,32 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
   };
 
   // Left menu drawer
-  // Menu content
-  const leftMenuItems = [
-    {
-      heading: 'Heading 1',
-      items: [
-        { label: 'Item 1', route: '/1_1' },
-        { label: 'Item 2', route: '/1_2' },
-        {
-          label: 'Item 3 (Expandable)', subItems: [
-            { label: 'Subitem 1', route: '/1_3_s1' },
-            { label: 'Subitem 2', route: '/1_3_s2', newTab: true },
-            { label: 'Subitem 3', route: '/1_3_s3' },
-          ]
-        },
-        { label: 'Item 4 (Opens in new tab)', route: '/1_4', newTab: true },
-        {
-          label: 'Item 5 (Expandable)', subItems: [
-            { label: 'Subitem 1', route: '/1_5_s1' },
-            { label: 'Subitem 2', route: '/1_5_s2' }
-          ]
-        },
-        { label: 'Item 6', route: '/1_6' },
-      ]
-    },
-    {
-      heading: 'Heading 2',
-      items: [
-        { label: 'Item 1 (Opens in new tab)', route: '/2_1', newTab: true },
-        { label: 'Item 2', route: '/2_2' },
-        {
-          label: 'Item 3 (Expandable)', subItems: [
-            { label: 'Subitem 1', route: '/2_3_s1' },
-            { label: 'Subitem 2', route: '/2_3_s2', newTab: true },
-            { label: 'Subitem 2', route: '/2_3_s3' }
-          ]
-        },
-        { label: 'Item 4', route: '/2_4' },
-      ]
-    },
-    {
-      heading: 'Heading 3',
-      items: [
-        { label: 'Item 1', route: '/3_1' },
-        { label: 'Item 2 (Opens in new tab)', route: '/3_2', newTab: true },
-        {
-          label: 'Item 3 (Expandable)', subItems: [
-            { label: 'Subitem 1', route: '/3_3_s1' },
-            { label: 'Subitem 2', route: '/3_3_s2', newTab: true },
-            { label: 'Subitem 2', route: '/3_3_s3' }
-          ]
-        },
-        { label: 'Item 4', route: '/3_4' },
-      ]
+  // Initialize menu content
+  const [leftMenuItems, setLeftMenuItems] = useState();
+  const initializeleftMenu = async () => {
+    setLeftMenuItems({ loading: true, alertData: undefined });
+
+    try {
+      const response = await axiosPrivate.get('/renderClient/getLeftMenuItems');
+      setLeftMenuItems(JSON.parse(response?.data?.leftMenuItems));
+    } catch (error) {
+      setLeftMenuItems({
+        loading: false,
+        alertData: {
+          severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
+          title: (error?.response?.data?.errCode ? "Unable to load account profile: " + error?.response?.data?.errCode : "Unknown error"),
+          message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
+          actions: [{ name: "Retry", onClick: () => { initializeleftMenu() } }]
+        }
+      });
     }
-  ];
+  }
+  useEffect(() => {
+    initializeleftMenu()
+    console.log("1111")
+    console.log(leftMenuItems)
+  }, []);
+
   // Handle nested list expand and collapse
   const [leftMenuExpanded, setLeftMenuExpanded] = useState({});
   const handleleftMenuClick = (sectionIndex, itemIndex) => {
@@ -329,6 +300,11 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
         sx={{ [`& .MuiDrawer-paper`]: { width: '319px', 'overflow-x': 'hidden', border: '1px solid rgba(0, 0, 0, 0.12)', 'background-color': 'rgb(250, 249, 248)' } }}
       >
         <Toolbar sx={{ 'margin-bottom': '18px' }} />
+        {leftMenuItems?.alertData} ? (
+
+        ) : ({leftMenuItems?.loading} ? (
+
+        ) : (
         <div>
           {leftMenuItems.map((section, sectionIndex) => {
             if (section.length <= 0) return;
@@ -379,7 +355,7 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
               </List>
             );
           })}
-        </div>
+        </div>))
       </Drawer>
 
       {/* Space holder so pages don't have to each add spaces at top to avoid bar overlap */}

@@ -42,6 +42,8 @@ app.use(validateUserAuth);
 
 // Routes
 // App APIs
+//// Frontend render with dynamic data
+app.use('/appApi/account/renderClient', require('./routes/appApi/renderClient'));
 //// User auth
 app.use('/appApi/account/userAuth', require('./routes/appApi/userAuth'));
 //// App auth to other internal apps

@@ -22,7 +22,7 @@ const getProfileSection = (req, res) => {
 const updateProfile = async (req, res) => {
   const profileField = req?.body?.payload?.id;
   const newValue = req?.body?.payload?.value;
-  if (!profileField || !newValue) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Missing required payload properties' });
+  if (!profileField || newValue === undefined) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Missing required payload properties' });
 
   if (profileField !== 'nickname') return res.status(400).json({ 'errCode': '-', 'errMsg': 'Invalid profileField' });
   try {

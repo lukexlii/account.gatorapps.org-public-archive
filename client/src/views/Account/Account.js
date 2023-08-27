@@ -6,6 +6,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SaveIcon from '@mui/icons-material/Save';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Alert from '../../components/Alert/Alert';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -29,7 +30,7 @@ const Account = () => {
     } catch (error) {
       setAlertData({
         severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
-        title: (error?.response?.data?.errCode ? "Unable to load your account profile: " + error?.response?.data?.errCode : "Unknown error"),
+        title: (error?.response?.data?.errCode ? "Unable to load account profile: " + error?.response?.data?.errCode : "Unknown error"),
         message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
         actions: [{ name: "Retry", onClick: () => { initializeSection() } }]
       });
@@ -50,6 +51,14 @@ const Account = () => {
   // Make dialogue full screen on small screens; currently not enabled
   // const theme = useTheme();
   // const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const DialogueBreakpoints = styled('div')(({ theme }) => ({
+    [theme.breakpoints.down('sm')]: {
+      width: '380px',
+    },
+    [theme.breakpoints.up('sm')]: {
+      width: '500px',
+    }
+  }));
   const [profileUpdateDialogue, setProfileUpdateDialogue] = useState({ open: false, item: undefined, updating: false });
   const handleProfileUpdateDialogueOpen = (item) => {
     setProfileUpdateDialogue({ open: true, item, newValue: item.value });
@@ -70,12 +79,15 @@ const Account = () => {
         }
       });
     } catch (error) {
-      setAlertData({
-        severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
-        title: (error?.response?.data?.errCode ? "Unable to load your account profile: " + error?.response?.data?.errCode : "Unknown error"),
-        message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
-        actions: [{ name: "Retry", onClick: () => { initializeSection() } }]
-      });
+      setProfileUpdateDialogue(prev => ({
+        ...prev,
+        alertData: {
+          severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
+          title: (error?.response?.data?.errCode ? "Unable to update account profile: " + error?.response?.data?.errCode : "Unknown error"),
+          message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
+        },
+        updating: false
+      }));
       return;
     }
 
@@ -126,23 +138,34 @@ const Account = () => {
         {/* Update profile field dialogue */}
         <Dialog open={profileUpdateDialogue.open} onClose={handleProfileUpdateDialogueClose}>
           <DialogTitle>{"Update " + profileUpdateDialogue?.item?.label}</DialogTitle>
-          <DialogContent sx={{ maxWidth: '512px' }}>
-            <DialogContentText sx={{ marginBottom: '14px' }}>
-              {profileUpdateDialogue?.item?.update?.description}
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id={"profile" + profileUpdateDialogue?.item?.id}
-              label={profileUpdateDialogue?.item?.label}
-              value={profileUpdateDialogue.newValue}
-              onChange={(event) => { setProfileUpdateDialogue(prev => ({ ...prev, newValue: event.target.value })) }}
-              type=""
-              fullWidth
-              variant="outlined"
-              disabled={profileUpdateDialogue.updating}
-            />
-          </DialogContent>
+          <DialogueBreakpoints>
+            <DialogContent>
+              {profileUpdateDialogue.alertData ? (
+                <Box>
+                  <Alert alertData={profileUpdateDialogue.alertData} />
+                </Box>
+              ) : (
+                <Fragment>
+                  <DialogContentText sx={{ marginBottom: '14px' }}>
+                    {profileUpdateDialogue?.item?.update?.description}
+                  </DialogContentText>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id={"profile" + profileUpdateDialogue?.item?.id}
+                    label={profileUpdateDialogue?.item?.label}
+                    value={profileUpdateDialogue.newValue}
+                    onChange={(event) => { setProfileUpdateDialogue(prev => ({ ...prev, newValue: event.target.value })) }}
+                    type=""
+                    fullWidth
+                    variant="outlined"
+                    disabled={profileUpdateDialogue.updating}
+                  />
+                </Fragment>
+              )
+              }
+            </DialogContent>
+          </DialogueBreakpoints>
           <DialogActions sx={{ margin: '0 12px 10px 0' }}>
             <Button onClick={handleProfileUpdateDialogueClose}><span>Cancel</span></Button>
             <LoadingButton
@@ -151,7 +174,7 @@ const Account = () => {
               startIcon={<SaveIcon />}
               variant="outlined"
               onClick={() => updateProfile(profileUpdateDialogue?.item, profileUpdateDialogue.newValue)}
-              disabled={profileUpdateDialogue.newValue === profileUpdateDialogue?.item?.value}>
+              disabled={profileUpdateDialogue.alertData || profileUpdateDialogue.newValue === profileUpdateDialogue?.item?.value}>
               <span>Save</span>
             </LoadingButton>
           </DialogActions>
