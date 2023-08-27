@@ -1,7 +1,9 @@
 import { Fragment, useState, useEffect } from "react";
 import { Box, Button, Container, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, FormControl, Grid, InputAdornment, InputLabel, OutlinedInput, Paper, TextField, Tooltip, Typography } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SaveIcon from '@mui/icons-material/Save';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Alert from '../../components/Alert/Alert';
@@ -9,13 +11,18 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
 import { axiosPrivate } from '../../apis/backend';
+import useGetUserInfo from '../../hooks/useGetUserInfo';
 
 const Account = () => {
   const [loading, setLoading] = useState(true);
-  const [alertData, setAlertData] = useState();
-  const [profileItems, setProfileItems] = useState();
+  const [alertData, setAlertData] = useState(undefined);
+  const [profileItems, setProfileItems] = useState([]);
+  const refreshUserInfo = useGetUserInfo();
 
   const initializeSection = async () => {
+    setLoading(true);
+    setAlertData(undefined);
+
     try {
       const response = await axiosPrivate.get('/userProfile/getProfileSection');
       setProfileItems(JSON.parse(response?.data?.profileItems));
@@ -24,10 +31,12 @@ const Account = () => {
         severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
         title: (error?.response?.data?.errCode ? "Unable to load your account profile: " + error?.response?.data?.errCode : "Unknown error"),
         message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
-        actions: [{ name: "Retry", onClick: () => { setAlertData(undefined); initializeSection() } }]
+        actions: [{ name: "Retry", onClick: () => { initializeSection() } }]
       });
       return;
     }
+
+    // initialize other sections
 
     setLoading(false);
   }
@@ -36,17 +45,45 @@ const Account = () => {
     initializeSection()
   }, []);
 
-  // Profile update dialogue
+  // Profile update
+  //// Dialogue
   // Make dialogue full screen on small screens; currently not enabled
-  //// const theme = useTheme();
-  //// const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const [profileUpdateDialogue, setProfileUpdateDialogue] = useState({ open: false, item: undefined });
+  // const theme = useTheme();
+  // const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [profileUpdateDialogue, setProfileUpdateDialogue] = useState({ open: false, item: undefined, updating: false });
   const handleProfileUpdateDialogueOpen = (item) => {
     setProfileUpdateDialogue({ open: true, item, newValue: item.value });
   };
   const handleProfileUpdateDialogueClose = () => {
     setProfileUpdateDialogue(prev => ({ ...prev, open: false }));
   };
+
+  //// Update
+  const updateProfile = async (item, newValue) => {
+    setProfileUpdateDialogue(prev => ({ ...prev, updating: true }));
+
+    try {
+      const response = await axiosPrivate.post(item.update.postRoute, {
+        payload: {
+          id: item.id,
+          value: newValue
+        }
+      });
+    } catch (error) {
+      setAlertData({
+        severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
+        title: (error?.response?.data?.errCode ? "Unable to load your account profile: " + error?.response?.data?.errCode : "Unknown error"),
+        message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
+        actions: [{ name: "Retry", onClick: () => { initializeSection() } }]
+      });
+      return;
+    }
+
+    initializeSection();
+    setProfileUpdateDialogue({ open: false, item: undefined, updating: false });
+    // So new data syncs in other components, such as header account dropdown
+    refreshUserInfo();
+  }
 
   const renderProfileItems = () => {
     return (
@@ -103,11 +140,20 @@ const Account = () => {
               type=""
               fullWidth
               variant="outlined"
+              disabled={profileUpdateDialogue.updating}
             />
           </DialogContent>
           <DialogActions sx={{ margin: '0 12px 10px 0' }}>
-            <Button onClick={handleProfileUpdateDialogueClose}>Cancel</Button>
-            <Button variant="outlined" onClick={handleProfileUpdateDialogueClose} disabled={profileUpdateDialogue.newValue === profileUpdateDialogue?.item?.value}>Save</Button>
+            <Button onClick={handleProfileUpdateDialogueClose}><span>Cancel</span></Button>
+            <LoadingButton
+              loading={profileUpdateDialogue.updating}
+              loadingPosition="start"
+              startIcon={<SaveIcon />}
+              variant="outlined"
+              onClick={() => updateProfile(profileUpdateDialogue?.item, profileUpdateDialogue.newValue)}
+              disabled={profileUpdateDialogue.newValue === profileUpdateDialogue?.item?.value}>
+              <span>Save</span>
+            </LoadingButton>
           </DialogActions>
         </Dialog>
       </Fragment>
