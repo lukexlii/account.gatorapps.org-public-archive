@@ -2,7 +2,9 @@
   box-sizing: inherit
 }
 
-html, body, main {
+html,
+body,
+main {
   height: 100%;
 }
 
@@ -27,11 +29,11 @@ main {
   justify-content: space-between;
 }
 
-body > div#root {
+body>div#root {
   height: calc(100% - 64px);
 }
 
-main > div:first-child {
+main>div:first-child {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -57,5 +59,4 @@ main > div:first-child {
 
 .GenericPage__container_paper {
   min-height: 75vh;
-  text-align: center;
 }

@@ -1,35 +1,40 @@
 import { Fragment, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Container, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, FormControl, Grid, InputAdornment, InputLabel, OutlinedInput, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import Alert from '../../components/Alert/Alert';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
+import { axiosPrivate } from '../../apis/backend';
 
 const Account = () => {
-  const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.auth.userInfo);
-
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [alertData, setAlertData] = useState();
+  const [profileItems, setProfileItems] = useState();
+
+  const initializeSection = async () => {
+    try {
+      const response = await axiosPrivate.get('/userProfile/getProfileSection');
+      setProfileItems(JSON.parse(response?.data?.profileItems));
+    } catch (error) {
+      setAlertData({
+        severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
+        title: (error?.response?.data?.errCode ? "Unable to load your account profile: " + error?.response?.data?.errCode : "Unknown error"),
+        message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
+        actions: [{ name: "Retry", onClick: () => { setAlertData(undefined); initializeSection() } }]
+      });
+      return;
+    }
+
+    setLoading(false);
+  }
 
   useEffect(() => {
-    setLoading(false);
+    initializeSection()
   }, []);
-
-  // Profile
-  const profileItems = [
-    { id: "name", label: "Name", value: "Luke Li" },
-    { id: "nickname", label: "Nickname", value: "Luke's Testing Nickname", update: { description: "Please enter your new nickname. Leave blank to clear your nickname.", postRoute: "/appApi/account/updateUserProfile" } },
-    { id: "organizationalDomain", label: "Organizational Domain", value: "UFL.EDU" },
-    { id: "organizationalID", label: "Organizational ID", value: "luke.li" },
-    { id: "currentAffiliation", label: "Current Affiliation", value: "Verified", verification: { verified: true } },
-    { id: "unverifiedTesting", label: "Unverified Demo", value: "Unverified", verification: { verified: false } }
-  ];
 
   // Profile update dialogue
   // Make dialogue full screen on small screens; currently not enabled
@@ -130,11 +135,18 @@ const Account = () => {
           <Container maxWidth="lg">
             <Paper className='GenericPage__container_paper' variant='outlined'>
               {loading ? (
-                <Fragment>
-                  <SkeletonGroup />
-                  <SkeletonGroup />
-                  <SkeletonGroup />
-                </Fragment>
+                <Box sx={{ margin: '24px' }}>
+                  {alertData ? (
+                    <Alert alertData={alertData} />
+                  ) : (
+                    <Fragment>
+                      <SkeletonGroup />
+                      <SkeletonGroup />
+                      <SkeletonGroup />
+                    </Fragment>
+                  )
+                  }
+                </Box>
               ) : (
                 <Box sx={{ padding: '32px' }}>
                   <Box>

@@ -46,6 +46,8 @@ app.use(validateUserAuth);
 app.use('/appApi/account/userAuth', require('./routes/appApi/userAuth'));
 //// App auth to other internal apps
 app.use('/appApi/account/appAuth', require('./routes/appApi/appAuth'));
+//// Get and update user profile
+app.use('/appApi/account/userProfile', require('./routes/appApi/userProfile'));
 
 // Global APIs
 app.use('/globalApi/account/userAuth', require('./routes/globalApi/userAuth'));
