@@ -119,7 +119,7 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
 
   // Left menu drawer
   // Initialize menu content
-  const { data: leftMenuData, loading: leftMenuLoading, alert: leftMenuAlert } = useFetchData('/renderClient/getLeftMenuItems');
+  const { data: leftMenuData, loading: leftMenuLoading, alert: leftMenuAlert } = useFetchData('/renderClient/getLeftMenuItems', { title: "menu items", retryButton: true });
   // Handle nested list expand and collapse
   const [leftMenuExpanded, setLeftMenuExpanded] = useState({});
   const handleleftMenuClick = (sectionIndex, itemIndex) => {
@@ -287,7 +287,7 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
           </Box>
         ) : (leftMenuAlert || !leftMenuData?.leftMenuItems) ? (
           <Box sx={{ margin: '12px' }}>
-            <Alert alertData={leftMenuAlert || undefined} />
+            <Alert data={leftMenuAlert || undefined} style={{ titleFontSize: '16px', textFontSize: '14px' }} />
           </Box>
         ) : (
           <Box>

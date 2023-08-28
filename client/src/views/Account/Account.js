@@ -12,39 +12,20 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
 import { axiosPrivate } from '../../apis/backend';
+import useFetchData from '../../hooks/useFetchData';
 import useGetUserInfo from '../../hooks/useGetUserInfo';
 
 const Account = () => {
-  const [loading, setLoading] = useState(true);
-  const [alertData, setAlertData] = useState(undefined);
-  const [profileItems, setProfileItems] = useState([]);
+  // User info from global context
   const refreshUserInfo = useGetUserInfo();
 
-  const initializeSection = async () => {
-    setLoading(true);
-    setAlertData(undefined);
-
-    try {
-      const response = await axiosPrivate.get('/userProfile/getProfileSection');
-      setProfileItems(JSON.parse(response?.data?.profileItems));
-    } catch (error) {
-      setAlertData({
-        severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
-        title: (error?.response?.data?.errCode ? "Unable to load account profile: " + error?.response?.data?.errCode : "Unknown error"),
-        message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
-        actions: [{ name: "Retry", onClick: () => { initializeSection() } }]
-      });
-      return;
-    }
-
-    // initialize other sections
-
-    setLoading(false);
+  // Fetch sections data
+  //// Fetch profile section
+  const { data: profileSectionData, loading: profileSectionLoading, alert: profileSectionAlert, reFetch: profileSectionReFetch } = useFetchData('/userProfile/getProfileSection', { title: "your account profile", retryButton: true });
+  // Function for refreshing all sections
+  const refreshSections = () => {
+    profileSectionReFetch();
   }
-
-  useEffect(() => {
-    initializeSection()
-  }, []);
 
   // Profile update
   //// Dialogue
@@ -91,7 +72,7 @@ const Account = () => {
       return;
     }
 
-    initializeSection();
+    refreshSections();
     setProfileUpdateDialogue({ open: false, item: undefined, updating: false });
     // So new data syncs in other components, such as header account dropdown
     refreshUserInfo();
@@ -99,87 +80,105 @@ const Account = () => {
 
   const renderProfileItems = () => {
     return (
-      <Fragment>
-        <Grid container spacing={3}>
-          {profileItems.map((item, itemIndex) => {
-            return (
-              <Grid item xs={12} sm={12} md={6}>
-                <FormControl disabled fullWidth variant="outlined">
-                  <InputLabel htmlFor={"profile-" + itemIndex}>{item.label}</InputLabel>
-                  <OutlinedInput id={"profile-" + itemIndex} value={item.value} endAdornment={
-                    <InputAdornment position="end">
-                      {item?.update && (<Button size="medium" onClick={() => handleProfileUpdateDialogueOpen(item)} sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>Update</Button>)}
-                      {item?.verification && (
-                        (item?.verification?.verified
-                          ? (
-                            <Tooltip title="Verified" arrow>
-                              <Button size="medium" sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>
-                                <CheckCircleOutlineIcon />
-                              </Button>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip title="Unverified" arrow>
-                              <Button size="medium" sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>
-                                <HelpOutlineIcon />
-                              </Button>
-                            </Tooltip>
-                          ))
-                      )}
-                    </InputAdornment>
-                  }
-                    label={item.label}
-                  />
-                </FormControl>
-              </Grid>
-            )
-          })}
-        </Grid >
+      <Box sx={{ padding: '32px' }}>
+        {profileSectionLoading ? (
+          <Fragment>
+            <SkeletonGroup />
+            <SkeletonGroup />
+            <SkeletonGroup />
+          </Fragment>
+        ) : (profileSectionAlert || !profileSectionData?.profileItems) ? (
+          <Box sx={{ margin: '12px' }}>
+            <Alert data={profileSectionAlert || undefined} style={{ titleFontSize: '17px', textFontSize: '15px' }} />
+          </Box>
+        ) : (
+          <Fragment>
+            <Box>
+              <Typography variant="h3" sx={{ 'color': 'rgb(191, 68, 24)', 'font-size': '1.5rem', 'text-align': 'left' }}>Profile</Typography>
+              <Divider sx={{ marginTop: '8px', marginBottom: '24px' }} />
+            </Box>
+            <Grid container spacing={3}>
+              {JSON.parse(profileSectionData?.profileItems).map((item, itemIndex) => {
+                return (
+                  <Grid item xs={12} sm={12} md={6}>
+                    <FormControl disabled fullWidth variant="outlined">
+                      <InputLabel htmlFor={"profile-" + itemIndex}>{item.label}</InputLabel>
+                      <OutlinedInput id={"profile-" + itemIndex} value={item.value} endAdornment={
+                        <InputAdornment position="end">
+                          {item?.update && (<Button size="medium" onClick={() => handleProfileUpdateDialogueOpen(item)} sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>Update</Button>)}
+                          {item?.verification && (
+                            (item?.verification?.verified
+                              ? (
+                                <Tooltip title="Verified" arrow>
+                                  <Button size="medium" sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>
+                                    <CheckCircleOutlineIcon />
+                                  </Button>
+                                </Tooltip>
+                              ) : (
+                                <Tooltip title="Unverified" arrow>
+                                  <Button size="medium" sx={{ marginLeft: '16px', height: '36px', minWidth: '36px' }}>
+                                    <HelpOutlineIcon />
+                                  </Button>
+                                </Tooltip>
+                              ))
+                          )}
+                        </InputAdornment>
+                      }
+                        label={item.label}
+                      />
+                    </FormControl>
+                  </Grid>
+                )
+              })}
+            </Grid >
 
-        {/* Update profile field dialogue */}
-        <Dialog open={profileUpdateDialogue.open} onClose={handleProfileUpdateDialogueClose}>
-          <DialogTitle>{"Update " + profileUpdateDialogue?.item?.label}</DialogTitle>
-          <DialogueBreakpoints>
-            <DialogContent>
-              {profileUpdateDialogue.alertData ? (
-                <Box>
-                  <Alert alertData={profileUpdateDialogue.alertData} />
-                </Box>
-              ) : (
-                <Fragment>
-                  <DialogContentText sx={{ marginBottom: '14px' }}>
-                    {profileUpdateDialogue?.item?.update?.description}
-                  </DialogContentText>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    id={"profile" + profileUpdateDialogue?.item?.id}
-                    label={profileUpdateDialogue?.item?.label}
-                    value={profileUpdateDialogue.newValue}
-                    onChange={(event) => { setProfileUpdateDialogue(prev => ({ ...prev, newValue: event.target.value })) }}
-                    type=""
-                    fullWidth
-                    variant="outlined"
-                    disabled={profileUpdateDialogue.updating}
-                  />
-                </Fragment>
-              )
-              }
-            </DialogContent>
-          </DialogueBreakpoints>
-          <DialogActions sx={{ margin: '0 12px 10px 0' }}>
-            <Button onClick={handleProfileUpdateDialogueClose}><span>Cancel</span></Button>
-            <LoadingButton
-              loading={profileUpdateDialogue.updating}
-              loadingPosition="start"
-              startIcon={<SaveIcon />}
-              variant="outlined"
-              onClick={() => updateProfile(profileUpdateDialogue?.item, profileUpdateDialogue.newValue)}
-              disabled={profileUpdateDialogue.alertData || profileUpdateDialogue.newValue === profileUpdateDialogue?.item?.value}>
-              <span>Save</span>
-            </LoadingButton>
-          </DialogActions>
-        </Dialog>
-      </Fragment>
+            {/* Update profile field dialogue */}
+            <Dialog open={profileUpdateDialogue.open} onClose={handleProfileUpdateDialogueClose}>
+              <DialogTitle sx={{ paddingBottom: '2px' }}>{"Update " + profileUpdateDialogue?.item?.label}</DialogTitle>
+              <DialogueBreakpoints>
+                <DialogContent>
+                  {profileUpdateDialogue.alertData ? (
+                    <Box>
+                      <Alert data={profileUpdateDialogue.alertData} />
+                    </Box>
+                  ) : (
+                    <Fragment>
+                      <DialogContentText sx={{ marginBottom: '14px' }}>
+                        {profileUpdateDialogue?.item?.update?.description}
+                      </DialogContentText>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id={"profile" + profileUpdateDialogue?.item?.id}
+                        label={profileUpdateDialogue?.item?.label}
+                        value={profileUpdateDialogue.newValue}
+                        onChange={(event) => { setProfileUpdateDialogue(prev => ({ ...prev, newValue: event.target.value })) }}
+                        type=""
+                        fullWidth
+                        variant="outlined"
+                        disabled={profileUpdateDialogue.updating}
+                      />
+                    </Fragment>
+                  )
+                  }
+                </DialogContent>
+              </DialogueBreakpoints>
+              <DialogActions sx={{ margin: '0 12px 10px 0' }}>
+                <Button onClick={handleProfileUpdateDialogueClose}><span>Cancel</span></Button>
+                <LoadingButton
+                  loading={profileUpdateDialogue.updating}
+                  loadingPosition="start"
+                  startIcon={<SaveIcon />}
+                  variant="outlined"
+                  onClick={() => updateProfile(profileUpdateDialogue?.item, profileUpdateDialogue.newValue)}
+                  disabled={profileUpdateDialogue.alertData || profileUpdateDialogue.newValue === profileUpdateDialogue?.item?.value}>
+                  <span>Save</span>
+                </LoadingButton>
+              </DialogActions>
+            </Dialog>
+          </Fragment>
+        )}
+      </Box>
     )
   }
 
@@ -203,28 +202,7 @@ const Account = () => {
           </Container>
           <Container maxWidth="lg">
             <Paper className='GenericPage__container_paper' variant='outlined'>
-              {loading ? (
-                <Box sx={{ margin: '24px' }}>
-                  {alertData ? (
-                    <Alert alertData={alertData} />
-                  ) : (
-                    <Fragment>
-                      <SkeletonGroup />
-                      <SkeletonGroup />
-                      <SkeletonGroup />
-                    </Fragment>
-                  )
-                  }
-                </Box>
-              ) : (
-                <Box sx={{ padding: '32px' }}>
-                  <Box>
-                    <Typography variant="h3" sx={{ 'color': 'rgb(191, 68, 24)', 'font-size': '1.5rem', 'text-align': 'left' }}>Profile</Typography>
-                    <Divider sx={{ marginTop: '8px', marginBottom: '24px' }} />
-                  </Box>
-                  {renderProfileItems()}
-                </Box>
-              )}
+              {renderProfileItems()}
             </Paper>
           </Container>
         </Box>

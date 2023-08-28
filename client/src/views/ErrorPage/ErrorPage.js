@@ -30,7 +30,7 @@ const ErrorPage = ({ error }) => {
     <div className="Unauthorized">
       <Header />
       <Container maxWidth="lg" sx={{ marginTop: '36px' }}>
-        <Alert alertData={alertData} />
+        <Alert data={alertData} />
       </Container>
     </div>
   );

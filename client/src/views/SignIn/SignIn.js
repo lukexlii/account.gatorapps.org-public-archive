@@ -55,7 +55,7 @@ const SignIn = () => {
       <Header />
       {alertData && (
         <Container maxWidth="lg" sx={{ marginY: '16px' }}>
-          <Alert alertData={alertData} />
+          <Alert data={alertData} />
         </Container>
       )}
       {!loading && <SignInWindow />}
