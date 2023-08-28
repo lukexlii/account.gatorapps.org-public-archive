@@ -12,8 +12,11 @@ import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Settings from '@mui/icons-material/Settings';
-import { axiosPrivate, axiosIdP } from '../../apis/backend';
+import { axiosIdP } from '../../apis/backend';
+import useFetchData from '../../hooks/useFetchData';
 import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
+import Alert from '../../components/Alert/Alert';
+import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
 import './Header.css';
 
 const Header = ({ SignInMenuItems, loading, signedIn }) => {
@@ -116,31 +119,7 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
 
   // Left menu drawer
   // Initialize menu content
-  const [leftMenuItems, setLeftMenuItems] = useState();
-  const initializeleftMenu = async () => {
-    setLeftMenuItems({ loading: true, alertData: undefined });
-
-    try {
-      const response = await axiosPrivate.get('/renderClient/getLeftMenuItems');
-      setLeftMenuItems(JSON.parse(response?.data?.leftMenuItems));
-    } catch (error) {
-      setLeftMenuItems({
-        loading: false,
-        alertData: {
-          severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
-          title: (error?.response?.data?.errCode ? "Unable to load account profile: " + error?.response?.data?.errCode : "Unknown error"),
-          message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
-          actions: [{ name: "Retry", onClick: () => { initializeleftMenu() } }]
-        }
-      });
-    }
-  }
-  useEffect(() => {
-    initializeleftMenu()
-    console.log("1111")
-    console.log(leftMenuItems)
-  }, []);
-
+  const { data: leftMenuData, loading: leftMenuLoading, alert: leftMenuAlert } = useFetchData('/renderClient/getLeftMenuItems');
   // Handle nested list expand and collapse
   const [leftMenuExpanded, setLeftMenuExpanded] = useState({});
   const handleleftMenuClick = (sectionIndex, itemIndex) => {
@@ -300,62 +279,69 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
         sx={{ [`& .MuiDrawer-paper`]: { width: '319px', 'overflow-x': 'hidden', border: '1px solid rgba(0, 0, 0, 0.12)', 'background-color': 'rgb(250, 249, 248)' } }}
       >
         <Toolbar sx={{ 'margin-bottom': '18px' }} />
-        {leftMenuItems?.alertData} ? (
-
-        ) : ({leftMenuItems?.loading} ? (
-
+        {leftMenuLoading ? (
+          <Box>
+            <SkeletonGroup />
+            <SkeletonGroup />
+            <SkeletonGroup />
+          </Box>
+        ) : (leftMenuAlert || !leftMenuData?.leftMenuItems) ? (
+          <Box sx={{ margin: '12px' }}>
+            <Alert alertData={leftMenuAlert || undefined} />
+          </Box>
         ) : (
-        <div>
-          {leftMenuItems.map((section, sectionIndex) => {
-            if (section.length <= 0) return;
-            return (
-              <List
-                component="nav"
-                aria-labelledby="nested-list-subheader"
-                subheader={
-                  <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '4px 0px 12px 24px' }}>
-                    <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
-                      {section.heading}
-                    </Typography>
-                  </ListSubheader>
-                }
-                sx={{ 'padding-bottom': '30px' }}
-              >
-                {section.items.map((item, itemIndex) => {
-                  // Item with route
-                  if (item.route) return (
-                    <ListItemButton href={item.route} target={item.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px' }}>
-                      <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                      {item.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '5px' }} />}
-                    </ListItemButton>
-                  );
-                  // Expandable item with subitems
-                  if (item.subItems) return (
-                    <Fragment>
-                      <ListItemButton onClick={() => { handleleftMenuClick(sectionIndex, itemIndex) }} sx={{ padding: '12px 24px' }}>
+          <Box>
+            {JSON.parse(leftMenuData.leftMenuItems).map((section, sectionIndex) => {
+              if (section.length <= 0) return;
+              return (
+                <List
+                  component="nav"
+                  aria-labelledby="nested-list-subheader"
+                  subheader={
+                    <ListSubheader component="div" id="nested-list-subheader" sx={{ 'background-color': 'transparent', padding: '4px 0px 12px 24px' }}>
+                      <Typography variant="h3" sx={{ color: 'rgb(191, 68, 24)', 'font-size': '0.938rem', 'font-weight': '700', 'letter-spacing': '0.047rem', 'line-height': '1.25rem' }}>
+                        {section.heading}
+                      </Typography>
+                    </ListSubheader>
+                  }
+                  sx={{ 'padding-bottom': '30px' }}
+                >
+                  {section.items.map((item, itemIndex) => {
+                    // Item with route
+                    if (item.route) return (
+                      <ListItemButton href={item.route} target={item.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px' }}>
                         <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                        {leftMenuExpanded[`${sectionIndex}-${itemIndex}`] ? <ExpandLess sx={{ color: 'rgb(179, 182, 182)' }} /> : <ExpandMore sx={{ color: 'rgb(179, 182, 182)' }} />}
+                        {item.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '5px' }} />}
                       </ListItemButton>
-                      <Collapse in={leftMenuExpanded[`${sectionIndex}-${itemIndex}`]} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                          {item.subItems.map((subItem) => {
-                            return (
-                              <ListItemButton href={subItem.route} target={subItem.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px 12px 40px' }}>
-                                <ListItemText primary={subItem.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
-                                {subItem.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '1.5px' }} />}
-                              </ListItemButton>
-                            )
-                          })}
-                        </List>
-                      </Collapse>
-                    </Fragment>
-                  );
-                  return;
-                })}
-              </List>
-            );
-          })}
-        </div>))
+                    );
+                    // Expandable item with subitems
+                    if (item.subItems) return (
+                      <Fragment>
+                        <ListItemButton onClick={() => { handleleftMenuClick(sectionIndex, itemIndex) }} sx={{ padding: '12px 24px' }}>
+                          <ListItemText primary={item.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                          {leftMenuExpanded[`${sectionIndex}-${itemIndex}`] ? <ExpandLess sx={{ color: 'rgb(179, 182, 182)' }} /> : <ExpandMore sx={{ color: 'rgb(179, 182, 182)' }} />}
+                        </ListItemButton>
+                        <Collapse in={leftMenuExpanded[`${sectionIndex}-${itemIndex}`]} timeout="auto" unmountOnExit>
+                          <List component="div" disablePadding>
+                            {item.subItems.map((subItem) => {
+                              return (
+                                <ListItemButton href={subItem.route} target={subItem.newTab ? '_blank' : '_self'} sx={{ padding: '12px 24px 12px 40px' }}>
+                                  <ListItemText primary={subItem.label} sx={{ margin: '0px 30px 0px 0px', 'max-width': '78%', [`& .MuiListItemText-primary`]: { 'font-size': '0.9375rem', 'color': 'rgb(88, 94, 94)' } }} />
+                                  {subItem.newTab && <OpenInNewIcon sx={{ color: 'rgb(88, 94, 94)', 'font-size': '14px', 'line-height': '14px', ml: '1.5px' }} />}
+                                </ListItemButton>
+                              )
+                            })}
+                          </List>
+                        </Collapse>
+                      </Fragment>
+                    );
+                    return;
+                  })}
+                </List>
+              );
+            })}
+          </Box>
+        )}
       </Drawer>
 
       {/* Space holder so pages don't have to each add spaces at top to avoid bar overlap */}

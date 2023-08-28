@@ -4,7 +4,7 @@ import './Alert.css'
 const Alert = ({ alertData }) => {
   return (
     <Box className='Alert'>
-      <MUIAlert severity={alertData?.severity || "info"} action={
+      <MUIAlert severity={alertData?.severity || "error"} action={
         <Box sx={{ marginRight: '12px' }}>
           {alertData?.actions?.map((action) => {
             return <Button color="inherit" variant="outlined" size="small" onClick={action.onClick} sx={{ margin: '6px' }}>{action.name}</Button>
