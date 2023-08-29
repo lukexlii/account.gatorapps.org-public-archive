@@ -1,5 +1,5 @@
-import { Fragment, useState, useEffect } from "react";
-import { Box, Button, Container, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, FormControl, Grid, InputAdornment, InputLabel, OutlinedInput, Paper, TextField, Tooltip, Typography } from '@mui/material';
+import { forwardRef, Fragment, useState, useEffect } from "react";
+import { Box, Button, Container, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, FormControl, Grid, Grow, InputAdornment, InputLabel, OutlinedInput, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -15,6 +15,11 @@ import { axiosPrivate } from '../../apis/backend';
 import useFetchData from '../../hooks/useFetchData';
 import useGetUserInfo from '../../hooks/useGetUserInfo';
 
+// Dialog open/close transition
+const dialogueTransition = forwardRef((props, ref) => {
+  return <Grow ref={ref} {...props} mountOnEnter unmountOnExit />;
+});
+
 const Account = () => {
   // User info from global context
   const refreshUserInfo = useGetUserInfo();
@@ -29,6 +34,7 @@ const Account = () => {
 
   // Profile update
   //// Dialogue
+  // Adaptive width
   // Make dialogue full screen on small screens; currently not enabled
   // const theme = useTheme();
   // const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -133,7 +139,7 @@ const Account = () => {
             </Grid >
 
             {/* Update profile field dialogue */}
-            <Dialog open={profileUpdateDialogue.open} onClose={handleProfileUpdateDialogueClose}>
+            <Dialog open={profileUpdateDialogue.open} onClose={handleProfileUpdateDialogueClose} TransitionComponent={dialogueTransition}>
               <DialogTitle sx={{ paddingBottom: '2px' }}>{"Update " + profileUpdateDialogue?.item?.label}</DialogTitle>
               <DialogueBreakpoints>
                 <DialogContent>
@@ -190,7 +196,7 @@ const Account = () => {
           <Container maxWidth="lg">
             <Box className="GenericPage__container_title_box GenericPage__container_title_flexBox GenericPage__container_title_flexBox_left">
               <Box className="GenericPage__container_title_flexBox GenericPage__container_title_flexBox_left">
-                <Typography variant="h1">Account</Typography>
+                <Typography variant="h1">Account Settings</Typography>
                 <Button size="medium" sx={{ 'margin-left': '16px' }}>Button</Button>
               </Box>
               <Box className="GenericPage__container_title_flexBox GenericPage__container_title_flexBox_right" sx={{ 'flex-grow': '1' }}>
