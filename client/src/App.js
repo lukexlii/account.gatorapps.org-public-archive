@@ -4,7 +4,6 @@ import Homepage from './views/Homepage/Homepage';
 import PersistAuth from './components/Auth/PersistAuth';
 import RequireAuth from './components/Auth/RequireAuth';
 import SignIn from './views/SignIn/SignIn';
-import Student from './views/Student/Student';
 import UFGoogleCallback from './views/SignIn/Callbacks/UFGoogleCallback';
 import { Routes, Route } from 'react-router-dom';
 import GenericPage from './components/GenericPage/GenericPage';
@@ -23,10 +22,6 @@ function App() {
         {/* protected routes */}
         <Route element={<RequireAuth allowedRoles={[100001]} />}>
           <Route path="/" element={<Homepage />} />
-        </Route>
-
-        <Route element={<RequireAuth allowedRoles={[100101]} />}>
-          <Route path="/student" element={<Student />} />
         </Route>
 
         <Route element={<RequireAuth allowedRoles={[200999]} />}>

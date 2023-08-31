@@ -4,7 +4,7 @@ import Header from '../Header/Header';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import useGetUserInfo from '../../hooks/useGetUserInfo';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const PersistAuth = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);

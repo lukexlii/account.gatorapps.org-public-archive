@@ -1,18 +1,7 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-const { ACCESS_TOKEN_LIFESPAN, APP_AUTH_STATE_LIFESPAN } = require('../config/authOptions');
-const { GLOBAL_USER_AUTH_TOKEN_LIFESPAN } = require('../config/config');
-
-const signAccessToken = (privateSigningKey, payload) => {
-  const accessToken = jwt.sign(
-    payload,
-    privateSigningKey,
-    // Time format: https://github.com/vercel/ms
-    { algorithm: 'ES256', expiresIn: ACCESS_TOKEN_LIFESPAN }
-  );
-  return accessToken;
-};
+const { GLOBAL_USER_AUTH_TOKEN_LIFESPAN, APP_AUTH_STATE_LIFESPAN } = require('../config/config');
 
 const signUserAuthToken = (payload) => {
   const userSessionToken = jwt.sign(
@@ -33,4 +22,4 @@ const signAppAuthState = (payload) => {
   return appAuthState;
 };
 
-module.exports = { signAccessToken, signUserAuthToken, signAppAuthState };
+module.exports = { signUserAuthToken, signAppAuthState };

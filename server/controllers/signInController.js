@@ -2,7 +2,7 @@ const User = require('../model/User');
 const { v4: uuidv4 } = require('uuid');
 const { google } = require('googleapis');
 const { signUserAuthToken } = require('./signJWT');
-const { MAX_WEB_SESSIONS } = require('../config/authOptions');
+const { MAX_WEB_SESSIONS } = require('../config/config');
 
 const handleUFGoogleSignIn = async (req, res, next) => {
   // Check req body contains access_token
