@@ -16,7 +16,7 @@ const RequireAuth = ({ allowedRoles }) => {
         ? <Outlet />
         : userInfo?.roles.includes(100001)
           ? <ErrorPage error='403' />
-          : <Navigate to="./signin" state={{ from: location }} replace />
+          : <Navigate to="/signin" state={{ from: location }} replace />
       : <Fragment>
         <Header loading />
         <Container maxWidth="lg" sx={{ marginTop: '36px' }}>
@@ -26,7 +26,7 @@ const RequireAuth = ({ allowedRoles }) => {
             message: "We are sorry, but we are unable to process your request at this time",
             actions: [
               { name: "Retry", onClick: () => { window.location.reload() } },
-              { name: "Return Home", onClick: () => { window.location.href = "./" } }
+              { name: "Return Home", onClick: () => { window.location.href = "/" } }
             ]
           }} />
         </Container>

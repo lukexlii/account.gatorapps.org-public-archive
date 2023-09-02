@@ -24,10 +24,10 @@ const SignIn = () => {
     const query = new URLSearchParams(location.search);
     const app = query.get('app');
     const state = query.get('state');
-    const returnTo = query.get('returnTo');
+    const continueTo = query.get('continueTo');
 
     axiosPrivate
-      .post('/appAuth/validateRequest', { app, state, returnTo })
+      .get("/userAuth/signIn/validateRequest" + (continueTo ? `?continueTo=${continueTo}` : ""))
       .then((response) => {
         setAlertData({
           severity: response?.data?.alertSeverity ? response.data.alertSeverity : "info",
@@ -39,6 +39,9 @@ const SignIn = () => {
         return;
       })
       .catch((error) => {
+        // If already no sign in required (such as user already signed in), go to continueToUrl provided by server
+        if (error?.response?.data?.continueToUrl) window.location.href = error?.response?.data?.continueToUrl;
+
         setAlertData({
           severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
           title: (error?.response?.data?.errCode ? "Unable to load your login session: " + error?.response?.data?.errCode : "Unknown error"),

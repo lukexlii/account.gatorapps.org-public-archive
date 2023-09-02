@@ -90,7 +90,7 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
       })
       .then((response) => {
         //dispatch(setUserInfo(null));
-        window.location.href = "./";
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);

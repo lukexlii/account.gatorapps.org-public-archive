@@ -1,7 +1,7 @@
 import { Alert as MUIAlert, AlertTitle, Box, Button, Typography } from '@mui/material';
 import './Alert.css'
 
-const Alert = ({ data, style = { titleFontSize: '18px', textFontSize: '16px' } }) => {
+const Alert = ({ data, style }) => {
   return (
     <Box className='Alert'>
       <MUIAlert severity={data?.severity || "error"} action={
@@ -11,8 +11,8 @@ const Alert = ({ data, style = { titleFontSize: '18px', textFontSize: '16px' } }
           })}
         </Box>
       } sx={{ padding: '16px' }}>
-        <AlertTitle sx={{ fontSize: style.titleFontSize }}>{data?.title || "Error"}</AlertTitle>
-        <Typography sx={{ fontSize: style.textFontSize }}>{data?.message || "Unknown error"}</Typography>
+        <AlertTitle sx={{ fontSize: style?.titleFontSize || '18px' }}>{data?.title || "Error"}</AlertTitle>
+        <Typography sx={{ fontSize: style?.textFontSize || '16px' }}>{data?.message || "Unknown error"}</Typography>
       </MUIAlert>
     </Box>
   )

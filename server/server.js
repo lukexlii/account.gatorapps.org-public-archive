@@ -7,6 +7,7 @@ const { APP_CORS_OPTIONS, GLOBAL_CORS_OPTIONS } = require('./config/corsOptions'
 const credentials = require('./middleware/credentials');
 const cookieParser = require('cookie-parser');
 const checkAppAvailability = require('./middleware/checkAvailability');
+const initializeReqProperties = require('./middleware/initializeReqProperties');
 const initializeUserSession = require('./middleware/initializeUserSession');
 const validateOrigin = require('./middleware/validateOrigin');
 const validateUserAuth = require('./middleware/validateUserAuth');
@@ -28,19 +29,21 @@ app.use('/globalApi/account/', cors(GLOBAL_CORS_OPTIONS));
 // TO DO: Resolve overlap with getAppAvailability in renderClientController
 app.use(checkAppAvailability);
 
-// Use express-session
-// !--- ATTENTION: cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
-// !--- ATTENTION: for prod, set cookie domain to .gatorapps.org ---!
-app.use(initializeUserSession);
-
-// TO DO: Handle CSRF
-
 // Parse url and request body
 app.use(express.urlencoded({ extended: false }));
 // TO DO: Only support JSON body
 app.use(express.json());
 // Session cookie is currently handled by express-session
 //app.use(cookieParser());
+
+app.use(initializeReqProperties);
+
+// Use express-session
+// !--- ATTENTION: cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
+// !--- ATTENTION: for prod, set cookie domain to .gatorapps.org ---!
+app.use(initializeUserSession);
+
+// TO DO: Handle CSRF
 
 // Validate requesting app's origin and store app in req.foundApp
 app.use(validateOrigin);
