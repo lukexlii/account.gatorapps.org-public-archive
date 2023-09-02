@@ -1,10 +1,10 @@
 const { DEFAULT_GETUSERINFO_SCOPE } = require('../config/config');
 
-const getUserInfo = async (req, res) => {
+const getUserAuthInfo = async (req, res) => {
   try {
     const foundUser = req?.userAuth?.authedUser;
     const foundApp = req?.reqApp?.foundApp;
-    if (!foundUser || !foundApp) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error while getting user info' });
+    if (!foundUser || !foundApp) return res.status(500).json({ errCode: '-', 'errMsg': 'Internal server error while getting user info' });
 
     const userInfoScope = (req.header('GATORAPPS_userInfoScope') && JSON.parse(req.header('GATORAPPS_userInfoScope'))) || DEFAULT_GETUSERINFO_SCOPE;
 
@@ -19,10 +19,10 @@ const getUserInfo = async (req, res) => {
       userInfo[attributeName] = foundUser[attributeName];
     });
 
-    res.status(200).json({ userInfo });
+    res.status(200).json({ errCode: '0', payload: JSON.stringify(userInfo) });
   } catch (err) {
-    return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unknown server error while getting user info' });
+    return res.status(500).json({ errCode: '-', 'errMsg': 'Unknown server error while getting user info' });
   }
 };
 
-module.exports = { getUserInfo }
+module.exports = { getUserAuthInfo }

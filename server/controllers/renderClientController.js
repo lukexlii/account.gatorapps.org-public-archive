@@ -1,3 +1,13 @@
+const getAppAlert = (req, res) => {
+  // [
+  //   "0" (client available) / "1" (app unavailable; any non-0 value prevents front end client load),
+  //   ["info" (severity), “” (title), "" (message), "" (actions)] (alert message array)
+  // ]
+  const appAvailability = ["0", ["info", "Scheduled Maintenance", "GatorApps is scheduled for necessary maintenance on Saturday, September 2nd, 2023 from 2AM to 6AM EST. Apps will have limited availability. We are alwayse working for your better experience!", null]];
+
+  return res.status(200).json({ errCode: '0', payload: JSON.stringify(appAvailability) });
+}
+
 const getLeftMenuItemsDemo = (req, res) => {
   const leftMenuItems = [
     {
@@ -70,4 +80,4 @@ const getLeftMenuItems = (req, res) => {
   res.status(200).json({ leftMenuItems: JSON.stringify(leftMenuItems) });
 }
 
-module.exports = { getLeftMenuItemsDemo, getLeftMenuItems };
+module.exports = { getAppAlert, getLeftMenuItemsDemo, getLeftMenuItems };

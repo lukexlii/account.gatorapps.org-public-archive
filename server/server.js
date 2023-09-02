@@ -6,6 +6,7 @@ const cors = require('cors');
 const { APP_CORS_OPTIONS, GLOBAL_CORS_OPTIONS } = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
 const cookieParser = require('cookie-parser');
+const checkAppAvailability = require('./middleware/checkAvailability');
 const initializeUserSession = require('./middleware/initializeUserSession');
 const validateOrigin = require('./middleware/validateOrigin');
 const validateUserAuth = require('./middleware/validateUserAuth');
@@ -14,25 +15,32 @@ const PORT = process.env.PORT || 8000;
 // Connect to MongoDB mongodb.com
 const { DBglobal, DBaccount } = require('./config/dbConnections');
 
-// Use express-session
-// !--- ATTENTION: cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
-// !--- ATTENTION: for prod, set cookie domain to .gatorapps.org ---!
-app.use(initializeUserSession);
-
 // Options credentials check and fetch cookies credentials requirement
 app.use(credentials);
-// Parse url and request body
-app.use(express.urlencoded({ extended: false }));
-// TO DO: Only support JSON body
-app.use(express.json());
-// Session cookie is currently handled by express-session
-//app.use(cookieParser());
 
 // CORS
 // App APIs (only available to this apps' client)
 app.use('/appApi/account/', cors(APP_CORS_OPTIONS));
 // Global APIs (available to all internal apps)
 app.use('/globalApi/account/', cors(GLOBAL_CORS_OPTIONS));
+
+// Check if app is avaliable; only process requests if so
+// TO DO: Resolve overlap with getAppAvailability in renderClientController
+app.use(checkAppAvailability);
+
+// Use express-session
+// !--- ATTENTION: cookie set to secure: false for testing in Thunder Client. Change back to true for prod/testing in Chrome. ---!
+// !--- ATTENTION: for prod, set cookie domain to .gatorapps.org ---!
+app.use(initializeUserSession);
+
+// TO DO: Handle CSRF
+
+// Parse url and request body
+app.use(express.urlencoded({ extended: false }));
+// TO DO: Only support JSON body
+app.use(express.json());
+// Session cookie is currently handled by express-session
+//app.use(cookieParser());
 
 // Validate requesting app's origin and store app in req.foundApp
 app.use(validateOrigin);

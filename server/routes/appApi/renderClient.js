@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const clientRenderController = require('../../controllers/clientRenderController');
+const renderClientController = require('../../controllers/renderClientController');
 
-router.get('/getLeftMenuItems', clientRenderController.getLeftMenuItems);
+router.get('/getAppAlert', renderClientController.getAppAlert);
+router.get('/getLeftMenuItems', renderClientController.getLeftMenuItems);
 
 module.exports = router;

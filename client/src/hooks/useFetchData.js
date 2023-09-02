@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { axiosPrivate } from '../apis/backend';
 
-const useFetchData = (endpoint, { title, retryButton, alertActions = [] }) => {
+const useFetchData = (endpoint, { title, retryButton, alertActions = [] } = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState(null);

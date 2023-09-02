@@ -2,6 +2,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../model/User');
 
 const validateUserAuth = async (req, res, next) => {
+  // Clear req.userAuth
+  delete req.userAuth;
+
   // Check userAuth info exists in session
   const userAuth = req?.session?.userAuth;
   if (!userAuth) {

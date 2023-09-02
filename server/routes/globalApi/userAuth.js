@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const requireUserAuth = require('../../middleware/requireUserAuth');
-const userInfoController = require('../../controllers/userInfoController');
-const signOutController = require('../../controllers/signOutController');
+const userSignOutController = require('../../controllers/userSignOutController');
 
-router.get('/getUserInfo', requireUserAuth, userInfoController.getUserInfo);
-router.post('/signOut', signOutController.handleSignOut);
+router.post('/signOut', userSignOutController.handleSignOut);
 
 module.exports = router

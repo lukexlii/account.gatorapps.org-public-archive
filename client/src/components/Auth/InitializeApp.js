@@ -5,25 +5,17 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import useGetUserInfo from '../../hooks/useGetUserInfo';
 import { useSelector } from 'react-redux';
+import useFetchData from '../../hooks/useFetchData';
 
-const PersistAuth = () => {
+const InitializeApp = () => {
   const [isRefreshing, setIsRefreshing] = useState(true);
   const refresh = useGetUserInfo();
 
   const userInfo = useSelector((state) => state.auth.userInfo);
 
-  useEffect(() => {
-    const verifyUserAuth = async () => {
-      try {
-        await refresh();
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsRefreshing(false);
-      }
-    }
+  const { data: userAuthInfoData, loading: userAuthInfoLoading, alert: userAuthInfoAlert, reFetch: userAuthInfoReFetch } = useFetchData('/userAuth/getUserAuthInfo');
 
-    !userInfo?.roles.includes('00001') ? verifyUserAuth() : setIsRefreshing(false);
+  useEffect(() => {
   }, []);
 
   return (
@@ -46,4 +38,4 @@ const PersistAuth = () => {
   )
 }
 
-export default PersistAuth;
+export default InitializeApp;
