@@ -39,13 +39,14 @@ const SignIn = () => {
         return;
       })
       .catch((error) => {
-        // If already no sign in required (such as user already signed in), go to continueToUrl provided by server
-        if (error?.response?.data?.continueToUrl) window.location.href = error?.response?.data?.continueToUrl;
+        // If no sign in required (such as already signed in), go to continueToUrl provided by server
+        if (error?.response?.data?.continueToUrl) return window.location.href = error?.response?.data?.continueToUrl;
 
         setAlertData({
           severity: error?.response?.data?.alertSeverity ? error.response.data.alertSeverity : "error",
-          title: (error?.response?.data?.errCode ? "Unable to load your login session: " + error?.response?.data?.errCode : "Unknown error"),
-          message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later")
+          title: (error?.response?.data?.errCode ? "Unable to load your sign in session: " + error?.response?.data?.errCode : "Unknown error"),
+          message: (error?.response?.data?.errMsg ? error?.response?.data?.errMsg : "We're sorry, but we are unable to process your request at this time. Please try again later"),
+          actions: [{ name: "Cancel", onClick: () => { navigate('/'); } }]
         });
         return;
       });
@@ -55,7 +56,7 @@ const SignIn = () => {
 
   return (
     <div className="AppAuth">
-      <Header />
+      <Header loading={loading} />
       {alertData && (
         <Container maxWidth="lg" sx={{ marginY: '16px' }}>
           <Alert data={alertData} />

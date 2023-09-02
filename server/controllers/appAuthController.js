@@ -42,8 +42,26 @@ const validateContinueTo = async (req, res, next) => {
   let { continueTo } = req.query;
   if (!continueTo) return next();
 
+  // Case continueTo matches an app's name
   try {
-    const url = new URL(continueTo);
+    const foundApp = await App.findOne({ name: continueTo }).exec();
+    if (foundApp) {
+      req.account_singIn_continueTo = { app: foundApp, url: foundApp.origins[0] };
+      return next();
+    }
+  } catch (error) {
+  }
+
+  // Case continueTo matches an app's origin url
+  // Check continueTo is in proper url format
+  let url;
+  try {
+    url = new URL(continueTo);
+  } catch (error) {
+    req.account_singIn_continueTo = { error: { errCode: '-', errMsg: 'The \"continueTo\" address you provided is malformed. You may continue to sign in to view your account, or examine your request and try again' } }
+    return next();
+  }
+  try {
     const foundApp = await App.findOne({ origins: url.origin }).exec();
     if (foundApp) {
       req.account_singIn_continueTo = { app: foundApp, url: continueTo };
@@ -66,16 +84,20 @@ const initiateAuth = async (req, res) => {
   if (!continueToApp || !continueToUrl) {
     try {
       const foundApp = await App.findOne({ origins: FRONTEND_HOST }).exec();
-      if (!foundApp) return res.status(500).json({ 'errCode': '-', 'errMsg': "We're sorry, but we are unable to process your request at this time. Please try again later" });
+      if (!foundApp) return res.status(500).json({ errCode: '-', errMsg: "We're sorry, but we are unable to process your request at this time. Please try again later" });
       continueToApp = foundApp;
       continueToUrl = FRONTEND_HOST;
     } catch (error) {
-      return res.status(500).json({ 'errCode': '-', 'errMsg': "We're sorry, but we are unable to process your request at this time. Please try again later" });
+      return res.status(500).json({ errCode: '-', errMsg: "We're sorry, but we are unable to process your request at this time. Please try again later" });
     }
   }
 
   if (req?.userAuth?.authedUser) {
-    return res.status(400).json({ errCode: '-', errMsg: 'Already signed in', continueToUrl });
+    if (continueToError) {
+      return res.status(400).json({ errCode: '-', errMsg: 'You are already signed in, but the \"continueTo\" address you provided is invalid. Please examine your request and try again', alertSeverity: 'warning' });
+    } else {
+      return res.status(400).json({ errCode: '-', errMsg: 'Already signed in', continueToUrl });
+    }
   }
 
   if (continueToError) {
