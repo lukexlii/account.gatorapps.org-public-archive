@@ -89,8 +89,8 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
         withCredentials: true
       })
       .then((response) => {
-        dispatch(setUserInfo(null));
-        navigate('/');
+        //dispatch(setUserInfo(null));
+        window.location.href = "./";
       })
       .catch((error) => {
         console.log(error);

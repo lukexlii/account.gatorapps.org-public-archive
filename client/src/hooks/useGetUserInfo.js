@@ -1,19 +1,21 @@
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from '../context/authSlice';
-import { axiosIdP } from '../apis/backend';
+import { axiosPrivate } from '../apis/backend';
 
 const useGetUserInfo = () => {
   const dispatch = useDispatch();
 
-  const refresh = async () => {
-    const response = await axiosIdP.get('/userAuth/getUserInfo', {
-      headers: { GATORAPPS_userInfoScope: JSON.stringify(['roles', 'nickname', 'firstName', 'lastName', 'primaryEmail']) }
-    });
-    dispatch(setUserInfo(response?.data?.userInfo));
-    return;
+  const getUserInfo = async () => {
+    await axiosPrivate.get('/userAuth/getUserAuthInfo')
+      .then(response => {
+        dispatch(setUserInfo(response?.data?.payload));
+      })
+      .catch(error => {
+        if (error?.response?.data?.errCode) dispatch(setUserInfo({ roles: [] }));
+      })
   };
 
-  return refresh;
+  return getUserInfo;
 };
 
 export default useGetUserInfo;

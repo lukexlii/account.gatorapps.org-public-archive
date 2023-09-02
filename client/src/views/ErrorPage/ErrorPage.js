@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container } from '@mui/material';
 import Header from '../../components/Header/Header';
 import Alert from '../../components/Alert/Alert';
-import { Container } from '@mui/material';
 
 const ErrorPage = ({ error }) => {
   const navigate = useNavigate();

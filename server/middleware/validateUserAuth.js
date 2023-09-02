@@ -87,18 +87,17 @@ const validateUserAuth = async (req, res, next) => {
         // Check auth has not expired
         const currentTimestamp = Math.floor(Date.now() / 1000);
         if (decoded.exp && decoded.exp > currentTimestamp) {
-          // Store foundUser in req.userAuth and continue
+          // If auth is active, store foundUser in req.userAuth
           req.userAuth = {
             authedUser: foundUser,
             error: { errCode: '0' }
           };
-          return next();
+        } else {
+          // If auth expired, store foundUser as expiredUser in error
+          req.userAuth = {
+            error: { status: 403, errCode: '-', errMsg: 'Auth session has expired', expiredUser: foundUser }
+          };
         }
-
-        // If auth expired, store foundUser as expiredUser in error
-        req.userAuth = {
-          error: { status: 403, errCode: '-', errMsg: 'Auth session has expired', expiredUser: foundUser }
-        };
         return next();
       }
     );

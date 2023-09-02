@@ -4,23 +4,21 @@ import Header from '../Header/Header';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import useGetUserInfo from '../../hooks/useGetUserInfo';
-import { useSelector } from 'react-redux';
-import useFetchData from '../../hooks/useFetchData';
 
 const InitializeApp = () => {
-  const [isRefreshing, setIsRefreshing] = useState(true);
-  const refresh = useGetUserInfo();
+  const [loading, setLoading] = useState(true);
+  const getUserInfo = useGetUserInfo();
 
-  const userInfo = useSelector((state) => state.auth.userInfo);
+  //const { data: userAuthInfoData, loading: userAuthInfoLoading, alert: userAuthInfoAlert, reFetch: userAuthInfoReFetch } = useFetchData('');
 
-  const { data: userAuthInfoData, loading: userAuthInfoLoading, alert: userAuthInfoAlert, reFetch: userAuthInfoReFetch } = useFetchData('/userAuth/getUserAuthInfo');
-
-  useEffect(() => {
+  useEffect(async () => {
+    await getUserInfo();
+    setLoading(false);
   }, []);
 
   return (
     <div>
-      {isRefreshing
+      {loading
         ? <Fragment>
           <Header loading />
           <Box align='center' sx={{

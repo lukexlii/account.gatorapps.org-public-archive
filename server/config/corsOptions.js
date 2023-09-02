@@ -17,7 +17,7 @@ const APP_CORS_OPTIONS = {
     if (APP_ORIGINS.includes(origin)) {
       callback(null, true)
     } else {
-      callback(new Error('Blocked by CORS. Origin: ' + origin));
+      callback(new Error());
     }
   },
   optionsSuccessStatus: 200
@@ -30,7 +30,7 @@ const GLOBAL_CORS_OPTIONS = {
     if (APP_ORIGINS.includes(origin)) {
       callback(null, true)
     } else {
-      callback(new Error('Blocked by CORS. Origin: ' + origin));
+      callback(new Error());
     }
   },
   optionsSuccessStatus: 200
