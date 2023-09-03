@@ -3,7 +3,7 @@ const { google } = require('googleapis');
 const crypto = require('crypto');
 const User = require('../model/User');
 const { signUserAuthToken } = require('./signJWT');
-const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URIS, MAX_WEB_SESSIONS } = require('../config/config');
+const { FRONTEND_HOST, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URIS, MAX_WEB_SESSIONS } = require('../config/config');
 
 const initializeSignIn = async (req, res, next) => {
   // Check not already signed in
@@ -13,7 +13,7 @@ const initializeSignIn = async (req, res, next) => {
   const state = crypto.randomBytes(16).toString('hex');
 
   // Save continueTo address in req and with session, if present
-  const continueToUrl = req.account_singIn_continueTo?.url;
+  const continueToUrl = req.account_singIn_continueTo?.url || FRONTEND_HOST;
   req.account_singIn_session = { state, continueToUrl };
 
   if (continueToUrl) {
