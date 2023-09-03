@@ -2,24 +2,60 @@ const User = require('../model/User');
 const { v4: uuidv4 } = require('uuid');
 const { google } = require('googleapis');
 const { signUserAuthToken } = require('./signJWT');
-const { MAX_WEB_SESSIONS } = require('../config/config');
+const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URIS, MAX_WEB_SESSIONS } = require('../config/config');
 
-const handleUFGoogleSignIn = async (req, res, next) => {
+const initializeSignIn = async (req, res, next) => {
+  // Check not already signed in
+  if (req?.userAuth?.authedUser) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });
+
+  // Save continueTo address with session, if present
+  const continueToUrl = req.account_singIn_continueTo?.url;
+  if (continueToUrl) {
+    // Save continueTo address with session
+    req.session.account_singIn_continueToUrl = continueToUrl;
+    req.session.save((err) => {
+      // record error to be returned with sign in address
+    });
+  }
+
+  return next();
+}
+
+const getSignInUrlUfgoogle = async (req, res) => {
+  const oauth2Client = new google.auth.OAuth2(
+    GOOGLE_CLIENT_ID,
+    null, //process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_REDIRECT_URIS[0]
+  );
+
+  const scopes = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'];
+  const signInUrlUfgoogle = oauth2Client.generateAuthUrl({
+    scope: scopes.join(' '),
+    hd: 'ufl.edu'
+  });
+
+  res.status(200).json({ errCode: '0', payload: signInUrlUfgoogle });
+}
+
+const handleCallbackUfgoogle = async (req, res, next) => {
   // Check req body contains access_token
-  const { access_token } = req.body;
-  if (!access_token) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Missing Google access_token' });
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Missing Google auth code' });
 
-  // Exchange access_token for email and name from Google
+  // Exchange oauth2 code for openid, email and name from Google
   // Google OAuth: https://developers.google.com/identity/protocols/oauth2
   let email, firstName, lastName;
   try {
-    const oauth2Client = new google.auth.OAuth2();
-    oauth2Client.setCredentials({ access_token: access_token });
+    const oauth2Client = new google.auth.OAuth2(
+      GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      GOOGLE_REDIRECT_URIS[0]
+    );
+    google.options({ auth: oauth2Client });
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.credentials = tokens;
 
-    const people = google.people({
-      version: 'v1',
-      auth: oauth2Client,
-    });
+    const people = google.people('v1');
 
     const profile = await people.people.get({
       resourceName: 'people/me',
@@ -50,7 +86,7 @@ const handleUFGoogleSignIn = async (req, res, next) => {
 
   try {
     // Check if user with given  primaryEmail already exists
-    const foundUser = await User.findOne({ primaryEmail: email }).exec();
+    let foundUser = await User.findOne({ emails: email }).exec();
 
     // If not, create user
     if (!foundUser) {
@@ -64,7 +100,7 @@ const handleUFGoogleSignIn = async (req, res, next) => {
         "opid": opid,
         "registerTimestamp": new Date().getTime(),
         "roles": ["100001"],
-        "primaryEmail": email,
+        "emails": [email],
         "firstName": firstName,
         "lastName": lastName
       });
@@ -75,6 +111,7 @@ const handleUFGoogleSignIn = async (req, res, next) => {
     req.signIn = { foundUser };
     next();
   } catch (err) {
+    console.log(err)
     return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user profile' });
   };
 };
@@ -124,4 +161,4 @@ const establishSession = async (req, res) => {
 
 };
 
-module.exports = { handleUFGoogleSignIn, establishSession };
+module.exports = { initializeSignIn, getSignInUrlUfgoogle, handleCallbackUfgoogle, establishSession };

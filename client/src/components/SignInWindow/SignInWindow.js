@@ -2,7 +2,7 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
+import { useUfGoogle } from '../../hooks/useGetSignInUrl';
 import './SignInWindow.css';
 
 const SignInWindow = () => {
@@ -22,7 +22,7 @@ const SignInWindow = () => {
               }>Students, Faculty & Staff</Typography>
             </Box>
             <Box marginY='16px'>
-              <Button variant='contained' size='medium' color='primary' fullWidth={true} onClick={UFLoginViaGoogle} sx={
+              <Button variant='contained' size='medium' color='primary' fullWidth={true} onClick={useUfGoogle} sx={
                 {
                   'font-size': '1.375rem',
                   'font-weight': '700',

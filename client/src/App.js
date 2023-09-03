@@ -2,7 +2,7 @@ import Admin from './views/Admin/Admin';
 import ErrorPage from './views/ErrorPage/ErrorPage';
 import Homepage from './views/Homepage/Homepage';
 import InitializeApp from './components/InitializeApp/InitializeApp';
-import RequireAuth from './components/Auth/RequireAuth';
+import RequireAuth from './components/RequireAuth/RequireAuth';
 import SignIn from './views/SignIn/SignIn';
 import UFGoogleCallback from './views/SignIn/Callbacks/UFGoogleCallback';
 import { Routes, Route } from 'react-router-dom';
@@ -13,7 +13,7 @@ function App() {
     <Routes>
       {/* sign ins */}
       <Route path="/signin" element={<SignIn />} />
-      <Route path="/signin/ufgoogle/callback" element={<UFGoogleCallback />} />
+      <Route path="/signin/callback/ufgoogle" element={<UFGoogleCallback />} />
 
       <Route element={<InitializeApp />}>
         {/* public routes */}

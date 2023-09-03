@@ -14,7 +14,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Settings from '@mui/icons-material/Settings';
 import { axiosIdP } from '../../apis/backend';
 import useFetchData from '../../hooks/useFetchData';
-import { UFLoginViaGoogle } from '../Auth/AuthFunctions';
+import { useUfGoogle } from '../../hooks/useGetSignInUrl';
 import Alert from '../../components/Alert/Alert';
 import SkeletonGroup from '../../components/SkeletonGroup/SkeletonGroup';
 import './Header.css';
@@ -42,7 +42,7 @@ const Header = ({ SignInMenuItems, loading, signedIn }) => {
   // Sign in dropdown menu
   const defaultSignInMenuItems = [
     { name: "Students, Faculty & Staff" },
-    { name: "Sign in with GatorLink", 'action': UFLoginViaGoogle },
+    { name: "Sign in with GatorLink", 'action': useUfGoogle },
     { name: "Alumni & Friends" },
     { name: "Coming soon...", 'action': () => window.alert("Coming soon...") }
   ];

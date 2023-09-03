@@ -19,26 +19,23 @@ export default function UFGoogleCallback() {
   const HandleGoogleCallback = () => {
     // Potential TODO: frontend HD validation
     const allowedHDs = ['ufl.edu'];
-    const url = new URL(window.location.href);
-    const hashParams = new URLSearchParams(url.hash.substr(1)); // Exclude the '#' character
-    const accessToken = hashParams.get('access_token');
-    window.history.replaceState({}, document.title, '../..');
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get('code');
+    //window.history.replaceState({}, document.title, '../..');
 
-    if (accessToken) {
-      // JUST FOR DEV, REMOVE FOR PROD
-      console.log(accessToken);
-      handleLoginSuccess(accessToken);
-    } else if (hashParams.get('error')) {
-      setErrorMessage(hashParams.get('error'));
+    if (code) {
+      handleLoginSuccess(code);
+    } else if (searchParams.get('error')) {
+      setErrorMessage(searchParams.get('error'));
     } else {
       setErrorMessage('Invalid IdP response');
     }
   };
 
-  const handleLoginSuccess = (access_token) => {
+  const handleLoginSuccess = (code) => {
     // Send access token to backend
     axios
-      .post('/userAuth/signIn/ufgoogle', { access_token }, {
+      .post('/userAuth/signIn/callback/ufgoogle', { code }, {
         headers: {
           'Content-Type': 'application/json'
         },
@@ -52,7 +49,7 @@ export default function UFGoogleCallback() {
         if (error?.response?.data?.errMsg) {
           setErrorMessage(error.response.data.errMsg);
         } else {
-          setErrorMessage('Unable to log you in');
+          setErrorMessage('Unable to sign you in');
         }
       });
   };

@@ -2,7 +2,7 @@ const getProfileSection = (req, res) => {
   try {
     const authedUser = req.userAuth.authedUser;
 
-    const [id, domain] = authedUser.primaryEmail.split("@");
+    const [id, domain] = authedUser.emails[0].split("@");
 
     const profileItems = [
       { id: "name", label: "Name", value: authedUser.firstName + " " + authedUser.lastName },

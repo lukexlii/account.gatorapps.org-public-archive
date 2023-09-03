@@ -1,8 +1,4 @@
 const App = require('../model/App');
-const { signAppAuthState } = require('./signJWT');
-const jwt = require('jsonwebtoken');
-const fs = require('fs');
-const path = require('path');
 const { FRONTEND_HOST } = require('../config/config');
 
 const validateContinueTo = async (req, res, next) => {

@@ -25,12 +25,7 @@ const userSchema = new Schema({
     require: true
   },
   nickname: String,
-  primaryEmail: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  secondaryEmails: [String],
+  emails: [String],
   sessions: [{
     _id: false,
     sessionID: String,
