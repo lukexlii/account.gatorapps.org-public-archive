@@ -15,6 +15,8 @@ const initializeReqProperties = (req, res, next) => {
   //                url: Validated url address to continue to after user signs in
   //              }
   delete req.account_singIn_continueTo;
+  delete req.account_singIn_session;
+  delete req.account_singIn_userToEstablishSession;
   next();
 }
 

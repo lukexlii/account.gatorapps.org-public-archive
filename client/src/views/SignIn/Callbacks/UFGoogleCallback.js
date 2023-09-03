@@ -21,10 +21,11 @@ export default function UFGoogleCallback() {
     const allowedHDs = ['ufl.edu'];
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get('code');
+    const state = searchParams.get('state');
     //window.history.replaceState({}, document.title, '../..');
 
-    if (code) {
-      handleLoginSuccess(code);
+    if (code && code) {
+      handleLoginSuccess(code, state);
     } else if (searchParams.get('error')) {
       setErrorMessage(searchParams.get('error'));
     } else {
@@ -32,17 +33,21 @@ export default function UFGoogleCallback() {
     }
   };
 
-  const handleLoginSuccess = (code) => {
+  const handleLoginSuccess = (code, state) => {
     // Send access token to backend
     axios
-      .post('/userAuth/signIn/callback/ufgoogle', { code }, {
+      .post('/userAuth/signIn/callback/ufgoogle', { code, state }, {
         headers: {
           'Content-Type': 'application/json'
         },
         withCredentials: true
       })
       .then((response) => {
-        navigate('/');
+        if (response.data?.continueToUrl) {
+          return window.location.href = response.data.continueToUrl;
+        } else {
+          return navigate('./');
+        }
       })
       .catch((error) => {
         console.log(error);

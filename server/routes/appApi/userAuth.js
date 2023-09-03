@@ -12,6 +12,7 @@ router.post('/signIn/initialize/*', appAuthController.validateContinueTo);
 router.post('/signIn/initialize/*', userSignInController.initializeSignIn);
 router.post('/signIn/initialize/ufgoogle', userSignInController.getSignInUrlUfgoogle);
 
+router.post('/signIn/callback/*', userSignInController.validateCallback);
 router.post('/signIn/callback/ufgoogle', userSignInController.handleCallbackUfgoogle);
 router.post('/signIn/callback/*', userSignInController.establishSession);
 

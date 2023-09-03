@@ -1,6 +1,7 @@
-const User = require('../model/User');
 const { v4: uuidv4 } = require('uuid');
 const { google } = require('googleapis');
+const crypto = require('crypto');
+const User = require('../model/User');
 const { signUserAuthToken } = require('./signJWT');
 const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URIS, MAX_WEB_SESSIONS } = require('../config/config');
 
@@ -8,39 +9,64 @@ const initializeSignIn = async (req, res, next) => {
   // Check not already signed in
   if (req?.userAuth?.authedUser) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Already signed in' });
 
-  // Save continueTo address with session, if present
+  // Generate random state 
+  const state = crypto.randomBytes(16).toString('hex');
+
+  // Save continueTo address in req and with session, if present
   const continueToUrl = req.account_singIn_continueTo?.url;
+  req.account_singIn_session = { state, continueToUrl };
+
   if (continueToUrl) {
     // Save continueTo address with session
-    req.session.account_singIn_continueToUrl = continueToUrl;
-    req.session.save((err) => {
-      // record error to be returned with sign in address
+    if (!req.session.signInSessions) req.session.signInSessions = [];
+    req.session.signInSessions.push(req.account_singIn_session);
+    await req.session.save((err) => {
+      if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish sign in state' });
     });
+    // Return if err and already send res in callback
+    if (res.headersSent) return;
   }
 
   return next();
 }
 
-const getSignInUrlUfgoogle = async (req, res) => {
+const getSignInUrlUfgoogle = (req, res) => {
+  const { state } = req.account_singIn_session;
+  if (!state) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error' });
+
   const oauth2Client = new google.auth.OAuth2(
     GOOGLE_CLIENT_ID,
     null, //process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_REDIRECT_URIS[0]
   );
 
-  const scopes = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'];
+  const scopes = ['openid', 'email', 'profile'];
   const signInUrlUfgoogle = oauth2Client.generateAuthUrl({
     scope: scopes.join(' '),
-    hd: 'ufl.edu'
+    hd: 'ufl.edu',
+    state: state
   });
 
-  res.status(200).json({ errCode: '0', payload: signInUrlUfgoogle });
+  return res.status(200).json({ errCode: '0', payload: signInUrlUfgoogle });
+}
+
+const validateCallback = (req, res, next) => {
+  const { state } = req.body;
+  if (!state) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Missing required callback parameters' });
+
+  if (!req.session?.signInSessions) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Unable to match sign in session with state provided' });
+  const signInSession = req.session.signInSessions.find(session => session.state === state);;
+  if (!signInSession) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Unable to match sign in session with state provided' });
+
+  // Restore sign in session
+  req.account_singIn_session = signInSession;
+  next();
 }
 
 const handleCallbackUfgoogle = async (req, res, next) => {
   // Check req body contains access_token
   const { code } = req.body;
-  if (!code) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Missing Google auth code' });
+  if (!code) return res.status(400).json({ 'errCode': '-', 'errMsg': 'Missing required callback parameters' });
 
   // Exchange oauth2 code for openid, email and name from Google
   // Google OAuth: https://developers.google.com/identity/protocols/oauth2
@@ -84,6 +110,7 @@ const handleCallbackUfgoogle = async (req, res, next) => {
     return res.status(400).json({ 'errCode': '-', 'errMsg': 'Unable to fetch user info with Google access_token provided' });
   }
 
+  // TO DO: Get and store openid, update name for re login
   try {
     // Check if user with given  primaryEmail already exists
     let foundUser = await User.findOne({ emails: email }).exec();
@@ -108,7 +135,7 @@ const handleCallbackUfgoogle = async (req, res, next) => {
     }
 
     // Store user and continue
-    req.signIn = { foundUser };
+    req.account_singIn_userToEstablishSession = foundUser;
     next();
   } catch (err) {
     console.log(err)
@@ -117,7 +144,7 @@ const handleCallbackUfgoogle = async (req, res, next) => {
 };
 
 const establishSession = async (req, res) => {
-  const foundUser = req.signIn.foundUser;
+  const foundUser = req.account_singIn_userToEstablishSession;
   if (!foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user session' });
 
   const signInTimeStamp = new Date().getTime();
@@ -131,7 +158,7 @@ const establishSession = async (req, res) => {
   }
 
   // If the current client sessionID has an old session with foundUser, remove the old session
-  foundUser.sessions = foundUser.sessions.filter((session) => session.sessionID !== req.sessionID);
+  foundUser.sessions = foundUser.sessions?.filter((session) => session.sessionID !== req.sessionID);
 
   // Sign out older sessions so number of simultaneous sessions for foundUser meet the max cap requirement
   while (foundUser.sessions.length >= MAX_WEB_SESSIONS) {
@@ -157,8 +184,10 @@ const establishSession = async (req, res) => {
     if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to update session with current sign in' });
   });
 
-  return res.status(200).json({ 'errCode': '0' });
-
+  // Delete current and all other sessions since already signed in
+  delete req.session.signInSessions;
+  await req.session.save();
+  return res.status(200).json({ 'errCode': '0', continueToUrl: req.account_singIn_session.continueToUrl });
 };
 
-module.exports = { initializeSignIn, getSignInUrlUfgoogle, handleCallbackUfgoogle, establishSession };
+module.exports = { initializeSignIn, getSignInUrlUfgoogle, validateCallback, handleCallbackUfgoogle, establishSession };
