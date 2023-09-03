@@ -56,7 +56,7 @@ const SignIn = () => {
 
   return (
     <div className="AppAuth">
-      <Header loading={loading} />
+      <Header isSignedIn={false} loading={loading} />
       {alertData && (
         <Container maxWidth="lg" sx={{ marginY: '16px' }}>
           <Alert data={alertData} />

@@ -5,39 +5,6 @@ const fs = require('fs');
 const path = require('path');
 const { FRONTEND_HOST } = require('../config/config');
 
-const initiateRequest = async (req, res) => {
-  const { app, returnTo, statePayload } = req.body;
-  if (!app) return res.status(400).json({ 'errCode': '-200101', 'errMsg': 'Missing app' });
-
-  try {
-    const foundApp = await App.findOne({ name: app }).exec();
-    if (!foundApp) return res.status(400).json({ 'errCode': '-200102', 'errMsg': 'App not found' });
-
-    const requireState = (foundApp.authOptions && JSON.parse(foundApp.authOptions)?.requireState);
-    if (requireState && !statePayload) return res.status(400).json({ 'errCode': '-200103', 'errMsg': 'App requires a state, statePayload not found' });
-
-    let authUrl = FRONTEND_HOST + '/signin?app=' + foundApp.name;
-
-    if (statePayload) {
-      try {
-        const state = signAppAuthState(statePayload);
-        authUrl += '&state=' + state;
-      } catch (error) {
-        return res.status(500).json({ 'errCode': '-200104', 'errMsg': 'Unable to sign statePayload' });
-      }
-    };
-
-    if (returnTo) {
-      // TODO: Validate returnTo is an authorized uri
-      authUrl += '&returnTo=' + returnTo;
-    };
-
-    return res.status(200).json({ authUrl });
-  } catch (error) {
-    return res.status(500).json({ 'errCode': '-200199', 'errMsg': 'Unknown server error' });
-  }
-};
-
 const validateContinueTo = async (req, res, next) => {
   let { continueTo } = req.query;
   if (!continueTo) return next();
@@ -49,16 +16,17 @@ const validateContinueTo = async (req, res, next) => {
       req.account_singIn_continueTo = { app: foundApp, url: foundApp.origins[0] };
       return next();
     }
-  } catch (error) {
+  } catch (err) {
   }
 
   // Case continueTo matches an app's origin url
-  // Check continueTo is in proper url format
   let url;
+  // Check continueTo is in proper url format
   try {
     url = new URL(continueTo);
-  } catch (error) {
-    req.account_singIn_continueTo = { error: { errCode: '-', errMsg: 'The \"continueTo\" address you provided is malformed. You may continue to sign in to view your account, or examine your request and try again' } }
+  } catch (err) {
+    // If not, then continueTo matches neither an authorized app name nor origin url
+    req.account_singIn_continueTo = { error: { errCode: '-', errMsg: 'The app you attempted to authenticate to does not exist or is not authorized to use with GatorApps. You may continue to sign in to view your account, or examine your request and try again' } }
     return next();
   }
   try {
@@ -75,6 +43,26 @@ const validateContinueTo = async (req, res, next) => {
   return next();
 };
 
+const getSignInUrl = async (req, res) => {
+  const reqApp = req.reqApp;
+  if (!reqApp._id) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error' });
+
+  const continueToApp = req.account_singIn_continueTo?.app;
+  const continueToUrl = req.account_singIn_continueTo?.url;
+
+  if (continueToUrl) {
+    // validateContinueTo already checks that name/origin in continueTo is valid and belongs to an internal app
+    // Here checks this internal app matches the app requesting the sign in url
+    if (!continueToApp._id || !reqApp._id.equals(continueToApp._id)) {
+      return res.status(403).json({ 'errCode': '-', 'errMsg': '"continueTo" address does not belong to requesting app' });
+    } else {
+      return res.status(200).json({ errCode: '0', payload: FRONTEND_HOST + `/signin?continueTo=${encodeURI(continueToUrl)}` });
+    }
+  } else {
+    return res.status(200).json({ errCode: '0', payload: FRONTEND_HOST + "/signin" });
+  }
+};
+
 const initiateAuth = async (req, res) => {
   let continueToApp = req.account_singIn_continueTo?.app;
   let continueToUrl = req.account_singIn_continueTo?.url;
@@ -87,7 +75,7 @@ const initiateAuth = async (req, res) => {
       if (!foundApp) return res.status(500).json({ errCode: '-', errMsg: "We're sorry, but we are unable to process your request at this time. Please try again later" });
       continueToApp = foundApp;
       continueToUrl = FRONTEND_HOST;
-    } catch (error) {
+    } catch (err) {
       return res.status(500).json({ errCode: '-', errMsg: "We're sorry, but we are unable to process your request at this time. Please try again later" });
     }
   }
@@ -107,4 +95,4 @@ const initiateAuth = async (req, res) => {
   }
 };
 
-module.exports = { initiateRequest, validateContinueTo, initiateAuth };
+module.exports = { validateContinueTo, getSignInUrl, initiateAuth };

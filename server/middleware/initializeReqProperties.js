@@ -1,10 +1,13 @@
 const initializeReqProperties = (req, res, next) => {
   // Global client session
-  delete req?.session;
-  delete req?.sessionID;
+  delete req.session;
+  delete req.sessionID;
+
+  // Global requesting app with authorized origin
+  delete req.reqApp;
 
   // Global client auth, stores authed user or auth error
-  delete req?.userAuth;
+  delete req.userAuth;
 
   // "account" app: User sign in flow
   // continueTo = {

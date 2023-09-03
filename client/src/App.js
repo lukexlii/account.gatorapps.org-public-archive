@@ -11,12 +11,12 @@ import GenericPage from './components/GenericPage/GenericPage';
 function App() {
   return (
     <Routes>
-      {/* sign in callbacks */}
+      {/* sign ins */}
+      <Route path="/signin" element={<SignIn />} />
       <Route path="/signin/ufgoogle/callback" element={<UFGoogleCallback />} />
 
       <Route element={<InitializeApp />}>
         {/* public routes */}
-        <Route path="/signin" element={<SignIn />} />
         <Route path="/test" element={<GenericPage />} />
 
         {/* protected routes */}

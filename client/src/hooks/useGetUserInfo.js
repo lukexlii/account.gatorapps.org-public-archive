@@ -11,6 +11,7 @@ const useGetUserInfo = () => {
         dispatch(setUserInfo(response?.data?.payload));
       })
       .catch(error => {
+        // TO DO: Only give roles if explicitly knows that user has not signed in
         if (error?.response?.data?.errCode) dispatch(setUserInfo({ roles: [] }));
       })
   };

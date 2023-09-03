@@ -18,7 +18,7 @@ const validateOrigin = async (req, res, next) => {
 
   if (!foundApp.origins.includes(origin)) return res.status(403).json({ 'errCode': '-', 'errMsg': 'Unauthorized or mismatched origin' });
 
-  req.reqApp = { foundApp };
+  req.reqApp = foundApp;
   next();
 };
 

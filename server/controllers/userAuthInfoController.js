@@ -3,7 +3,7 @@ const { DEFAULT_GETUSERINFO_SCOPE } = require('../config/config');
 const getUserAuthInfo = async (req, res) => {
   try {
     const foundUser = req?.userAuth?.authedUser;
-    const foundApp = req?.reqApp?.foundApp;
+    const foundApp = req?.reqApp;
     if (!foundUser || !foundApp) return res.status(500).json({ errCode: '-', errMsg: 'Internal server error while getting user info' });
 
     const userInfoScope = (req.header('GATORAPPS_userInfoScope') && JSON.parse(req.header('GATORAPPS_userInfoScope'))) || DEFAULT_GETUSERINFO_SCOPE;

@@ -57,14 +57,12 @@ app.use(validateUserAuth);
 app.use('/appApi/account/renderClient', require('./routes/appApi/renderClient'));
 //// User auth
 app.use('/appApi/account/userAuth', require('./routes/appApi/userAuth'));
-//// App auth to other internal apps
-app.use('/appApi/account/appAuth', require('./routes/appApi/appAuth'));
 //// Get and update user profile
 app.use('/appApi/account/userProfile', require('./routes/appApi/userProfile'));
 
 // Global APIs
+//// User auth requests from other internal apps
 app.use('/globalApi/account/userAuth', require('./routes/globalApi/userAuth'));
-app.use('/globalApi/account/appAuth', require('./routes/globalApi/appAuth'));
 
 
 // HTTP Status Codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
