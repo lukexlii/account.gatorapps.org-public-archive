@@ -18,8 +18,8 @@ const DEFAULT_GETUSERINFO_SCOPE = ['roles', 'nickname', 'firstName', 'lastName',
 
 // Oauth 2 clients, DO NOT store client secrets here
 //// Google
-GOOGLE_CLIENT_ID = '23936223068-ktbf75l67ivbv3gn99mebn7r8nfq5j4a.apps.googleusercontent.com';
-GOOGLE_REDIRECT_URIS = ['http://localhost:3000/signin/callback/ufgoogle'];
+GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID_HERE';
+GOOGLE_REDIRECT_URIS = [`${FRONTEND_HOST}/signin/callback/ufgoogle`];
 
 module.exports = {
   FRONTEND_HOST, GLOBAL_SESSION_COOKIE_NAME, GLOBAL_SESSION_LIFESPAN, GLOBAL_USER_AUTH_TOKEN_LIFESPAN, MAX_WEB_SESSIONS,
