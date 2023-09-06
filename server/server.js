@@ -43,12 +43,17 @@ app.use(initializeReqProperties);
 // !--- ATTENTION: for prod, set cookie domain to .gatorapps.org ---!
 app.use(initializeUserSession);
 
-// TO DO: Handle CSRF
-
 // Validate requesting app's origin and store app in req.foundApp
 app.use(validateOrigin);
 // Validate user auth status and store user in req.userAuth.authedUser
 app.use(validateUserAuth);
+
+// TO DO: Anti-CSRF
+const crypto = require('crypto');
+app.get('/appApi/account/acsrf/getToken', (req, res) => {
+  const token = crypto.randomBytes(16).toString('hex');
+  res.status(200).json({ errCode: '0', payload: token })
+});
 
 
 // Routes

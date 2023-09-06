@@ -22,7 +22,7 @@ export default function UFGoogleCallback() {
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get('code');
     const state = searchParams.get('state');
-    //window.history.replaceState({}, document.title, '../..');
+    window.history.replaceState({}, document.title, '../..');
 
     if (code && code) {
       handleLoginSuccess(code, state);

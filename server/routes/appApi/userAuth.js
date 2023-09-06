@@ -14,6 +14,7 @@ router.post('/signIn/initialize/ufgoogle', userSignInController.getSignInUrlUfgo
 
 router.post('/signIn/callback/*', userSignInController.validateCallback);
 router.post('/signIn/callback/ufgoogle', userSignInController.handleCallbackUfgoogle);
+router.post('/signIn/callback/*', userSignInController.regenerateClientSession);
 router.post('/signIn/callback/*', userSignInController.establishSession);
 
 router.get('/getUserAuthInfo', requireUserAuth, userInfoController.getUserAuthInfo);

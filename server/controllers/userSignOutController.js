@@ -1,13 +1,16 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/User');
 
-const handleSignOut = async (req, res) => {
-  delete req.session.userAuth;
-  req.session.save((err) => {
+const removeClientSession = (req, res, next) => {
+  // Remove client's user session for anti-session fixation
+  req.session.destroy((err) => {
     if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to update client session to sign you out' });
+    return next();
   });
+}
 
-  // remove client's session from foundUser's sessions
+const handleSignOut = async (req, res) => {
+  // Remove user session from foundUser's sessions
   const foundUser = req?.userAuth?.authedUser || req?.userAuth?.error?.expiredUser;
   if (foundUser) {
     try {
@@ -21,4 +24,4 @@ const handleSignOut = async (req, res) => {
   res.status(204).json({ 'errCode': '0' });
 };
 
-module.exports = { handleSignOut }
+module.exports = { removeClientSession, handleSignOut }

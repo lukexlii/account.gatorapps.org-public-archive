@@ -6,6 +6,7 @@ const userSignOutController = require('../../controllers/userSignOutController')
 router.get('/getSignInUrl', validateContinueTo);
 router.get('/getSignInUrl', getSignInUrl);
 
+router.post('/signOut', userSignOutController.removeClientSession);
 router.post('/signOut', userSignOutController.handleSignOut);
 
 module.exports = router

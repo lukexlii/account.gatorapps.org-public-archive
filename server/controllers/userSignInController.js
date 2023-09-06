@@ -143,9 +143,18 @@ const handleCallbackUfgoogle = async (req, res, next) => {
   };
 };
 
+const regenerateClientSession = (req, res, next) => {
+  // Regenerate client's user session for anti-session fixation
+  // This also removes all previous sign in sessions (eg. for oauth states and callback continueTos)
+  req.session.regenerate((err) => {
+    if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish client user session' });
+    return next();
+  });
+}
+
 const establishSession = async (req, res) => {
   const foundUser = req.account_singIn_userToEstablishSession;
-  if (!foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to establish user session' });
+  if (!foundUser) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Internal server error' });
 
   const signInTimeStamp = new Date().getTime();
 
@@ -184,10 +193,7 @@ const establishSession = async (req, res) => {
     if (err) return res.status(500).json({ 'errCode': '-', 'errMsg': 'Unable to update session with current sign in' });
   });
 
-  // Delete current and all other sessions since already signed in
-  delete req.session.signInSessions;
-  await req.session.save();
   return res.status(200).json({ 'errCode': '0', continueToUrl: req.account_singIn_session.continueToUrl });
 };
 
-module.exports = { initializeSignIn, getSignInUrlUfgoogle, validateCallback, handleCallbackUfgoogle, establishSession };
+module.exports = { initializeSignIn, getSignInUrlUfgoogle, validateCallback, handleCallbackUfgoogle, regenerateClientSession, establishSession };

@@ -76,11 +76,14 @@ const initiateAuth = async (req, res) => {
     }
   }
 
+  // Case user already signed in, block re-sign in
   if (req?.userAuth?.authedUser) {
+    // Case provided invalid continueTo, show warning
     if (continueToError) {
       return res.status(400).json({ errCode: '-', errMsg: 'You are already signed in, but the \"continueTo\" address you provided is invalid. Please examine your request and try again', alertSeverity: 'warning' });
+      // Case valid continueTo, redirect client to continueTo
     } else {
-      return res.status(400).json({ errCode: '-', errMsg: 'Already signed in', continueToUrl });
+      return res.status(400).json({ errCode: '-', errMsg: 'Already signed in', redirectUrl });
     }
   }
 
